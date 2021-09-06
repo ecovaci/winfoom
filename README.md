@@ -115,7 +115,7 @@ The application log file is placed under `<WINFOOM_CONFIG>/.winfoom/logs` direct
 Winfoom has a graphical user interface that allows configuration.
  
 The first thing to select is the proxy type:
-1) `HTTP` - if the upstream proxy is NTLM, KERBEROS or any other HTTP proxy
+1) `HTTP` - if the upstream proxy is NTLM or any other HTTP proxy
 2) `SOCKS4` - if the upstream proxy is SOCKS version 4
 3) `SOCKS5` - if the upstream proxy is SOCKS version 5
 4) `PAC` - if the proxy is using a Proxy Auto Config file
@@ -250,29 +250,7 @@ If you want to shut down Winfoom execute `foomcli shutdown`
 ---
 
 On Linux/Macos or Windows with `useCurrentCredentials=false`, if the proxy type is HTTP you need to set the `httpAuthProtocol` field, 
-which is the proxy protocol: one of `NTLM, KERBEROS, BASIC` values. 
-
-For Kerberos proxy protocol, the config JSON would look something like:
-
-```
-{
-"proxyType" : "HTTP",
-"proxyHost" : "auth.example.com",
-"proxyPort" : 3128,
-"proxyUsername" : "EXAMPLE.COM\\winfoom",
-"proxyPassword" : "***",
-"localPort" : 3129,
-"proxyTestUrl" : "http://example.com",
-"httpAuthProtocol" : "KERBEROS",
-"krb5ConfFilepath" : "/etc/krb5.conf"
-}
-```
-
-> 👉 Note: For Kerberos proxy protocol to work on Linux/Macos, your workstation must be properly configured.
-> As an example for RHEL [see this](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system-level_authentication_guide/configuring_a_kerberos_5_client).
-> Winfoom reads the Kerberos configuration from the `/etc/krb5.conf` location or the value of `KRB5_CONFIG` environment variable.
-
----
+which is the proxy protocol: one of `NTLM, BASIC` values.
 
 If the proxy type is PAC, then the output of the `foomcli config` command would be like:
 
@@ -289,7 +267,7 @@ If the proxy type is PAC, then the output of the `foomcli config` command would 
 }
 ```
 
-The possible values of `pacHttpAuthProtocol` field are: `NTLM`, `KERBEROS`, `BASIC`. You need to set this field only when the PAC file points to at least one upstream HTTP proxy.
+The possible values of `pacHttpAuthProtocol` field are: `NTLM`, `BASIC`. You need to set this field only when the PAC file points to at least one upstream HTTP proxy.
 
 ---
 
@@ -352,7 +330,6 @@ The available settings:
 |pacScriptEngine.pool.minIdle|The pacScriptEngine pool min idle instances|Integer|20|
 |connection.request.timeout|The timeout for request connection (seconds)|Integer|30|
 |apiServer.request.timeout|The timeout for API commands (seconds)|Integer|10|
-|kerberos.login.minInterval|The minimum interval successful Kerberos login is allowed (seconds)|Integer|30|
 
 ### Authentication
 * For HTTP proxy type, Winfoom uses the current Windows user credentials to authenticate to the upstream proxy, 
