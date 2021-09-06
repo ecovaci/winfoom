@@ -47,14 +47,19 @@ public class ProxyController {
 
     private final AbstractApplicationContext applicationContext;
 
-    private final ProxyConfig proxyConfig;
+    private final  ProxyConfig proxyConfig;
 
-    private final LocalProxyServer localProxyServer;
+    private  LocalProxyServer localProxyServer;
 
     /**
      * Whether the proxy session is started or not.
      */
     private volatile boolean started;
+
+    @Autowired
+    public void setLocalProxyServer(LocalProxyServer localProxyServer) {
+        this.localProxyServer = localProxyServer;
+    }
 
     /**
      * Begin a proxy session.
