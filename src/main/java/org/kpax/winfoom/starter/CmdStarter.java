@@ -13,6 +13,7 @@
 
 package org.kpax.winfoom.starter;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.exception.InvalidProxySettingsException;
@@ -23,16 +24,15 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Slf4j
 @Profile("!gui")
 @Component
 public class CmdStarter implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxyController proxyController;
+    private final ProxyController proxyController;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {

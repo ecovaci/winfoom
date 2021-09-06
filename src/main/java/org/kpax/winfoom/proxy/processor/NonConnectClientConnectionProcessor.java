@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy.processor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
@@ -29,6 +30,7 @@ import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.HttpClientBuilderFactory;
+import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,7 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Process any type of non-CONNECT request for any type of proxy.
@@ -51,14 +54,19 @@ import java.net.UnknownHostException;
 @Component
 class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final HttpClientBuilderFactory clientBuilderFactory;
 
-    @Autowired
-    private HttpClientBuilderFactory clientBuilderFactory;
+    public NonConnectClientConnectionProcessor(ExecutorService executorService,
+                                               ProxyConfig proxyConfig,
+                                               ProxyBlacklist proxyBlacklist,
+                                               SystemConfig systemConfig,
+                                               HttpClientBuilderFactory clientBuilderFactory) {
+        super(executorService, proxyConfig, proxyBlacklist);
+        this.systemConfig = systemConfig;
+        this.clientBuilderFactory = clientBuilderFactory;
+    }
 
     @Override
     void handleRequest(final ClientConnection clientConnection, final ProxyInfo proxyInfo)

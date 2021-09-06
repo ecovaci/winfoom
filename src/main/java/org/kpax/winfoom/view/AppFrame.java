@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.view;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kpax.winfoom.config.ProxyConfig;
@@ -38,6 +39,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Slf4j
 @Profile("gui")
 @Component
@@ -48,20 +50,15 @@ public class AppFrame extends JFrame {
 
     private static final int TOOLTIP_TIMEOUT = 10;
 
-    @Autowired
-    private ConfigurableApplicationContext applicationContext;
+    private final ConfigurableApplicationContext applicationContext;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxyController proxyController;
+    private final ProxyController proxyController;
 
-    @Autowired
-    private ProxyValidator proxyValidator;
+    private final ProxyValidator proxyValidator;
 
-    @Autowired
-    private ProxyBlacklist proxyBlacklist;
+    private final ProxyBlacklist proxyBlacklist;
 
     private JLabel proxyTypeLabel;
     private JComboBox<ProxyConfig.Type> proxyTypeCombo;

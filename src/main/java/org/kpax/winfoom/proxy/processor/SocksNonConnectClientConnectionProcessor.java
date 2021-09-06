@@ -17,8 +17,12 @@ import org.apache.http.HttpStatus;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.kpax.winfoom.annotation.ThreadSafe;
+import org.kpax.winfoom.config.ProxyConfig;
+import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
+import org.kpax.winfoom.proxy.HttpClientBuilderFactory;
+import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.HttpUtils;
 import org.springframework.stereotype.Component;
@@ -27,6 +31,7 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Process any type of non-CONNECT request for SOCKS/DIRECT proxy.
@@ -35,6 +40,14 @@ import java.net.UnknownHostException;
 @ThreadSafe
 @Component
 class SocksNonConnectClientConnectionProcessor extends NonConnectClientConnectionProcessor {
+
+    public SocksNonConnectClientConnectionProcessor(ExecutorService executorService,
+                                                    ProxyConfig proxyConfig,
+                                                    ProxyBlacklist proxyBlacklist,
+                                                    SystemConfig systemConfig,
+                                                    HttpClientBuilderFactory clientBuilderFactory) {
+        super(executorService, proxyConfig, proxyBlacklist, systemConfig, clientBuilderFactory);
+    }
 
     @Override
     void handleError(ClientConnection clientConnection,

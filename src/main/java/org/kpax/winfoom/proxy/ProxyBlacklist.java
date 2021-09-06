@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.NotNull;
 import org.kpax.winfoom.annotation.ThreadSafe;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  * <p>If a proxy doesn't respond to a connect attempt, it can be blacklisted
  * which means it will not be used again until the blacklist timeout happens.
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Component
@@ -48,8 +50,7 @@ public class ProxyBlacklist implements StopListener {
      */
     public static final ChronoUnit TEMPORAL_UNIT = ChronoUnit.MINUTES;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
     /**
      * Attempt to blacklist a proxy. Does nothing if the blacklisting is disabled.<br>

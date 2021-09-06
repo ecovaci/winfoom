@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -36,23 +37,20 @@ import java.util.concurrent.TimeUnit;
  * It manages the HTTP connection pooling mechanism.
  * <p>Only used for non-CONNECT HTTP requests.
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Order(1)
 @Component
 class ConnectionPoolingManager implements StopListener {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private ProxyController proxyController;
+    private final ProxyController proxyController;
 
-    @Autowired
-    private SocksConnectionSocketFactory socksConnectionSocketFactory;
+    private final SocksConnectionSocketFactory socksConnectionSocketFactory;
 
-    @Autowired
-    private Socks4ConnectionSocketFactory socks4ConnectionSocketFactory;
+    private final Socks4ConnectionSocketFactory socks4ConnectionSocketFactory;
 
     /**
      * For HTTP proxy type

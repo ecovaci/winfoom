@@ -12,15 +12,18 @@
 
 package org.kpax.winfoom.proxy.processor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.RequestLine;
 import org.apache.http.protocol.HTTP;
 import org.kpax.winfoom.annotation.ThreadSafe;
+import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
+import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.StreamSource;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Process a CONNECT request through a SOCKS proxy or no proxy (DIRECT).
@@ -36,14 +40,29 @@ import java.net.*;
  * @author Eugen Covaci {@literal eugen.covaci.q@gmail.com}
  * Created on 4/16/2020
  */
-
 @Slf4j
 @ThreadSafe
 @Component
 class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final ExecutorService executorService;
+
+    private final ProxyConfig proxyConfig;
+
+    private final ProxyBlacklist proxyBlacklist;
+
+    private final SystemConfig systemConfig;
+
+    public SocksConnectClientConnectionProcessor(ExecutorService executorService,
+                                                 ProxyConfig proxyConfig,
+                                                 ProxyBlacklist proxyBlacklist,
+                                                 ExecutorService executorService1, ProxyConfig proxyConfig1, ProxyBlacklist proxyBlacklist1, SystemConfig systemConfig) {
+        super(executorService, proxyConfig, proxyBlacklist);
+        this.executorService = executorService1;
+        this.proxyConfig = proxyConfig1;
+        this.proxyBlacklist = proxyBlacklist1;
+        this.systemConfig = systemConfig;
+    }
 
     @Override
     void handleRequest(final ClientConnection clientConnection, final ProxyInfo proxyInfo)

@@ -14,6 +14,7 @@ package org.kpax.winfoom.proxy;
 
 import org.apache.http.protocol.HttpContext;
 import org.kpax.winfoom.annotation.ThreadSafe;
+import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.HttpUtils;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,10 @@ import java.net.Socket;
 @ThreadSafe
 @Component
 class Socks4ConnectionSocketFactory extends SocksConnectionSocketFactory {
+
+    public Socks4ConnectionSocketFactory(SystemConfig systemConfig) {
+        super(systemConfig);
+    }
 
     @Override
     public Socket createSocket(final HttpContext context) throws IOException {

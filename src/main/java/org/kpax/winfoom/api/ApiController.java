@@ -15,6 +15,7 @@ package org.kpax.winfoom.api;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpRequest;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Open an API server and map various request handlers.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Profile({"!gui & !test"})
 @Component
@@ -61,20 +63,15 @@ public class ApiController implements AutoCloseable {
 
     private HttpServer apiServer;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private ProxyController proxyController;
+    private final ProxyController proxyController;
 
-    @Autowired
-    private ProxyExecutorService executorService;
+    private final ProxyExecutorService executorService;
 
-    @Autowired
-    private ConfigurableApplicationContext applicationContext;
+    private final ConfigurableApplicationContext applicationContext;
 
     @PostConstruct
     private void init() throws IOException {

@@ -12,6 +12,8 @@
 
 package org.kpax.winfoom.proxy.processor;
 
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.kpax.winfoom.annotation.NotNull;
@@ -38,17 +40,15 @@ import java.util.concurrent.Future;
  * @author Eugen Covaci {@literal eugen.covaci.q@gmail.com}
  * Created on 4/13/2020
  */
+@RequiredArgsConstructor
 @Slf4j
 public abstract class ClientConnectionProcessor {
 
-    @Autowired
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    protected final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxyBlacklist proxyBlacklist;
+    protected final ProxyBlacklist proxyBlacklist;
 
     /**
      * Process the client's connection. That is:<br>

@@ -39,14 +39,4 @@ public class SystemContext {
             map(s -> List.of(s.split(",")).contains("gui")).
             orElse(false);
 
-    /**
-     * Set various system properties.
-     * <p>Currently, only config location is set.
-     */
-    public static void setEnvironment() {
-        String configLocation = System.getenv(SystemConfig.WINFOOM_CONFIG_ENV);
-        System.setProperty(SystemConfig.WINFOOM_CONFIG_ENV, configLocation != null ? configLocation : System.getProperty("user.home"));
-        System.out.println("Config location: " + System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV));
-    }
-
 }

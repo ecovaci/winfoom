@@ -13,6 +13,7 @@
 
 package org.kpax.winfoom.starter;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.SwingUtils;
 import org.kpax.winfoom.view.AppFrame;
@@ -22,13 +23,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Slf4j
 @Profile("gui")
 @Component
 public class GuiStarter implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Autowired
-    private AppFrame appFrame;
+    private final AppFrame appFrame;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {

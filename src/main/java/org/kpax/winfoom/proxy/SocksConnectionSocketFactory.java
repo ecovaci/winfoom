@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -28,12 +29,12 @@ import java.net.*;
 /**
  * A {@link ConnectionSocketFactory} implementation for SOCKS proxy.
  */
+@RequiredArgsConstructor
 @ThreadSafe
 @Component
 class SocksConnectionSocketFactory implements ConnectionSocketFactory {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
     @Override
     public Socket createSocket(final HttpContext context) throws IOException {

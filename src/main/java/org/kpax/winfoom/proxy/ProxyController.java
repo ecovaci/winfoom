@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.annotation.TypeQualifier;
@@ -38,19 +39,17 @@ import java.util.stream.Stream;
  *
  * @author Eugen Covaci
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Component
 public class ProxyController {
 
-    @Autowired
-    private AbstractApplicationContext applicationContext;
+    private final AbstractApplicationContext applicationContext;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private LocalProxyServer localProxyServer;
+    private final LocalProxyServer localProxyServer;
 
     /**
      * Whether the proxy session is started or not.

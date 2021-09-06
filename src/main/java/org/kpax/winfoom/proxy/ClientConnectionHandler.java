@@ -13,6 +13,7 @@
 package org.kpax.winfoom.proxy;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -44,24 +45,31 @@ import java.util.List;
 @Component
 public class ClientConnectionHandler implements StopListener {
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private PacScriptEvaluator pacScriptEvaluator;
+    private final PacScriptEvaluator pacScriptEvaluator;
 
-    @Autowired
-    private ConnectionProcessorSelector connectionProcessorSelector;
+    private final ConnectionProcessorSelector connectionProcessorSelector;
 
     /**
      * Supplier for ProxyInfo, manual case.
      */
-    private final SingletonSupplier<ProxyInfo> proxyInfoSupplier = new SingletonSupplier<>(
-            () -> new ProxyInfo(proxyConfig.getProxyType(), proxyConfig.getProxyType().isDirect() ? null :
-                    new HttpHost(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())));
+    private final SingletonSupplier<ProxyInfo> proxyInfoSupplier;
+
+    public ClientConnectionHandler(ProxyConfig proxyConfig,
+                                   SystemConfig systemConfig,
+                                   PacScriptEvaluator pacScriptEvaluator,
+                                   ConnectionProcessorSelector connectionProcessorSelector) {
+        this.proxyConfig = proxyConfig;
+        this.systemConfig = systemConfig;
+        this.pacScriptEvaluator = pacScriptEvaluator;
+        this.connectionProcessorSelector = connectionProcessorSelector;
+        this.proxyInfoSupplier = new SingletonSupplier<>(
+                () -> new ProxyInfo(proxyConfig.getProxyType(), proxyConfig.getProxyType().isDirect() ? null :
+                        new HttpHost(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())));
+    }
 
     /**
      * Create a {@link ClientConnection} instance then process it.

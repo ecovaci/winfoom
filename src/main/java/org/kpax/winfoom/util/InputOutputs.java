@@ -137,39 +137,4 @@ public final class InputOutputs {
         return files.length == 0;
     }
 
-    /**
-     * Move the file designated by a {@link Path} to a backup location.
-     *
-     * @param path        the file's {@link Path}
-     * @param withWarning if {@code true} an warning will popup
-     * @param options     the moving {@link CopyOption}s
-     * @return the new {@link Path} or {@code null} if the original file does not exist
-     * @throws IOException
-     */
-    public static Path backupFile(final Path path,
-                                  final boolean withWarning,
-                                  final CopyOption... options) throws IOException {
-        Assert.notNull(path, "path cannot be null");
-        if (Files.exists(path)) {
-            Path appHomePath = Paths.get(System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV), SystemConfig.APP_HOME_DIR_NAME);
-            Path backupDirPath = appHomePath.resolve(SystemConfig.BACKUP_DIR_NAME);
-            if (!Files.exists(backupDirPath)) {
-                Files.createDirectories(backupDirPath);
-            }
-            if (withWarning) {
-                SwingUtils.showWarningMessage(
-                        String.format("The %s file found belongs to a different application version<br>" +
-                                        "and is not compatible with the current version!<br>" +
-                                        "The existent one will be moved to:<br>" +
-                                        "%s directory.",
-                                path.getFileName(),
-                                backupDirPath.toString()));
-            }
-            logger.info("Move the file {} to: {} directory", path, backupDirPath);
-            return Files.move(path, backupDirPath.resolve(path.getFileName()), options);
-        }
-        logger.info("Cannot move file {} because it does not exist", path);
-        return null;
-    }
-
 }

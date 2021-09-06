@@ -44,6 +44,7 @@
 package org.kpax.winfoom.pac;
 
 import inet.ipaddr.IPAddressString;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kpax.winfoom.config.SystemConfig;
@@ -67,17 +68,16 @@ import java.util.stream.Collectors;
 /**
  * Default implementation of a the PAC 'helper functions'.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHelperMethodsMicrosoft {
 
     private static final Predicate<InetAddress> isIPv4Predicate = a -> a.getClass() == Inet4Address.class;
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private GlobPatternMatcher globPatternMatcher;
+    private final GlobPatternMatcher globPatternMatcher;
 
     // *************************************************************
     //  Official helper functions.

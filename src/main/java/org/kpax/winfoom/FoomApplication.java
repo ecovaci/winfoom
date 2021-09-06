@@ -73,22 +73,6 @@ public class FoomApplication {
             }
         }
 
-        SystemContext.setEnvironment();
-
-        // Check version
-        try {
-            checkAppVersion();
-        } catch (Exception e) {
-            logger.error("Failed to verify app version", e);
-            if (SystemContext.IS_GUI_MODE) {
-                SwingUtils.showErrorMessage(String.format("Failed to verify application version.<br>" +
-                                "Remove the %s directory then try again.",
-                        Paths.get(System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV), SystemConfig.APP_HOME_DIR_NAME)));
-            }
-            System.exit(1);
-        }
-
-
         logger.info("Bootstrap Spring's application context");
         try {
             SpringApplication.run(FoomApplication.class, args);
@@ -102,59 +86,5 @@ public class FoomApplication {
         }
     }
 
-    /**
-     * Verify whether the existent system.properties file's releaseVersion property and
-     * the application version (extracted from the MANIFEST file) are the same or backward compatible.
-     * If not, the existent {@code *.properties} file are moved into a backup location.
-     *
-     * @throws IOException
-     * @throws ConfigurationException
-     */
-    private static void checkAppVersion() throws IOException, ConfigurationException {
-        logger.info("Check the application's version");
-        Path appHomePath = Paths.get(System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV), SystemConfig.APP_HOME_DIR_NAME);
-        if (Files.exists(appHomePath)) {
-            Path proxyConfigPath = appHomePath.resolve(ProxyConfig.FILENAME);
-            if (Files.exists(proxyConfigPath)) {
-                Configuration configuration = new Configurations()
-                        .propertiesBuilder(proxyConfigPath.toFile()).getConfiguration();
-                String existingVersion = configuration.getString("app.version");
-                logger.info("existingVersion [{}]", existingVersion);
-                if (existingVersion != null) {
-                    String actualVersion = FoomApplication.class.getPackage().getImplementationVersion();
-                    logger.info("actualVersion [{}]", actualVersion);
-                    if (actualVersion != null && !actualVersion.equals(existingVersion)) {
-                        boolean isCompatibleProxyConfig = !Files.exists(proxyConfigPath)
-                                || ProxyConfig.isCompatible(configuration);
-                        logger.info("The existent proxy config is compatible with the new one: {}",
-                                isCompatibleProxyConfig);
-
-                        if (!isCompatibleProxyConfig) {
-                            logger.info("Backup the existent proxy.properties file since is invalid" +
-                                    " (from a previous incompatible version)");
-                            InputOutputs.backupFile(proxyConfigPath,
-                                    SystemContext.IS_GUI_MODE,
-                                    StandardCopyOption.REPLACE_EXISTING);
-                        }
-                    }
-                } else {
-                    logger.info("Version not found within proxy.properties, " +
-                            "backup both config files since they are invalid (from a previous incompatible version)");
-                    InputOutputs.backupFile(proxyConfigPath,
-                            SystemContext.IS_GUI_MODE,
-                            StandardCopyOption.REPLACE_EXISTING);
-                    InputOutputs.backupFile(appHomePath.resolve(SystemConfig.FILENAME),
-                            SystemContext.IS_GUI_MODE,
-                            StandardCopyOption.REPLACE_EXISTING);
-                }
-            } else {
-                logger.info("No proxy.properties found, backup the system.properties file " +
-                        "since is invalid (from a previous incompatible version)");
-                InputOutputs.backupFile(appHomePath.resolve(SystemConfig.FILENAME),
-                        SystemContext.IS_GUI_MODE,
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
-    }
 
 }

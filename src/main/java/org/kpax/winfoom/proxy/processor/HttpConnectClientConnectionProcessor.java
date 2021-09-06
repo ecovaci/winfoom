@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy.processor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
 import org.apache.http.impl.execchain.TunnelRefusedException;
@@ -19,10 +20,7 @@ import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
-import org.kpax.winfoom.proxy.ClientConnection;
-import org.kpax.winfoom.proxy.ProxyInfo;
-import org.kpax.winfoom.proxy.Tunnel;
-import org.kpax.winfoom.proxy.TunnelConnection;
+import org.kpax.winfoom.proxy.*;
 import org.kpax.winfoom.util.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Process a CONNECT request through a HTTP proxy.
@@ -42,11 +41,15 @@ import java.net.UnknownHostException;
 @Component
 class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
-    @Autowired
-    private TunnelConnection tunnelConnection;
+    private final TunnelConnection tunnelConnection;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    public HttpConnectClientConnectionProcessor(ExecutorService executorService,
+                                                ProxyConfig proxyConfig,
+                                                ProxyBlacklist proxyBlacklist,
+                                                TunnelConnection tunnelConnection) {
+        super(executorService, proxyConfig, proxyBlacklist);
+        this.tunnelConnection = tunnelConnection;
+    }
 
     @Override
     void handleRequest(final ClientConnection clientConnection, final ProxyInfo proxyInfo)

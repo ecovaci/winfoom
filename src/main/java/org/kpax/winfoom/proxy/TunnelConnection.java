@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
 import org.apache.http.auth.AUTH;
@@ -55,19 +56,17 @@ import java.net.Socket;
  *
  * @author Eugen Covaci
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Component
 public class TunnelConnection {
 
-    @Autowired
-    private ProxySingletonSupplier<CredentialsProvider> credentialsProviderSupplier;
+    private final ProxySingletonSupplier<CredentialsProvider> credentialsProviderSupplier;
 
-    @Autowired
-    private ProxySingletonSupplier<Registry<AuthSchemeProvider>> authSchemeRegistrySupplier;
+    private final ProxySingletonSupplier<Registry<AuthSchemeProvider>> authSchemeRegistrySupplier;
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
     private HttpProcessor httpProcessor;
     private HttpRequestExecutor requestExec;

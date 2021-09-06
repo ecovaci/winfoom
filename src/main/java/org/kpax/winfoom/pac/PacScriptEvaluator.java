@@ -31,6 +31,7 @@
 package org.kpax.winfoom.pac;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -56,6 +57,7 @@ import org.kpax.winfoom.util.functional.SingletonSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import javax.script.ScriptException;
@@ -86,18 +88,13 @@ public class PacScriptEvaluator implements ProxyListener {
      */
     private static final String IPV6_AWARE_PAC_MAIN_FUNCTION = "FindProxyForURLEx";
 
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final DefaultPacHelperMethods pacHelperMethods;
 
-    @Autowired
-    private DefaultPacHelperMethods pacHelperMethods;
-
-    @Autowired
-    private ProxyBlacklist proxyBlacklist;
+    private final ProxyBlacklist proxyBlacklist;
 
     /**
      * The supplier for the sharable {@link Engine} instance.
@@ -115,36 +112,43 @@ public class PacScriptEvaluator implements ProxyListener {
         }
     });
 
-
     /**
      * The {@link GenericObjectPool} supplier.
      * <p>Since the Graaljs {@link Context} is not thread safe, we maintain a pool of {@link GraalJSScriptEngine} instances.
      */
-    private final SingletonSupplier<GenericObjectPool<GraalJSScriptEngine>> enginePoolSingletonSupplier =
-            new SingletonSupplier<>(() -> {
-                GenericObjectPoolConfig<GraalJSScriptEngine> config = new GenericObjectPoolConfig<>();
-                config.setMaxTotal(systemConfig.getPacScriptEnginePoolMaxTotal());
-                config.setMinIdle(systemConfig.getPacScriptEnginePoolMinIdle());
-                config.setTestOnBorrow(false);
-                config.setTestOnCreate(false);
-                config.setTestOnReturn(false);
-                config.setBlockWhenExhausted(true);
-                return new GenericObjectPool<>(
-                        new BasePooledObjectFactory<GraalJSScriptEngine>() {
-                            @Override
-                            public GraalJSScriptEngine create() throws PacFileException, IOException {
-                                return createScriptEngine();
-                            }
-
-                            @Override
-                            public PooledObject<GraalJSScriptEngine> wrap(GraalJSScriptEngine obj) {
-                                return new DefaultPooledObject<>(obj);
-                            }
-                        }, config);
-            });
+    private final SingletonSupplier<GenericObjectPool<GraalJSScriptEngine>> enginePoolSingletonSupplier;
 
     private String jsMainFunction;
 
+
+    public PacScriptEvaluator(ProxyConfig proxyConfig, SystemConfig systemConfig, DefaultPacHelperMethods pacHelperMethods, ProxyBlacklist proxyBlacklist) {
+        this.proxyConfig = proxyConfig;
+        this.systemConfig = systemConfig;
+        this.pacHelperMethods = pacHelperMethods;
+        this.proxyBlacklist = proxyBlacklist;
+        this.enginePoolSingletonSupplier =
+                new SingletonSupplier<>(() -> {
+                    GenericObjectPoolConfig<GraalJSScriptEngine> config = new GenericObjectPoolConfig<>();
+                    config.setMaxTotal(systemConfig.getPacScriptEnginePoolMaxTotal());
+                    config.setMinIdle(systemConfig.getPacScriptEnginePoolMinIdle());
+                    config.setTestOnBorrow(false);
+                    config.setTestOnCreate(false);
+                    config.setTestOnReturn(false);
+                    config.setBlockWhenExhausted(true);
+                    return new GenericObjectPool<>(
+                            new BasePooledObjectFactory<GraalJSScriptEngine>() {
+                                @Override
+                                public GraalJSScriptEngine create() throws PacFileException, IOException {
+                                    return createScriptEngine();
+                                }
+
+                                @Override
+                                public PooledObject<GraalJSScriptEngine> wrap(GraalJSScriptEngine obj) {
+                                    return new DefaultPooledObject<>(obj);
+                                }
+                            }, config);
+                });
+    }
 
     @TypeQualifier(ProxyConfig.Type.PAC)
     @Override

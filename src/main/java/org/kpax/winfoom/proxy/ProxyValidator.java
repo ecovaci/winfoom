@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -32,13 +33,13 @@ import java.io.IOException;
 /**
  * Responsible with proxy config validation.
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Component
 public class ProxyValidator {
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
     /**
      * Test the proxy settings by issuing a request through the proxy facade.

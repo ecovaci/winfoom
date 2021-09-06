@@ -37,7 +37,7 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
             return;
         }
 
-        Path logDirPath = Paths.get("./logs");
+        Path logDirPath = Paths.get("./out/logs");
         if (!Files.exists(logDirPath)) {
             try {
                 Files.createDirectories(logDirPath);

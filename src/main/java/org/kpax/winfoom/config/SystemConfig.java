@@ -34,15 +34,8 @@ import java.net.SocketException;
 @ToString
 @Getter
 @Component
-@PropertySource(value = "file:./config/" + SystemConfig.FILENAME, ignoreResourceNotFound = true)
+@PropertySource(value = "file:./config/system.properties", ignoreResourceNotFound = true)
 public class SystemConfig {
-
-    public static final String FILENAME = "system.properties";
-
-    public static final String APP_HOME_DIR_NAME = ".winfoom";
-
-    public static final String BACKUP_DIR_NAME = "backup";
-    public static final String WINFOOM_CONFIG_ENV = "WINFOOM_CONFIG";
 
     /**
      * Connection pool property:  max polled connections per route.

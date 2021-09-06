@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.CredentialsProvider;
@@ -34,24 +35,20 @@ import org.springframework.stereotype.Component;
  * @author Eugen Covaci {@literal eugen.covaci.q@gmail.com}
  * Created on 4/10/2020
  */
+@RequiredArgsConstructor
 @ThreadSafe
 @Component
 public class HttpClientBuilderFactory {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxySingletonSupplier<CredentialsProvider> credentialsProviderSupplier;
+    private final ProxySingletonSupplier<CredentialsProvider> credentialsProviderSupplier;
 
-    @Autowired
-    private ProxySingletonSupplier<Registry<AuthSchemeProvider>> authSchemeRegistrySupplier;
+    private final ProxySingletonSupplier<Registry<AuthSchemeProvider>> authSchemeRegistrySupplier;
 
-    @Autowired
-    private ConnectionPoolingManager connectionPoolingManager;
+    private final ConnectionPoolingManager connectionPoolingManager;
 
     /**
      * Create a new instance of {@link HttpClientBuilder} according to the requested proxy.

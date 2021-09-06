@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
@@ -34,23 +35,20 @@ import java.net.SocketException;
  *
  * @author Eugen Covaci
  */
+@RequiredArgsConstructor
 @Slf4j
 @ThreadSafe
 @Order(0)
 @Component
 class LocalProxyServer implements StopListener {
 
-    @Autowired
-    private SystemConfig systemConfig;
+    private final SystemConfig systemConfig;
 
-    @Autowired
-    private ProxyConfig proxyConfig;
+    private final ProxyConfig proxyConfig;
 
-    @Autowired
-    private ProxyExecutorService executorService;
+    private final ProxyExecutorService executorService;
 
-    @Autowired
-    private ClientConnectionHandler clientConnectionHandler;
+    private final ClientConnectionHandler clientConnectionHandler;
 
     private ServerSocket serverSocket;
 

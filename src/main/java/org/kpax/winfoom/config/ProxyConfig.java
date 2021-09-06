@@ -63,11 +63,9 @@ import java.util.*;
         "proxyPacFileLocation", "blacklistTimeout",
         "localPort", "proxyTestUrl", "autostart", "autodetect"})
 @Component
-@PropertySource(value = "file:./config/" + ProxyConfig.FILENAME, ignoreResourceNotFound = true)
+@PropertySource(value = "file:./config/proxy.properties", ignoreResourceNotFound = true)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ProxyConfig implements StartListener {
-
-    public static final String FILENAME = "proxy.properties";
 
     @Value("${app.version}")
     private String appVersion;
@@ -158,23 +156,8 @@ public class ProxyConfig implements StartListener {
 
     @PostConstruct
     public void init() throws IOException, ConfigurationException {
-        File userProperties = Paths.get(System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV), SystemConfig.APP_HOME_DIR_NAME,
-                ProxyConfig.FILENAME).toFile();
-
-        // Make sure the file exists.
-        // If not, create a new one and write the app.version
-        if (!userProperties.exists()) {
-            userProperties.createNewFile();
-            FileBasedConfigurationBuilder<PropertiesConfiguration> propertiesBuilder = new Configurations()
-                    .propertiesBuilder(userProperties);
-            Configuration config = propertiesBuilder.getConfiguration();
-            config.setProperty("app.version", appVersion);
-            propertiesBuilder.save();
-        }
-
+        tempDirectory = Paths.get("./out/temp");
         logger.info("Check temp directory");
-
-        tempDirectory = Paths.get("./temp");
 
         if (!Files.exists(tempDirectory)) {
             logger.info("Create temp directory {}", tempDirectory);
@@ -472,11 +455,15 @@ public class ProxyConfig implements StartListener {
     }
 
     public boolean isHttpAuthAutoMode() {
-        return SystemContext.IS_OS_WINDOWS && proxyType.isHttp() && useCurrentCredentials;
+        return SystemContext.IS_OS_WINDOWS
+                && proxyType.isHttp()
+                && useCurrentCredentials;
     }
 
     public boolean isPacAuthAutoMode() {
-        return SystemContext.IS_OS_WINDOWS && proxyType.isPac() && StringUtils.isEmpty(proxyPacUsername);
+        return SystemContext.IS_OS_WINDOWS
+                && proxyType.isPac()
+                && StringUtils.isEmpty(proxyPacUsername);
     }
 
     public boolean isPacAuthManualMode() {
@@ -488,7 +475,9 @@ public class ProxyConfig implements StartListener {
     }
 
     public boolean isPacAuthDisabledMode() {
-        return proxyType.isPac() && !SystemContext.IS_OS_WINDOWS && StringUtils.isEmpty(proxyPacUsername);
+        return proxyType.isPac()
+                && !SystemContext.IS_OS_WINDOWS
+                && StringUtils.isEmpty(proxyPacUsername);
     }
 
     public void setUseCurrentCredentials(boolean useCurrentCredentials) {
@@ -585,8 +574,7 @@ public class ProxyConfig implements StartListener {
     @PreDestroy
     void save() throws ConfigurationException {
         logger.info("Save proxy settings");
-        File userProperties = Paths.get(System.getProperty(SystemConfig.WINFOOM_CONFIG_ENV), SystemConfig.APP_HOME_DIR_NAME,
-                ProxyConfig.FILENAME).toFile();
+        File userProperties = new File("./config/proxy.properties");
         FileBasedConfigurationBuilder<PropertiesConfiguration> propertiesBuilder = new Configurations()
                 .propertiesBuilder(userProperties);
         Configuration config = propertiesBuilder.getConfiguration();
@@ -641,32 +629,6 @@ public class ProxyConfig implements StartListener {
         } else {
             config.clearProperty(key);
         }
-    }
-
-    /**
-     * Check whether a {@link Configuration} instance is compatible with the current {@link ProxyConfig} structure.
-     *
-     * @param proxyConfig the {@link Configuration} instance
-     * @return {@code true} if each {@link Configuration} key is among
-     * the {@link ProxyConfig}'s {@link Value} annotated fields.
-     */
-    public static boolean isCompatible(Configuration proxyConfig) {
-        List<String> keys = new ArrayList<>();
-        for (Field field : ProxyConfig.class.getDeclaredFields()) {
-            Value valueAnnotation = field.getAnnotation(Value.class);
-            if (valueAnnotation != null) {
-                keys.add(valueAnnotation.value().replaceAll("[${}]", "").split(":")[0]);
-            }
-        }
-
-        for (Iterator<String> itr = proxyConfig.getKeys(); itr.hasNext(); ) {
-            String key = itr.next();
-            if (!keys.contains(key)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
