@@ -55,7 +55,7 @@ import java.util.Locale;
  */
 @Slf4j
 @NotThreadSafe
-public abstract class ClientConnection implements StreamSource, AutoCloseable {
+public class ClientConnection implements StreamSource, AutoCloseable {
 
     /**
      * The underlying socket.
@@ -101,12 +101,7 @@ public abstract class ClientConnection implements StreamSource, AutoCloseable {
     /**
      * The proxy iterator for PAC.
      */
-    protected Iterator<ProxyInfo> proxyInfoIterator;
-
-    /**
-     * The proxy for manual processing.
-     */
-    protected ProxyInfo manualProxy;
+    /*    protected Iterator<ProxyInfo> proxyInfoIterator;*/
 
     /**
      * Constructor.<br>
@@ -162,62 +157,6 @@ public abstract class ClientConnection implements StreamSource, AutoCloseable {
             for (Header header : request.getAllHeaders()) {
                 logger.debug("<<< Request header: {}", header);
             }
-        }
-    }
-
-    /**
-     * Constructor for manual proxy case.
-     *
-     * @param socket
-     * @param proxyConfig
-     * @param systemConfig
-     * @param connectionProcessorSelector
-     * @param manualProxy
-     * @throws IOException
-     * @throws HttpException
-     */
-    ClientConnection(final Socket socket,
-                     final ProxyConfig proxyConfig,
-                     final SystemConfig systemConfig,
-                     final ConnectionProcessorSelector connectionProcessorSelector,
-                     final ProxyInfo manualProxy) throws IOException, HttpException {
-        this(socket, proxyConfig, systemConfig, connectionProcessorSelector);
-        this.manualProxy = manualProxy;
-    }
-
-    /**
-     * Constructor for PAC case.<br>
-     *
-     * @param socket
-     * @param proxyConfig
-     * @param systemConfig
-     * @param connectionProcessorSelector
-     * @param pacScriptEvaluator
-     * @throws IOException
-     * @throws HttpException
-     */
-    ClientConnection(final Socket socket,
-                     final ProxyConfig proxyConfig,
-                     final SystemConfig systemConfig,
-                     final ConnectionProcessorSelector connectionProcessorSelector,
-                     final PacScriptEvaluator pacScriptEvaluator)
-            throws Exception {
-        this(socket, proxyConfig, systemConfig, connectionProcessorSelector);
-        URI requestUri = getRequestUri();
-        logger.debug("Extracted URI from request {}", requestUri);
-        try {
-            List<ProxyInfo> activeProxies = pacScriptEvaluator.findProxyForURL(requestUri);
-            logger.debug("activeProxies: {}", activeProxies);
-            this.proxyInfoIterator = activeProxies.iterator();
-        } catch (Exception e) {
-            writeErrorResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpUtils.reasonPhraseForPac(e));
-            throw e;
-        }
-        if (!this.proxyInfoIterator.hasNext()) {
-            writeErrorResponse(
-                    HttpStatus.SC_BAD_GATEWAY,
-                    "Proxy Auto Config error: no available proxy server");
-            throw new IllegalStateException("All proxy servers are blacklisted!");
         }
     }
 
@@ -311,6 +250,10 @@ public abstract class ClientConnection implements StreamSource, AutoCloseable {
         }
     }
 
+    public void writeBadGatewayResponse(String reasonPhrase) {
+        writeErrorResponse(HttpStatus.SC_BAD_GATEWAY, reasonPhrase);
+    }
+
     public void writeProxyAuthRequiredErrorResponse() {
         logger.debug("Write error response: statusCode = {}", HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
         String body = "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">\n"
@@ -392,12 +335,6 @@ public abstract class ClientConnection implements StreamSource, AutoCloseable {
         }
     }
 
-    /**
-     * Process the client connection with each available proxy.
-     * <p><b>This method does always commit the response.</b></p>
-     */
-    abstract void process();
-
     private void prepareRequest() {
         logger.debug("Prepare the request for execution");
         // Prepare the request for execution:
@@ -450,35 +387,6 @@ public abstract class ClientConnection implements StreamSource, AutoCloseable {
         request.removeHeaders(HttpHeaders.VIA);
         request.setHeader(HttpUtils.createViaHeader(request.getRequestLine().getProtocolVersion(),
                 viaHeader));
-    }
-
-    /**
-     * Delegate the request processing to an appropriate {@link ClientConnectionProcessor}
-     * and process the client connection with the provided proxy.<br>
-     * <p><b>This method must commit the response if processing succeeds or there is no other available proxy.</b></p>
-     *
-     * @param proxy the proxy to process the request with.
-     * @return {@code true} iff the processing succeeded.
-     */
-    protected boolean processProxy(ProxyInfo proxy) {
-        ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.selectConnectionProcessor(
-                connect, proxy);
-        logger.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
-        try {
-            connectionProcessor.process(this, proxy);
-            return true;
-        } catch (ProxyConnectException e) {
-            logger.debug("Proxy connect error", e);
-            if (proxyInfoIterator != null && proxyInfoIterator.hasNext()) {
-                logger.debug("Failed to connect to proxy: {}", proxy);
-            } else {
-                logger.debug("Failed to connect to proxy: {}, send the error response", proxy);
-                // Cannot connect to the remote proxy,
-                // commit a response with 502 error code
-                writeErrorResponse(HttpStatus.SC_BAD_GATEWAY, e.getMessage());
-            }
-        }
-        return false;
     }
 
     @Override

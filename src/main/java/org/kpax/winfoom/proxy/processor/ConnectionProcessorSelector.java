@@ -33,7 +33,7 @@ public class ConnectionProcessorSelector {
 
     private final SocksNonConnectClientConnectionProcessor socksNonConnectClientConnectionProcessor;
 
-    public ClientConnectionProcessor selectConnectionProcessor(boolean isConnect, @NotNull ProxyInfo proxyInfo) {
+    public ClientConnectionProcessor select(boolean isConnect, @NotNull ProxyInfo proxyInfo) {
         if (isConnect) {
             if (proxyInfo.getType().isHttp()) {
                 return httpConnectClientConnectionProcessor;

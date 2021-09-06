@@ -34,8 +34,7 @@ import java.net.SocketException;
 @ToString
 @Getter
 @Component
-@PropertySource(value = "file:${" + SystemConfig.WINFOOM_CONFIG_ENV + "}/" + SystemConfig.APP_HOME_DIR_NAME + "/" + SystemConfig.FILENAME,
-        ignoreResourceNotFound = true)
+@PropertySource(value = "file:./config/" + SystemConfig.FILENAME, ignoreResourceNotFound = true)
 public class SystemConfig {
 
     public static final String FILENAME = "system.properties";

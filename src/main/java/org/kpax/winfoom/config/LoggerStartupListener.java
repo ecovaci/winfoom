@@ -36,11 +36,8 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
         if (started) {
             return;
         }
-        String configLocation = System.getenv(SystemConfig.WINFOOM_CONFIG_ENV);
-        if (configLocation == null) {
-            configLocation = System.getProperty("user.home");
-        }
-        Path logDirPath = Paths.get(configLocation, SystemConfig.APP_HOME_DIR_NAME, "logs");
+
+        Path logDirPath = Paths.get("./logs");
         if (!Files.exists(logDirPath)) {
             try {
                 Files.createDirectories(logDirPath);
@@ -49,6 +46,7 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
                 return;
             }
         }
+
         Context context = getContext();
         context.putProperty("LOG_PATH", logDirPath.toString());
 

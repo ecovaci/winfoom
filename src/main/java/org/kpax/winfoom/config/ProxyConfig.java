@@ -63,8 +63,7 @@ import java.util.*;
         "proxyPacFileLocation", "blacklistTimeout",
         "localPort", "proxyTestUrl", "autostart", "autodetect"})
 @Component
-@PropertySource(value = "file:${" + SystemConfig.WINFOOM_CONFIG_ENV + "}/" + SystemConfig.APP_HOME_DIR_NAME + "/" + ProxyConfig.FILENAME,
-        ignoreResourceNotFound = true)
+@PropertySource(value = "file:./config/" + ProxyConfig.FILENAME, ignoreResourceNotFound = true)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ProxyConfig implements StartListener {
 
@@ -155,7 +154,6 @@ public class ProxyConfig implements StartListener {
     private Path tempDirectory;
 
     // --- Calculated fields on server startup
-
     private boolean ntlm;
 
     @PostConstruct
@@ -175,6 +173,9 @@ public class ProxyConfig implements StartListener {
         }
 
         logger.info("Check temp directory");
+
+        tempDirectory = Paths.get("./temp");
+
         if (!Files.exists(tempDirectory)) {
             logger.info("Create temp directory {}", tempDirectory);
             Files.createDirectories(tempDirectory);
@@ -552,11 +553,6 @@ public class ProxyConfig implements StartListener {
 
     public boolean isNtlm() {
         return ntlm;
-    }
-
-    @Autowired
-    private void setTempDirectory(@Value("${" + SystemConfig.WINFOOM_CONFIG_ENV + "}") String userHome) {
-        tempDirectory = Paths.get(userHome, SystemConfig.APP_HOME_DIR_NAME, "temp");
     }
 
     @JsonView(value = {Views.Settings.class})
