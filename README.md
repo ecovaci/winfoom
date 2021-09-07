@@ -1,7 +1,7 @@
 # winfoom 
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecovaci/winfoom/blob/master/LICENSE)
-![Total downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total)
+![Total downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total.svg)
 ![Latest downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/latest/total)
 ![Release](https://img.shields.io/github/v/release/ecovaci/winfoom)
 [![Java CI with Maven](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml)
