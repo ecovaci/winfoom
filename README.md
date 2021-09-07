@@ -372,6 +372,10 @@ If you decide to build your own docker image, here are the steps:
 
 You can read [dockerhub's README](https://hub.docker.com/r/ecovaci/winfoom) for further instructions.
    
+# TODOs
+
+* Proper unit testing
+
 # Coding Guidance
 
 Please review these docs below about coding practices.
