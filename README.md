@@ -28,7 +28,7 @@ An example of such a facade for NTLM proxies is [CNTLM](http://cntlm.sourceforge
 # Getting Started
 ## Download Winfoom
 ### Download prepackaged
-To try out Winfoom without needing to download the source and package it, check out the [releases](https://github.com/ecovaci/winfoom/releases) for a prepackaged `winfoom.zip`.
+To try out Winfoom without needing to download the source and package it, check out the [releases](https://github.com/ecovaci/winfoom/releases) for a prepackaged `winfoom-*.zip`.
 Winfoom is a Java application and requires a Java Runtime Environment (at least v11).
 
 If it is not already installed on your system, you can download it from [AdoptOpenJDK](https://adoptopenjdk.net/) or, 
@@ -36,8 +36,6 @@ on Linux systems, use your package manager.
 
 If, for certain reasons, you do not want to install Java globally on your system then download the JRE archive according
 to your system architecture, unzip it in the Winfoom directory and rename it to `jdk`.
-
-> 👉 Note: For Windows systems there is `winfoom-windows.zip` archive containing only the Windows executable files together with AdoptOpenJDK v11 (the `jdk` directory), therefore you don't need a Java Runtime Environment to be installed on your operating system.
 
 If you want to run Winfoom in command line mode, then you also need `foomcli.zip` archive, containing scripts for application management (start, stop, config, etc).
 
