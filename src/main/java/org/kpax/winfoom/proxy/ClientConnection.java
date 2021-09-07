@@ -153,9 +153,9 @@ public class ClientConnection implements StreamSource, AutoCloseable {
             throw e;
         }
 
-        if (logger.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             for (Header header : request.getAllHeaders()) {
-                logger.debug("<<< Request header: {}", header);
+                log.debug("<<< Request header: {}", header);
             }
         }
     }
@@ -239,14 +239,14 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      * @param reasonPhrase the request's reason code
      */
     public void writeErrorResponse(int statusCode, String reasonPhrase) {
-        logger.debug("Write error response: statusCode = {}  reasonPhrase = [{}]", statusCode, reasonPhrase);
+        log.debug("Write error response: statusCode = {}  reasonPhrase = [{}]", statusCode, reasonPhrase);
         try {
             write(HttpUtils.toStatusLine(request != null ? request.getProtocolVersion() : HttpVersion.HTTP_1_1,
                     statusCode, HttpUtils.replaceCRAndLF(reasonPhrase, StringUtils.SPACE)));
             write(HttpUtils.createHttpHeader(HTTP.DATE_HEADER, HttpUtils.getCurrentDate()));
             writeln();
         } catch (Exception ex) {
-            logger.debug("Error on writing error response", ex);
+            log.debug("Error on writing error response", ex);
         }
     }
 
@@ -255,7 +255,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     }
 
     public void writeProxyAuthRequiredErrorResponse() {
-        logger.debug("Write error response: statusCode = {}", HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
+        log.debug("Write error response: statusCode = {}", HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
         String body = "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">\n"
                 + "<html><head>\n"
                 + "<title>" + "Proxy authentication failed" + "</title>\n"
@@ -272,7 +272,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
             outputStream.write(bytes);
             outputStream.flush();
         } catch (Exception ex) {
-            logger.debug("Error on writing proxy auth required error response", ex);
+            log.debug("Error on writing proxy auth required error response", ex);
         }
     }
 
@@ -285,11 +285,11 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      */
     public void writeHttpResponse(@NotNull final HttpResponse httpResponse) throws IOException {
         StatusLine statusLine = httpResponse.getStatusLine();
-        logger.debug("Write statusLine {}", statusLine);
+        log.debug("Write statusLine {}", statusLine);
         write(statusLine);
 
         for (Header header : httpResponse.getAllHeaders()) {
-            logger.debug("Write header {}", header);
+            log.debug("Write header {}", header);
             write(header);
         }
 
@@ -298,7 +298,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
 
         HttpEntity entity = httpResponse.getEntity();
         if (entity != null) {
-            logger.debug("Write entity content");
+            log.debug("Write entity content");
             entity.writeTo(outputStream);
         }
         EntityUtils.consume(entity);
@@ -336,11 +336,11 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     }
 
     private void prepareRequest() {
-        logger.debug("Prepare the request for execution");
+        log.debug("Prepare the request for execution");
         // Prepare the request for execution:
         // remove some headers, fix VIA header and set a proper entity
         if (request instanceof HttpEntityEnclosingRequest) {
-            logger.debug("Set enclosing entity");
+            log.debug("Set enclosing entity");
             RepeatableHttpEntity entity = new RepeatableHttpEntity(request,
                     sessionInputBuffer,
                     proxyConfig.getTempDirectory(),
@@ -348,7 +348,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
             Header transferEncoding = request.getFirstHeader(HTTP.TRANSFER_ENCODING);
             if (transferEncoding != null
                     && StringUtils.containsIgnoreCase(transferEncoding.getValue(), HTTP.CHUNK_CODING)) {
-                logger.debug("Mark entity as chunked");
+                log.debug("Mark entity as chunked");
                 entity.setChunked(true);
 
                 // Apache HttpClient adds a Transfer-Encoding header's chunk directive
@@ -359,15 +359,15 @@ public class ClientConnection implements StreamSource, AutoCloseable {
                     request.addHeader(
                             HttpUtils.createHttpHeader(HttpHeaders.TRANSFER_ENCODING,
                                     nonChunkedTransferEncoding));
-                    logger.debug("Add chunk-striped request header");
+                    log.debug("Add chunk-striped request header");
                 } else {
-                    logger.debug("Remove transfer encoding chunked request header");
+                    log.debug("Remove transfer encoding chunked request header");
                 }
 
             }
             ((HttpEntityEnclosingRequest) request).setEntity(entity);
         } else {
-            logger.debug("No enclosing entity");
+            log.debug("No enclosing entity");
         }
 
         // Remove banned headers
@@ -376,9 +376,9 @@ public class ClientConnection implements StreamSource, AutoCloseable {
         for (Header header : request.getAllHeaders()) {
             if (bannedHeaders.contains(header.getName())) {
                 request.removeHeader(header);
-                logger.debug("Request header {} removed", header);
+                log.debug("Request header {} removed", header);
             } else {
-                logger.debug("Allow request header {}", header);
+                log.debug("Allow request header {}", header);
             }
         }
 

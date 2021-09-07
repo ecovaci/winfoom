@@ -125,7 +125,7 @@ public class TunnelConnection {
             response = requestExec.execute(connect, connection, context);
 
             final int status = response.getStatusLine().getStatusCode();
-            logger.debug("Tunnel status code: {}", status);
+            log.debug("Tunnel status code: {}", status);
             if (status < HttpStatus.SC_OK) {
                 throw new HttpException("Unexpected response to CONNECT request: " + response.getStatusLine());
             }
@@ -137,10 +137,10 @@ public class TunnelConnection {
                     // Retry request
                     if (DefaultConnectionReuseStrategy.INSTANCE.keepAlive(response, context)) {
                         // Consume response content
-                        logger.debug("Now consume entity");
+                        log.debug("Now consume entity");
                         EntityUtils.consume(response.getEntity());
                     } else {
-                        logger.debug("Close tunnel connection");
+                        log.debug("Close tunnel connection");
                         InputOutputs.close(connection);
                     }
                     // discard previous auth header
@@ -155,7 +155,7 @@ public class TunnelConnection {
         }
 
         final int status = response.getStatusLine().getStatusCode();
-        logger.debug("Tunnel final status code: {}", status);
+        log.debug("Tunnel final status code: {}", status);
 
         if (status > HttpUtils.MAX_HTTP_SUCCESS_CODE) { // Error case
 
@@ -164,7 +164,7 @@ public class TunnelConnection {
             if (entity != null) {
                 response.setEntity(new BufferedHttpEntity(entity));
             }
-            logger.debug("Close tunnel connection");
+            log.debug("Close tunnel connection");
             InputOutputs.close(connection);
             throw new TunnelRefusedException("CONNECT refused by proxy: " + response.getStatusLine(), response);
         }

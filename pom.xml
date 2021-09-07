@@ -18,12 +18,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.6.RELEASE</version>
+        <version>2.5.4</version>
         <relativePath/>
     </parent>
     <groupId>org.kpax</groupId>
     <artifactId>winfoom</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>4.0.0</version>
 
     <name>winfoom</name>
     <url>https://github.com/ecovaci/winfoom</url>
@@ -42,8 +42,6 @@
         <mock-server.version>5.9.0</mock-server.version>
         <littleproxy.version>1.1.2</littleproxy.version>
         <mockserver-netty.version>5.10.0</mockserver-netty.version>
-        <kerby.version>2.0.1</kerby.version>
-        <pac4j.version>4.2.0</pac4j.version>
         <lombok.version>1.18.20</lombok.version>
     </properties>
 
@@ -165,20 +163,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.kerby</groupId>
-            <artifactId>kerb-simplekdc</artifactId>
-            <version>${kerby.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-kerberos</artifactId>
-            <version>${pac4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -187,6 +171,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly-windows.xml</descriptor>
+                        <descriptor>assembly-unix.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

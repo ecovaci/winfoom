@@ -31,7 +31,6 @@ import org.kpax.winfoom.proxy.listener.StartListener;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.jna.IEProxyConfig;
 import org.kpax.winfoom.util.jna.WinHttpHelpers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
@@ -43,14 +42,14 @@ import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Base64;
+import java.util.Properties;
 
 /**
  * The proxy facade configuration.
@@ -155,18 +154,26 @@ public class ProxyConfig implements StartListener {
     private boolean ntlm;
 
     @PostConstruct
-    public void init() throws IOException, ConfigurationException {
+    public void init() throws IOException {
+        log.info("Check config directory");
+        File configFile = new File("./config/proxy.properties");
+
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdir();
+            configFile.createNewFile();
+        }
+
+        log.info("Check temp directory");
         tempDirectory = Paths.get("./out/temp");
-        logger.info("Check temp directory");
 
         if (!Files.exists(tempDirectory)) {
-            logger.info("Create temp directory {}", tempDirectory);
+            log.info("Create temp directory {}", tempDirectory);
             Files.createDirectories(tempDirectory);
         } else if (!Files.isDirectory(tempDirectory)) {
             throw new IllegalStateException(
                     String.format("The file [%s] should be a directory, not a regular file", tempDirectory));
         } else {
-            logger.info("Using temp directory {}", tempDirectory);
+            log.info("Using temp directory {}", tempDirectory);
         }
     }
 
@@ -224,19 +231,19 @@ public class ProxyConfig implements StartListener {
     }
 
     public boolean autoDetect() throws IOException {
-        logger.info("Detecting IE proxy settings");
+        log.info("Detecting IE proxy settings");
         IEProxyConfig ieProxyConfig = WinHttpHelpers.readIEProxyConfig();
-        logger.info("IE settings {}", ieProxyConfig);
+        log.info("IE settings {}", ieProxyConfig);
         if (ieProxyConfig != null) {
             String pacUrl = WinHttpHelpers.findPacFileLocation(ieProxyConfig);
             if (pacUrl != null) {
-                logger.info("Proxy Auto Config file location: {}", pacUrl);
+                log.info("Proxy Auto Config file location: {}", pacUrl);
                 proxyType = Type.PAC;
                 proxyPacFileLocation = pacUrl;
                 return true;
             } else {// Manual case
                 String proxySettings = ieProxyConfig.getProxy();
-                logger.info("Manual proxy settings: [{}]", proxySettings);
+                log.info("Manual proxy settings: [{}]", proxySettings);
                 if (proxySettings != null) {
                     if (proxySettings.indexOf('=') == -1) {
                         setProxy(Type.HTTP, proxySettings);
@@ -261,13 +268,13 @@ public class ProxyConfig implements StartListener {
                 }
             }
         } else {
-            logger.warn("Cannot retrieve IE settings");
+            log.warn("Cannot retrieve IE settings");
         }
         return false;
     }
 
     private void setProxy(Type type, String proxy) {
-        logger.info("Set proxy type: {}, value: {}", type, proxy);
+        log.info("Set proxy type: {}, value: {}", type, proxy);
         proxyType = type;
         HttpHost httpHost = HttpHost.create(proxy);
         setProxyHost(httpHost.getHostName());
@@ -573,7 +580,7 @@ public class ProxyConfig implements StartListener {
      */
     @PreDestroy
     void save() throws ConfigurationException {
-        logger.info("Save proxy settings");
+        log.info("Save proxy settings");
         File userProperties = new File("./config/proxy.properties");
         FileBasedConfigurationBuilder<PropertiesConfiguration> propertiesBuilder = new Configurations()
                 .propertiesBuilder(userProperties);
@@ -594,13 +601,13 @@ public class ProxyConfig implements StartListener {
         setProperty(config, "proxy.socks5.username", proxySocks5Username);
 
         if (StringUtils.isNotEmpty(proxyHttpPassword)) {
-            setProperty(config, "proxy.http.password", "encoded(" + Base64.getEncoder().encodeToString(proxyHttpPassword.getBytes()) + ")");
+            setProperty(config, "proxy.http.password", encode(Base64.getEncoder().encodeToString(proxyHttpPassword.getBytes())));
         } else {
             config.clearProperty("proxy.http.password");
         }
 
         if (StringUtils.isNotEmpty(proxySocks5Password)) {
-            setProperty(config, "proxy.socks5.password", "encoded(" + Base64.getEncoder().encodeToString(proxySocks5Password.getBytes()) + ")");
+            setProperty(config, "proxy.socks5.password", encode(Base64.getEncoder().encodeToString(proxySocks5Password.getBytes())));
         } else {
             config.clearProperty("proxy.socks5.password");
         }
@@ -608,7 +615,7 @@ public class ProxyConfig implements StartListener {
         setProperty(config, "proxy.pac.fileLocation", proxyPacFileLocation);
         setProperty(config, "proxy.pac.username", proxyPacUsername);
         if (StringUtils.isNotEmpty(proxyPacPassword)) {
-            setProperty(config, "proxy.pac.password", "encoded(" + Base64.getEncoder().encodeToString(proxyPacPassword.getBytes()) + ")");
+            setProperty(config, "proxy.pac.password", encode(Base64.getEncoder().encodeToString(proxyPacPassword.getBytes())));
         } else {
             config.clearProperty("proxy.pac.password");
         }
@@ -619,6 +626,10 @@ public class ProxyConfig implements StartListener {
         setProperty(config, "autostart", autostart);
         setProperty(config, "autodetect", autodetect);
         propertiesBuilder.save();
+    }
+
+    private static String encode (String value) {
+        return "encoded(" + value + ")";
     }
 
     private void setProperty(final Configuration config, final String key, final Object value) {
@@ -632,7 +643,7 @@ public class ProxyConfig implements StartListener {
     }
 
     @Override
-    public void onStart() throws Exception {
+    public void onStart() {
         this.ntlm = !isAuthAutoMode() &&
                 ((proxyType.isHttp() && httpAuthProtocol != null && httpAuthProtocol.isNtlm()) ||
                         (proxyType.isPac() && pacHttpAuthProtocol != null && pacHttpAuthProtocol.isNtlm()));
@@ -679,5 +690,4 @@ public class ProxyConfig implements StartListener {
         }
 
     }
-
 }

@@ -60,9 +60,9 @@ public class GlobPatternMatcher {
         Cache<String, Pattern> patternCache = globPatternCacheSupplier.get();
         Pattern pattern = patternCache.get(glob);
         if (pattern == null) {
-            logger.debug("Create pattern for {}", glob);
+            log.debug("Create pattern for {}", glob);
             String regexPattern = convertGlobToRegEx(glob.trim());
-            logger.debug("glob regexPattern={}", regexPattern);
+            log.debug("glob regexPattern={}", regexPattern);
             pattern = Pattern.compile(regexPattern);
             patternCache.put(glob, pattern);
         }

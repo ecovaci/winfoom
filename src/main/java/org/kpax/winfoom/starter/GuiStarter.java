@@ -34,11 +34,11 @@ public class GuiStarter implements ApplicationListener<ApplicationReadyEvent> {
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         appFrame.setLocationRelativeTo(null);
-        logger.info("Launch the GUI");
+        log.info("Launch the GUI");
         try {
             appFrame.activate();
         } catch (Exception e) {
-            logger.error("GUI error", e);
+            log.error("GUI error", e);
             SwingUtils.showErrorMessage("Failed to load the graphical interface." +
                     "<br>Please check the application's log file.");
             System.exit(1);

@@ -64,10 +64,14 @@ Now you should have the generated executable *jar* file under the *target* direc
 
 ## Run Winfoom
 
-The prepackaged `winfoom.zip` contains the following executable files: 
-* `launch.bat` launches the application (Windows systems)
-* `launchGui.bat` launches the application in graphical mode (Windows systems)
-* `launch.sh` launches the application (Linux/Macos systems, needs to be made executable)
+The prepackaged `winfoom-windows.zip` for Windows systems, contains the following executable files: 
+* `launch.bat` launches the application
+* `launchGui.bat` launches the application in graphical mode
+* `foomcli.bat` manages the application in GUI-less mode
+
+The prepackaged `winfoom-unix.zip` for Linux/Macos systems, contains the following executable files:
+* `launch.sh` launches the application (needs to be made executable)
+* `foomcli.sh` manages the application in GUI-less mode (needs to be made executable)
 
 On Windows systems, Winfoom can be launched by double-click on `launchGui.bat` or
 from the command prompt:
@@ -97,16 +101,8 @@ Winfoom can be launched with modified Java and system parameters by defining the
 
 > 👉 Note: It's a good idea to add the Winfoom's home directory to the PATH environment variable.
 
-Starting with v3.3.0 it is possible to modify the config directory location by setting the `WINFOOM_CONFIG` environment variable.
-When this variable is not set, the default value would be `WINFOOM_CONFIG=<user.home.directory.path>`. 
-This allows running multiple instances of the application having different configurations.
-
-For GUI-less management you need `foomcli.zip` containing:
-* `foomcli.bat` manages the application (Windows systems)
-* `foomcli.sh` manages the application (Linux/Macos systems, needs to be made executable)
-
 ## Winfoom's logs
-The application log file is placed under `<WINFOOM_CONFIG>/.winfoom/logs` directory.
+The application log file is placed under `out/logs` directory.
 
 ## Configuration
 ### User settings
@@ -310,7 +306,7 @@ then check the new settings with `foomcli settings`
 
 
 ### System settings
-The system settings configuration file is `<WINFOOM_CONFIG>/.winfoom/system.properties`.
+The system settings configuration file is `config/system.properties`.
 
 _Please do not modify this file unless absolutely necessary. It is advisable to post your issue in [Issues Section](https://github.com/ecovaci/winfoom/issues) first._
 

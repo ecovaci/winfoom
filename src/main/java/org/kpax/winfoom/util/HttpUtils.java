@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
  * @author Eugen Covaci
  */
 @Slf4j
+@UtilityClass
 public final class HttpUtils {
 
     /**
@@ -92,9 +94,6 @@ public final class HttpUtils {
      * The time zone to use in the date header.
      */
     public static final TimeZone GMT = TimeZone.getTimeZone("GMT");
-
-    private HttpUtils() {
-    }
 
     /**
      * Parse a {@link String} value into an {@link URI} instance.
@@ -149,7 +148,7 @@ public final class HttpUtils {
                 return toUri(uri);
             }
         } catch (Exception e) {
-            logger.debug("Error on parsing request URI", e);
+            log.debug("Error on parsing request URI", e);
             if (e instanceof URISyntaxException) {
                 throw e;
             }
@@ -369,7 +368,7 @@ public final class HttpUtils {
                 if (filter.test(proxyInfo)) {
                     proxyInfos.add(proxyInfo);
                 } else {
-                    logger.debug("Ignore blacklisted proxy {}", proxyInfo);
+                    log.debug("Ignore blacklisted proxy {}", proxyInfo);
                 }
             }
         }

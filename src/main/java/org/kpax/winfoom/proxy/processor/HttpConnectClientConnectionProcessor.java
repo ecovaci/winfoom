@@ -60,11 +60,11 @@ class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
         try (Tunnel tunnel = tunnelConnection.open(proxy, target, requestLine.getProtocolVersion())) {
             try {
                 // Handle the tunnel response
-                logger.debug("Write status line {}", tunnel.getStatusLine());
+                log.debug("Write status line {}", tunnel.getStatusLine());
                 clientConnection.write(tunnel.getStatusLine());
 
                 for (Header header : tunnel.getResponse().getAllHeaders()) {
-                    logger.debug("Write header {}", header);
+                    log.debug("Write header {}", header);
                     clientConnection.write(header);
                 }
 
@@ -76,14 +76,14 @@ class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
                 // This usually ends on connection reset, timeout or any other error
                 duplex(tunnel, clientConnection);
             } catch (Exception e) {
-                logger.debug("Error on handling CONNECT response", e);
+                log.debug("Error on handling CONNECT response", e);
             }
         } catch (TunnelRefusedException tre) {
-            logger.debug("The tunnel request was rejected by the proxy host", tre);
+            log.debug("The tunnel request was rejected by the proxy host", tre);
             try {
                 clientConnection.writeHttpResponse(tre.getResponse());
             } catch (Exception e) {
-                logger.debug("Error on writing response", e);
+                log.debug("Error on writing response", e);
             }
         }
     }

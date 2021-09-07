@@ -66,7 +66,7 @@ class LocalProxyServer implements StopListener {
     synchronized void start() throws IOException {
         Assert.isTrue(serverSocket == null || serverSocket.isClosed(),
                 "There is an active ServerSocket instance that needs to be closed before creating another one");
-        logger.info("Start local proxy server with userConfig {}", proxyConfig);
+        log.info("Start local proxy server with userConfig {}", proxyConfig);
         try {
             serverSocket = new ServerSocket(proxyConfig.getLocalPort(),
                     systemConfig.getServerSocketBacklog());
@@ -79,7 +79,7 @@ class LocalProxyServer implements StopListener {
                             try {
                                 clientConnectionHandler.handleConnection(socket);
                             } catch (Exception e) {
-                                logger.debug("Error on handling connection", e);
+                                log.debug("Error on handling connection", e);
                             } finally {
                                 InputOutputs.close(socket);
                             }
@@ -93,14 +93,14 @@ class LocalProxyServer implements StopListener {
                         // Get connection interrupted error whenever stop the server socket,
                         // there is no reason to debug it
                         if (!HttpUtils.isConnectionInterrupted(e)) {
-                            logger.debug("Socket error on getting connection", e);
+                            log.debug("Socket error on getting connection", e);
                         }
                     } catch (Exception e) {
-                        logger.debug("Generic error on getting connection", e);
+                        log.debug("Generic error on getting connection", e);
                     }
                 }
             });
-            logger.info("Server started, listening on port: " + proxyConfig.getLocalPort());
+            log.info("Server started, listening on port: " + proxyConfig.getLocalPort());
         } catch (Exception e) {
             // Cleanup on exception
             close();
@@ -110,7 +110,7 @@ class LocalProxyServer implements StopListener {
 
     @Override
     public synchronized void onStop() {
-        logger.info("Close the local proxy server");
+        log.info("Close the local proxy server");
         InputOutputs.close(serverSocket);
     }
 

@@ -14,6 +14,7 @@ package org.kpax.winfoom.pac.net;
 
 
 import inet.ipaddr.IPAddressString;
+import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.functional.SingleExceptionSingletonSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 /**
  * IP address utilities: resolving hostname, comparing IP addresses.
  */
+@Slf4j
 public class IpAddresses {
 
     public static final String LOCALHOST = "127.0.0.1";
@@ -93,8 +95,6 @@ public class IpAddresses {
         }
         return compareByType;
     };
-
-    private static final Logger logger = LoggerFactory.getLogger(IpAddresses.class);
 
     IpAddresses() {
     }
@@ -182,7 +182,7 @@ public class IpAddresses {
             addrString.toAddress();
             return true;
         } catch (Exception e) {
-            logger.debug("Not a valid IP address: {}", e.getMessage());
+            log.debug("Not a valid IP address: {}", e.getMessage());
             return false;
         }
     }
@@ -198,7 +198,7 @@ public class IpAddresses {
             IPAddressString addrString = new IPAddressString(address);
             return addrString.toAddress().isIPv4();
         } catch (Exception e) {
-            logger.debug("Not a valid IP address", e);
+            log.debug("Not a valid IP address", e);
             return false;
         }
     }
@@ -214,7 +214,7 @@ public class IpAddresses {
             IPAddressString addrString = new IPAddressString(address);
             return addrString.toAddress().isIPv6();
         } catch (Exception e) {
-            logger.debug("Not a valid IP address", e);
+            log.debug("Not a valid IP address", e);
             return false;
         }
     }

@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.kpax.winfoom.annotation.NotNull;
 import org.springframework.util.Assert;
@@ -23,10 +24,8 @@ import java.util.Optional;
 /**
  * Various exception related utility methods.
  */
+@UtilityClass
 public class Throwables {
-
-    private Throwables() {
-    }
 
     /**
      * Returns the first {@link Throwable} object in the exception chain that matches one of the provided types.

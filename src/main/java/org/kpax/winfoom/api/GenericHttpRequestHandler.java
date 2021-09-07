@@ -59,7 +59,7 @@ public class GenericHttpRequestHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context)
             throws HttpException, IOException {
-        logger.debug("Received request {}", request);
+        log.debug("Received request {}", request);
         boolean isAuthorized = handleAuthorization(request, response, context);
         if (isAuthorized) {
             Future<Object> future = executorService.submit(() -> {
@@ -88,18 +88,18 @@ public class GenericHttpRequestHandler implements HttpRequestHandler {
             try {
                 future.get(systemConfig.getApiServerRequestTimeout(), TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                logger.debug("Request execution interrupted", e);
+                log.debug("Request execution interrupted", e);
                 response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                 response.setEntity(new StringEntity("Command execution interrupted"));
             } catch (ExecutionException e) {
                 Throwables.throwIfMatches(e.getCause(), HttpException.class);
                 Throwables.throwIfMatches(e.getCause(), IOException.class);
                 Throwables.throwIfMatches(e.getCause(), RuntimeException.class);
-                logger.debug("Error on executing request", e);
+                log.debug("Error on executing request", e);
                 response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                 response.setEntity(new StringEntity("Error on executing command: " + e.getMessage()));
             } catch (TimeoutException e) {
-                logger.debug("Request timeout", e);
+                log.debug("Request timeout", e);
                 response.setStatusCode(HttpStatus.SC_REQUEST_TIMEOUT);
                 response.setEntity(new StringEntity("Command timeout"));
             }
@@ -115,11 +115,11 @@ public class GenericHttpRequestHandler implements HttpRequestHandler {
                 response.setEntity(new StringEntity("Incorrect user/password"));
             }
         } catch (AuthenticationException e) {
-            logger.warn("Command authorization error", e);
+            log.warn("Command authorization error", e);
             response.setStatusCode(HttpStatus.SC_UNAUTHORIZED);
             response.setEntity(new StringEntity(e.getMessage()));
         }
-        logger.debug("Is request authorized? {}", isAuthorized);
+        log.debug("Is request authorized? {}", isAuthorized);
         return isAuthorized;
     }
 

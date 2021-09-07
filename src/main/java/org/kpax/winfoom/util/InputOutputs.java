@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.io.SessionInputBufferImpl;
 import org.kpax.winfoom.annotation.NotNull;
@@ -32,12 +33,10 @@ import java.util.Properties;
  * @author Eugen Covaci
  */
 @Slf4j
+@UtilityClass
 public final class InputOutputs {
 
     public static final int DEFAULT_BUFFER_SIZE = 8192;
-
-    private InputOutputs() {
-    }
 
     /**
      * Check for available data.
@@ -57,34 +56,34 @@ public final class InputOutputs {
      */
     public static void close(final AutoCloseable closeable) {
         if (closeable != null) {
-            logger.debug("Close {}", closeable.getClass());
+            log.debug("Close {}", closeable.getClass());
             try {
                 closeable.close();
             } catch (Exception e) {
-                logger.debug("Fail to close: " + closeable.getClass().getName(), e);
+                log.debug("Fail to close: " + closeable.getClass().getName(), e);
             }
         }
 
     }
 
     public static void close(@NotNull final Socket socket) {
-        logger.debug("Close socket");
+        log.debug("Close socket");
         try {
             socket.shutdownInput();
         } catch (Exception e) {
-            logger.debug("Fail to shutdown socket input", e);
+            log.debug("Fail to shutdown socket input", e);
         }
 
         try {
             socket.shutdownOutput();
         } catch (Exception e) {
-            logger.debug("Fail to shutdown socket output", e);
+            log.debug("Fail to shutdown socket output", e);
         }
 
         try {
             socket.close();
         } catch (Exception e) {
-            logger.debug("Fail to close socket", e);
+            log.debug("Fail to close socket", e);
         }
     }
 
@@ -92,18 +91,6 @@ public final class InputOutputs {
         return System.nanoTime() +
                 "-" +
                 (int) (Math.random() * 100);
-    }
-
-
-    public static boolean isIncluded(final Properties who, final Properties where) {
-        Assert.notNull(who, "who cannot be null");
-        Assert.notNull(where, "where cannot be null");
-        for (String key : who.stringPropertyNames()) {
-            if (where.getProperty(key) == null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

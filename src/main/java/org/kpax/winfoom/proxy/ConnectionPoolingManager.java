@@ -116,19 +116,19 @@ class ConnectionPoolingManager implements StopListener {
     @Scheduled(fixedRateString = "#{systemConfig.connectionManagerCleanInterval * 1000}")
     void cleanUpConnectionManager() {
         if (proxyController.isRunning()) {
-            logger.debug("Execute connection manager pool clean up task");
+            log.debug("Execute connection manager pool clean up task");
             poolingHttpSuppliers.stream().filter(SingletonSupplier::hasValue).forEach((connectionManagerSupplier) -> {
                 try {
                     PoolingHttpClientConnectionManager connectionManager = connectionManagerSupplier.get();
                     connectionManager.closeExpiredConnections();
                     connectionManager.closeIdleConnections(systemConfig.getConnectionManagerIdleTimeout(),
                             TimeUnit.SECONDS);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("PoolingHttpClientConnectionManager statistics {}",
+                    if (log.isDebugEnabled()) {
+                        log.debug("PoolingHttpClientConnectionManager statistics {}",
                                 connectionManager.getTotalStats());
                     }
                 } catch (Exception e) {
-                    logger.debug("Error on cleaning connection pool", e);
+                    log.debug("Error on cleaning connection pool", e);
                 }
             });
         }
@@ -147,7 +147,7 @@ class ConnectionPoolingManager implements StopListener {
         PoolingHttpClientConnectionManager connectionManager = socketFactoryRegistry != null
                 ? new PoolingHttpClientConnectionManager(socketFactoryRegistry) :
                 new PoolingHttpClientConnectionManager();
-        logger.info("Configure connection manager");
+        log.info("Configure connection manager");
         if (systemConfig.getMaxConnections() != null) {
             connectionManager.setMaxTotal(systemConfig.getMaxConnections());
         }
@@ -176,7 +176,7 @@ class ConnectionPoolingManager implements StopListener {
 
     @Override
     public void onStop() {
-        logger.debug("Close all active connection managers and reset the suppliers");
+        log.debug("Close all active connection managers and reset the suppliers");
         poolingHttpSuppliers.stream().filter(SingletonSupplier::hasValue).
                 forEach(SingletonSupplier::reset);
     }

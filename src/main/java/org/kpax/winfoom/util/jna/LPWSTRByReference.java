@@ -57,6 +57,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WTypes;
+import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.InputOutputs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +78,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author phansson
  */
+@Slf4j
 public class LPWSTRByReference extends PointerType implements AutoCloseable {
-
-    private final Logger logger = LoggerFactory.getLogger(LPWSTRByReference.class);
 
     public LPWSTRByReference() {
         setPointer(new CloseableMemory(Pointer.SIZE));
@@ -127,13 +127,13 @@ public class LPWSTRByReference extends PointerType implements AutoCloseable {
                     // The call to GlobalFree has failed. This should never
                     // happen. If it really does happen, there isn't much we
                     // can do about it other than logging it.
-                    logger.warn(
+                    log.warn(
                             "Windows function GlobalFree failed while freeing memory for {} object",
                             getClass());
                 }
             }
         } catch (Exception e) {
-            logger.warn("Fail to free the memory occupied by the string returned from the Win32 function", e);
+            log.warn("Fail to free the memory occupied by the string returned from the Win32 function", e);
         } finally {
             // This will free the memory of the pointer-to-pointer
             InputOutputs.close((CloseableMemory) getPointer());

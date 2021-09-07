@@ -57,10 +57,10 @@ public class ProxyValidator {
                     .build();
             HttpGet request = new HttpGet("/");
             request.setConfig(config);
-            logger.info("Executing request " + request.getRequestLine() + " to " + target + " via " + proxy);
+            log.info("Executing request " + request.getRequestLine() + " to " + target + " via " + proxy);
             try (CloseableHttpResponse response = httpClient.execute(target, request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
-                logger.info("statusCode={}", statusCode);
+                log.info("statusCode={}", statusCode);
                 if (statusCode > HttpUtils.MAX_HTTP_SUCCESS_CODE) {
                     if (statusCode == HttpStatus.SC_BAD_GATEWAY) {
                         throw new InvalidProxySettingsException("Wrong proxy host/port");

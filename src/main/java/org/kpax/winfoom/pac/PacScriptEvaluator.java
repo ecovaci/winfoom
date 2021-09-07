@@ -176,7 +176,7 @@ public class PacScriptEvaluator implements ProxyListener {
             Object type = eng.invokeMethod(typeofCheck, "call", null, functionName);
             return "function".equals(type);
         } catch (NoSuchMethodException | ScriptException ex) {
-            logger.warn("Error on testing if the function is there", ex);
+            log.warn("Error on testing if the function is there", ex);
             return false;
         }
     }
@@ -190,10 +190,10 @@ public class PacScriptEvaluator implements ProxyListener {
     private String loadScript() throws IOException {
         URL url = proxyConfig.getProxyPacFileLocationAsURL();
         Assert.state(url != null, "No proxy PAC file location found");
-        logger.info("Get PAC file from: {}", url);
+        log.info("Get PAC file from: {}", url);
         try (InputStream inputStream = url.openStream()) {
             String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            logger.info("PAC content: {}", content);
+            log.info("PAC content: {}", content);
             return content;
         }
     }
@@ -278,7 +278,7 @@ public class PacScriptEvaluator implements ProxyListener {
                 enginePoolSingletonSupplier.get().returnObject(scriptEngine);
             }
             String proxyLine = Objects.toString(callResult, null);
-            logger.debug("Parse proxyLine [{}] for uri [{}]", proxyLine, uri);
+            log.debug("Parse proxyLine [{}] for uri [{}]", proxyLine, uri);
             return HttpUtils.parsePacProxyLine(proxyLine, proxyBlacklist::isActive);
         } catch (Exception ex) {
             throw new PacScriptException("Error when executing PAC script function: " + jsMainFunction, ex);
@@ -287,7 +287,7 @@ public class PacScriptEvaluator implements ProxyListener {
 
     @Override
     public void onStop() {
-        logger.debug("Reset the scriptEngineSupplier");
+        log.debug("Reset the scriptEngineSupplier");
         enginePoolSingletonSupplier.reset();
         jsMainFunction = null;
     }

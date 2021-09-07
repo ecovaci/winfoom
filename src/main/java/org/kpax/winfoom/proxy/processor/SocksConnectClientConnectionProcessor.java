@@ -83,11 +83,11 @@ class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
             if (proxyInfo.getType().isSocks4()) {
                 HttpUtils.setSocks4(socket);
             }
-            logger.debug("Open connection");
+            log.debug("Open connection");
             socket.connect(new InetSocketAddress(target.getHostName(), target.getPort()),
                     systemConfig.getSocketConnectTimeout() * 1000);
 
-            logger.debug("Connected to {}", target);
+            log.debug("Connected to {}", target);
 
             // Respond with 200 code
             clientConnection.write(String.format("%s 200 Connection established",
@@ -102,7 +102,7 @@ class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
                 // This usually ends on connection reset, timeout or any other error
                 duplex(StreamSource.from(socket), clientConnection);
             } catch (Exception e) {
-                logger.error("Error on full duplex", e);
+                log.error("Error on full duplex", e);
             }
 
         }

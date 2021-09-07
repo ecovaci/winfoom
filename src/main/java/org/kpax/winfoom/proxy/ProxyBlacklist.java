@@ -60,9 +60,9 @@ public class ProxyBlacklist implements StopListener {
      * @return the blacklist timeout {@link Instant} iff the blacklisting is enabled, {@code null} otherwise.
      */
     public Instant blacklist(@NotNull final ProxyInfo proxyInfo) {
-        logger.debug("Attempt to blacklist proxy {}", proxyInfo);
+        log.debug("Attempt to blacklist proxy {}", proxyInfo);
         if (proxyConfig.getBlacklistTimeout() < 1) {
-            logger.debug("Blacklisting is disabled, nothing to do");
+            log.debug("Blacklisting is disabled, nothing to do");
             return null;
         }
         return blacklistMap.compute(proxyInfo, (key, value) -> {
@@ -70,10 +70,10 @@ public class ProxyBlacklist implements StopListener {
             if (value == null || value.isBefore(now)) {
                 Instant timeoutInstant = now.plus(proxyConfig.getBlacklistTimeout(),
                         TEMPORAL_UNIT);
-                logger.debug("Blacklisted until {}", timeoutInstant);
+                log.debug("Blacklisted until {}", timeoutInstant);
                 return timeoutInstant;
             } else {
-                logger.debug("Already blacklisted until {}", value);
+                log.debug("Already blacklisted until {}", value);
                 return value;
             }
         });
@@ -131,7 +131,7 @@ public class ProxyBlacklist implements StopListener {
 
     @Override
     public void onStop() {
-        logger.debug("Clear the blacklist");
+        log.debug("Clear the blacklist");
         blacklistMap.clear();
     }
 }

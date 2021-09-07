@@ -147,7 +147,7 @@ public class SystemConfig {
 
     @PostConstruct
     private void init() {
-        logger.info("System settings: {}", this);
+        log.info("System settings: {}", this);
     }
 
     public RequestConfig.Builder applyConfig(final RequestConfig.Builder configBuilder) {

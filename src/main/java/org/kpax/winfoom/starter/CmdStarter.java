@@ -40,23 +40,23 @@ public class CmdStarter implements ApplicationListener<ApplicationReadyEvent> {
             try {
                 boolean result = proxyConfig.autoDetect();
                 if (!result) {
-                    logger.warn("Failed to retrieve Internet Explorer network settings:");
+                    log.warn("Failed to retrieve Internet Explorer network settings:");
                 }
             } catch (Exception e) {
-                logger.error("Error on retrieving Internet Explorer network settings:", e);
+                log.error("Error on retrieving Internet Explorer network settings:", e);
             }
         }
         if (proxyConfig.isAutostart()) {
             try {
                 proxyConfig.validate();
                 proxyController.start();
-                logger.info("The local proxy server has been started");
+                log.info("The local proxy server has been started");
             } catch (InvalidProxySettingsException e) {
-                logger.warn("Cannot start local proxy server, invalid proxy configuration", e);
+                log.warn("Cannot start local proxy server, invalid proxy configuration", e);
             } catch (Exception e) {
-                logger.error("The local proxy server failed to start", e);
+                log.error("The local proxy server failed to start", e);
             }
         }
-        logger.info("Application is ready");
+        log.info("Application is ready");
     }
 }

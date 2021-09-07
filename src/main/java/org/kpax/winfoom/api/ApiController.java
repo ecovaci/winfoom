@@ -76,14 +76,14 @@ public class ApiController implements AutoCloseable {
     @PostConstruct
     private void init() throws IOException {
         Credentials credentials = new ApiCredentials(proxyConfig.getApiToken());
-        logger.info("Register API request handlers");
+        log.info("Register API request handlers");
         apiServer = ServerBootstrap.bootstrap().setListenerPort(proxyConfig.getApiPort()).
                 registerHandler("/start",
                         new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'start' command received");
+                                log.debug("'start' command received");
                                 try {
                                     proxyConfig.validate();
                                     proxyController.start();
@@ -91,7 +91,7 @@ public class ApiController implements AutoCloseable {
                                 } catch (InvalidProxySettingsException e) {
                                     response.setEntity(new StringEntity("Invalid configuration: " + e.getMessage()));
                                 } catch (Exception e) {
-                                    logger.error("Error on starting local proxy server", e);
+                                    log.error("Error on starting local proxy server", e);
                                     response.setEntity(new StringEntity("Failed to start the local proxy: " + e.getMessage()));
                                 }
                             }
@@ -101,13 +101,13 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'stop' command received");
+                                log.debug("'stop' command received");
                                 if (proxyController.isRunning()) {
                                     try {
                                         proxyController.stop();
                                         response.setEntity(new StringEntity("The local proxy server has been stopped"));
                                     } catch (Exception e) {
-                                        logger.error("Error on stopping local proxy server", e);
+                                        log.error("Error on stopping local proxy server", e);
                                         response.setEntity(new StringEntity("Failed to stop the local proxy: " + e.getMessage()));
                                     }
                                 } else {
@@ -120,7 +120,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'status' command received");
+                                log.debug("'status' command received");
                                 response.setEntity(new StringEntity(String.format("The local proxy server is %s",
                                         proxyController.isRunning() ? "up" : "stopped")));
                             }
@@ -130,17 +130,17 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'validate' command received");
+                                log.debug("'validate' command received");
                                 boolean running = proxyController.isRunning();
                                 if (running) {
                                     try {
                                         applicationContext.getBean(ProxyValidator.class).testProxy();
                                         response.setEntity(new StringEntity("The configuration is valid"));
                                     } catch (InvalidProxySettingsException e) {
-                                        logger.debug("Invalid proxy settings", e);
+                                        log.debug("Invalid proxy settings", e);
                                         response.setEntity(new StringEntity("The configuration is invalid: " + e.getMessage()));
                                     } catch (IOException e) {
-                                        logger.error("Failed to validate proxy settings", e);
+                                        log.error("Failed to validate proxy settings", e);
                                         response.setEntity(new StringEntity("Error on validation the configuration: " + e.getMessage()));
                                     }
                                 } else {
@@ -153,7 +153,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'autodetect' command received");
+                                log.debug("'autodetect' command received");
                                 if (systemConfig.isApiReadOnly()) {
                                     response.setStatusCode(HttpStatus.SC_FORBIDDEN);
                                     response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
@@ -168,7 +168,7 @@ public class ApiController implements AutoCloseable {
                                             response.setEntity(new StringEntity("No proxy configuration found on your system"));
                                         }
                                     } catch (Exception e) {
-                                        logger.error("Error on autodetect proxy settings", e);
+                                        log.error("Error on autodetect proxy settings", e);
                                         response.setEntity(new StringEntity("Error on auto-detecting the configuration: " + e.getMessage()));
                                     }
                                 } else {
@@ -181,7 +181,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'config get' command received");
+                                log.debug("'config get' command received");
                                 try {
                                     response.setEntity(new StringEntity(new ObjectMapper().
                                             configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false).
@@ -189,7 +189,7 @@ public class ApiController implements AutoCloseable {
                                             withView(Views.getView(proxyConfig)).
                                             writeValueAsString(proxyConfig)));
                                 } catch (Exception e) {
-                                    logger.error("Error on serializing proxy configuration", e);
+                                    log.error("Error on serializing proxy configuration", e);
                                     response.setEntity(new StringEntity("Failed to get proxy configuration: " + e.getMessage()));
                                 }
                             }
@@ -197,7 +197,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doPost(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'config post' command received");
+                                log.debug("'config post' command received");
                                 if (systemConfig.isApiReadOnly()) {
                                     response.setStatusCode(HttpStatus.SC_FORBIDDEN);
                                     response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
@@ -216,13 +216,13 @@ public class ApiController implements AutoCloseable {
                                             BeanUtils.copyProperties(JsonUtils.getFieldNames(json), configDto, proxyConfig);
                                             response.setEntity(new StringEntity("Proxy configuration changed"));
                                         } catch (IOException e) {
-                                            logger.error("Error on parsing JSON", e);
+                                            log.error("Error on parsing JSON", e);
                                             response.setEntity(new StringEntity("Failed to parse JSON: " + e.getMessage()));
                                         } catch (InvalidProxySettingsException e) {
-                                            logger.error("Invalid JSON", e);
+                                            log.error("Invalid JSON", e);
                                             response.setEntity(new StringEntity("Invalid JSON: " + e.getMessage()));
                                         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                                            logger.error("Error on applying proxy configuration", e);
+                                            log.error("Error on applying proxy configuration", e);
                                             response.setEntity(new StringEntity("Failed to changed proxy configuration: " + e.getMessage()));
                                         }
                                     } else {
@@ -236,7 +236,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'settings' command received");
+                                log.debug("'settings' command received");
                                 try {
                                     response.setEntity(new StringEntity(new ObjectMapper().
                                             configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false).
@@ -244,7 +244,7 @@ public class ApiController implements AutoCloseable {
                                             withView(Views.getSettingsView()).
                                             writeValueAsString(proxyConfig)));
                                 } catch (Exception e) {
-                                    logger.error("Error on serializing proxy settings", e);
+                                    log.error("Error on serializing proxy settings", e);
                                     response.setEntity(new StringEntity("Failed to get proxy settings: " + e.getMessage()));
                                 }
                             }
@@ -252,7 +252,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doPost(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'settings post' command received");
+                                log.debug("'settings post' command received");
                                 if (systemConfig.isApiReadOnly()) {
                                     response.setStatusCode(HttpStatus.SC_FORBIDDEN);
                                     response.setEntity(new StringEntity("Forbidden: Modifying settings is disabled"));
@@ -271,13 +271,13 @@ public class ApiController implements AutoCloseable {
                                             BeanUtils.copyProperties(JsonUtils.getFieldNames(json), settingsDto, proxyConfig);
                                             response.setEntity(new StringEntity("Proxy settings changed"));
                                         } catch (IOException e) {
-                                            logger.error("Error on parsing JSON", e);
+                                            log.error("Error on parsing JSON", e);
                                             response.setEntity(new StringEntity("Failed to parse JSON: " + e.getMessage()));
                                         } catch (InvalidProxySettingsException e) {
-                                            logger.error("Invalid JSON", e);
+                                            log.error("Invalid JSON", e);
                                             response.setEntity(new StringEntity("Invalid JSON: " + e.getMessage()));
                                         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                                            logger.error("Error on applying proxy settings", e);
+                                            log.error("Error on applying proxy settings", e);
                                             response.setEntity(new StringEntity("Failed to change proxy settings: " + e.getMessage()));
                                         }
                                     } else {
@@ -291,7 +291,7 @@ public class ApiController implements AutoCloseable {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                logger.debug("'shutdown' command received");
+                                log.debug("'shutdown' command received");
                                 if (systemConfig.isApiDisableShutdown()) {
                                     response.setStatusCode(HttpStatus.SC_FORBIDDEN);
                                     response.setEntity(new StringEntity("Forbidden: Shutdown is disabled"));
@@ -307,7 +307,7 @@ public class ApiController implements AutoCloseable {
 
     @Override
     public void close() {
-        logger.info("Stop the api server");
+        log.info("Stop the api server");
         try {
             try {
                 apiServer.awaitTermination(SHUTDOWN_GRACE_PERIOD, TimeUnit.MILLISECONDS);
@@ -316,7 +316,7 @@ public class ApiController implements AutoCloseable {
             }
             apiServer.shutdown(0, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.debug("Error on stopping API server", e);
+            log.debug("Error on stopping API server", e);
         }
     }
 }

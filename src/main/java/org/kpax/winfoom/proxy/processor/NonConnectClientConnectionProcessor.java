@@ -87,7 +87,7 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
             try (CloseableHttpResponse response = httpClient.execute(target, clientConnection.getRequest(), context)) {
                 StatusLine statusLine = response.getStatusLine();
                 try {
-                    logger.debug("Write status line: {}", statusLine);
+                    log.debug("Write status line: {}", statusLine);
                     clientConnection.write(statusLine);
                     clientConnection.write(HttpUtils.createViaHeader(
                             clientConnection.getRequestLine().getProtocolVersion(),
@@ -106,12 +106,12 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                                 clientConnection.write(
                                         HttpUtils.createHttpHeader(HttpHeaders.TRANSFER_ENCODING,
                                                 nonChunkedTransferEncoding));
-                                logger.debug("Add chunk-striped header response");
+                                log.debug("Add chunk-striped header response");
                             } else {
-                                logger.debug("Remove transfer encoding chunked header response");
+                                log.debug("Remove transfer encoding chunked header response");
                             }
                         } else {
-                            logger.debug("Write response header: {}", header);
+                            log.debug("Write response header: {}", header);
                             clientConnection.write(header);
                         }
                     }
@@ -123,16 +123,16 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                     // Now write the request body, if any
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        logger.debug("Start writing entity content");
+                        log.debug("Start writing entity content");
                         entity.writeTo(clientConnection.getOutputStream());
-                        logger.debug("End writing entity content");
+                        log.debug("End writing entity content");
 
                         // Make sure the entity is fully consumed
                         EntityUtils.consume(entity);
                     }
 
                 } catch (Exception e) {
-                    logger.debug("Error on handling non CONNECT response", e);
+                    log.debug("Error on handling non CONNECT response", e);
                 }
             }
         }

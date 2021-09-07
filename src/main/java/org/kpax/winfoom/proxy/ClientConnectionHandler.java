@@ -82,18 +82,18 @@ public class ClientConnectionHandler implements StopListener {
                 socket, proxyConfig, systemConfig, connectionProcessorSelector)) {
 
             RequestLine requestLine = clientConnection.getRequestLine();
-            logger.debug("Handle request: {}", requestLine);
+            log.debug("Handle request: {}", requestLine);
 
             clientConnection.prepare();
 
             if (proxyConfig.isAutoConfig()) {
                 URI requestUri = clientConnection.getRequestUri();
-                logger.debug("Extracted URI from request {}", requestUri);
+                log.debug("Extracted URI from request {}", requestUri);
 
                 List<ProxyInfo> activeProxies;
                 try {
                     activeProxies = pacScriptEvaluator.findProxyForURL(requestUri);
-                    logger.debug("activeProxies: {}", activeProxies);
+                    log.debug("activeProxies: {}", activeProxies);
                 } catch (Exception e) {
                     clientConnection.writeErrorResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpUtils.reasonPhraseForPac(e));
                     throw e;
@@ -108,16 +108,16 @@ public class ClientConnectionHandler implements StopListener {
                     ProxyInfo proxy = itr.next();
                     ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.select(clientConnection.isConnect(),
                             proxy);
-                    logger.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
+                    log.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
                     try {
                         connectionProcessor.process(clientConnection, proxy);
                         break;
                     } catch (ProxyConnectException e) {
-                        logger.debug("Proxy connect error", e);
+                        log.debug("Proxy connect error", e);
                         if (itr.hasNext()) {
-                            logger.debug("Failed to connect to proxy: {}", proxy);
+                            log.debug("Failed to connect to proxy: {}", proxy);
                         } else {
-                            logger.debug("Failed to connect to proxy: {}, send the error response", proxy);
+                            log.debug("Failed to connect to proxy: {}, send the error response", proxy);
                             // Cannot connect to the remote proxy,
                             // commit a response with 502 error code
                             clientConnection.writeBadGatewayResponse(e.getMessage());
@@ -131,14 +131,14 @@ public class ClientConnectionHandler implements StopListener {
                 try {
                     connectionProcessor.process(clientConnection, proxyInfoSupplier.get());
                 } catch (ProxyConnectException e) {
-                    logger.debug("Failed to connect to proxy: {}, send the error response", proxyInfoSupplier.get());
+                    log.debug("Failed to connect to proxy: {}, send the error response", proxyInfoSupplier.get());
                     // Cannot connect to the remote proxy,
                     // commit a response with 502 error code
                     clientConnection.writeBadGatewayResponse(e.getMessage());
                 }
             }
 
-            logger.debug("Done handling request: {}", requestLine);
+            log.debug("Done handling request: {}", requestLine);
         }
     }
 
