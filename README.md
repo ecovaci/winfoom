@@ -37,8 +37,6 @@ on Linux systems, use your package manager.
 If, for certain reasons, you do not want to install Java globally on your system then download the JRE archive according
 to your system architecture, unzip it in the Winfoom directory and rename it to `jdk`.
 
-If you want to run Winfoom in command line mode, then you also need `foomcli.zip` archive, containing scripts for application management (start, stop, config, etc).
-
 ### Build from source code
 If you decide to build the executable *jar* file from the source code, you would need these prerequisites:
 * Java JDK 11(+)
