@@ -22,7 +22,6 @@ import org.kpax.winfoom.proxy.ProxyController;
 import org.kpax.winfoom.proxy.ProxyValidator;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.SwingUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

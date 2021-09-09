@@ -31,7 +31,6 @@
 package org.kpax.winfoom.pac;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -54,10 +53,8 @@ import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.proxy.listener.ProxyListener;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import javax.script.ScriptException;
@@ -90,8 +87,6 @@ public class PacScriptEvaluator implements ProxyListener {
 
     private final ProxyConfig proxyConfig;
 
-    private final SystemConfig systemConfig;
-
     private final DefaultPacHelperMethods pacHelperMethods;
 
     private final ProxyBlacklist proxyBlacklist;
@@ -123,7 +118,6 @@ public class PacScriptEvaluator implements ProxyListener {
 
     public PacScriptEvaluator(ProxyConfig proxyConfig, SystemConfig systemConfig, DefaultPacHelperMethods pacHelperMethods, ProxyBlacklist proxyBlacklist) {
         this.proxyConfig = proxyConfig;
-        this.systemConfig = systemConfig;
         this.pacHelperMethods = pacHelperMethods;
         this.proxyBlacklist = proxyBlacklist;
         this.enginePoolSingletonSupplier =
@@ -136,7 +130,7 @@ public class PacScriptEvaluator implements ProxyListener {
                     config.setTestOnReturn(false);
                     config.setBlockWhenExhausted(true);
                     return new GenericObjectPool<>(
-                            new BasePooledObjectFactory<GraalJSScriptEngine>() {
+                            new BasePooledObjectFactory<>() {
                                 @Override
                                 public GraalJSScriptEngine create() throws PacFileException, IOException {
                                     return createScriptEngine();

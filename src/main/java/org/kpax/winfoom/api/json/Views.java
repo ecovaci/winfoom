@@ -18,7 +18,7 @@ import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemContext;
 
 /**
- * Jackson's views to control which fields should be JSON available, based on the operation system and proxy type.
+ * Jackson's views to control which fields should be JSON available, based on the operating system and proxy type.
  */
 public class Views {
 

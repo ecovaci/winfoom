@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.exception.InvalidProxySettingsException;
 import org.kpax.winfoom.proxy.ProxyController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;

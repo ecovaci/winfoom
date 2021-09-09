@@ -59,8 +59,6 @@ import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kpax.winfoom.annotation.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Static helper methods for Windows {@code WinHttp} functions.
@@ -77,12 +75,11 @@ public class WinHttpHelpers {
      * Finds the URL for the Proxy Auto-Configuration (PAC) file using WPAD.
      * This is merely a wrapper around
      * {@link WinHttp#WinHttpDetectAutoProxyConfigUrl(WinDef.DWORD, LPWSTRByReference)}
-     * WinHttpDetectAutoProxyConfigUrl}
      *
      * <p>
      * This method is blocking and may take some time to execute.
      *
-     * @param dwAutoDetectFlags flags for auto detection
+     * @param dwAutoDetectFlags flags for auto-detection
      * @return the url of the PAC file or {@code null} if it cannot be located
      * using WPAD method.
      */
@@ -142,8 +139,8 @@ public class WinHttpHelpers {
         log.debug("IE uses script: {}", pacUrl);
         if (StringUtils.isNotEmpty(pacUrl)) {
             // Fix for issue 9
-            // If the IE has a file URL and it only starts has 2 slashes,
-            // add a third so it can be properly converted to the URL class
+            // If the IE has a file URL and only starts has 2 slashes,
+            // add a third, so it can be properly converted to the URL class
             if (pacUrl.startsWith("file://") && !pacUrl.startsWith("file:///")) {
                 pacUrl = "file:///" + pacUrl.substring(7);
             }

@@ -236,7 +236,7 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
         }
 
         @Override
-        public void write(int length) throws IOException {
+        public void write(int length) {
             fileChannel.write(byteBuffer.position(0).limit(length), position);
             position += length;
         }

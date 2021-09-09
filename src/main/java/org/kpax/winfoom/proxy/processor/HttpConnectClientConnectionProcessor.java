@@ -12,7 +12,6 @@
 
 package org.kpax.winfoom.proxy.processor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
 import org.apache.http.impl.execchain.TunnelRefusedException;
@@ -22,7 +21,6 @@ import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.*;
 import org.kpax.winfoom.util.HttpUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -53,7 +51,7 @@ class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
     @Override
     void handleRequest(final ClientConnection clientConnection, final ProxyInfo proxyInfo)
-            throws IOException, HttpException, ProxyAuthorizationException {
+            throws IOException, HttpException {
         RequestLine requestLine = clientConnection.getRequestLine();
         HttpHost target = HttpHost.create(requestLine.getUri());
         HttpHost proxy = new HttpHost(proxyInfo.getProxyHost().getHostName(), proxyInfo.getProxyHost().getPort());

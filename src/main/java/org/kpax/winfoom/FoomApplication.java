@@ -13,14 +13,8 @@
 package org.kpax.winfoom;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.config.SystemContext;
 import org.kpax.winfoom.util.Base64DecoderPropertyEditor;
-import org.kpax.winfoom.util.InputOutputs;
 import org.kpax.winfoom.util.SwingUtils;
 import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.boot.SpringApplication;
@@ -30,11 +24,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.swing.*;
 import java.beans.PropertyEditor;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

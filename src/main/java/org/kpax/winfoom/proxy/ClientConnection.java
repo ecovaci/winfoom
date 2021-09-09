@@ -25,10 +25,6 @@ import org.kpax.winfoom.annotation.NotNull;
 import org.kpax.winfoom.annotation.NotThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemConfig;
-import org.kpax.winfoom.exception.ProxyConnectException;
-import org.kpax.winfoom.pac.PacScriptEvaluator;
-import org.kpax.winfoom.proxy.processor.ClientConnectionProcessor;
-import org.kpax.winfoom.proxy.processor.ConnectionProcessorSelector;
 import org.kpax.winfoom.util.CrlfConverter;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.InputOutputs;
@@ -41,7 +37,6 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,8 +56,6 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      * The underlying socket.
      */
     private final Socket socket;
-
-    private final ConnectionProcessorSelector connectionProcessorSelector;
 
     private final ProxyConfig proxyConfig;
 
@@ -99,11 +92,6 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     private final boolean connect;
 
     /**
-     * The proxy iterator for PAC.
-     */
-    /*    protected Iterator<ProxyInfo> proxyInfoIterator;*/
-
-    /**
      * Constructor.<br>
      * Has the responsibility of parsing the request and initiate various objects.
      * <p><b>The response should be committed before throwing any exception.</b></p>
@@ -111,18 +99,15 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      * @param socket
      * @param proxyConfig
      * @param systemConfig
-     * @param connectionProcessorSelector
      * @throws IOException
      * @throws HttpException
      */
     ClientConnection(final Socket socket,
                      final ProxyConfig proxyConfig,
-                     final SystemConfig systemConfig,
-                     final ConnectionProcessorSelector connectionProcessorSelector) throws IOException, HttpException {
+                     final SystemConfig systemConfig) throws IOException, HttpException {
         this.socket = socket;
         this.proxyConfig = proxyConfig;
         this.systemConfig = systemConfig;
-        this.connectionProcessorSelector = connectionProcessorSelector;
         this.inputStream = socket.getInputStream();
         this.outputStream = socket.getOutputStream();
 

@@ -51,7 +51,6 @@ import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.pac.datetime.PacDateTimeUtils;
 import org.kpax.winfoom.pac.net.IpAddressMatcher;
 import org.kpax.winfoom.pac.net.IpAddresses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.Inet4Address;

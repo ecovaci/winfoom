@@ -43,7 +43,6 @@ import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.InputOutputs;
 import org.kpax.winfoom.util.functional.ProxySingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -51,7 +50,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Establish a tunnel via a HTTP proxy.<br>
+ * Establish a tunnel via an HTTP proxy.<br>
  * It is an adaptation of {@link org.apache.http.impl.client.ProxyClient}
  *
  * @author Eugen Covaci

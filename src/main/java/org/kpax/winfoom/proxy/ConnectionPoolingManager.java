@@ -23,7 +23,6 @@ import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

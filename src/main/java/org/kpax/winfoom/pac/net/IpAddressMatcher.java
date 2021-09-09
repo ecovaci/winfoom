@@ -57,7 +57,7 @@ public final class IpAddressMatcher {
      *                  come.
      */
     public IpAddressMatcher(String ipAddress) throws UnknownHostException {
-        if (StringUtils.isEmpty(ipAddress)) {
+        if (StringUtils.hasText(ipAddress)) {
             throw new UnknownHostException("Null or empty address");
         }
         if (ipAddress.indexOf('/') > 0) {

@@ -12,7 +12,6 @@
 
 package org.kpax.winfoom.proxy.processor;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
@@ -24,7 +23,6 @@ import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.StreamSource;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -66,7 +64,7 @@ public abstract class ClientConnectionProcessor {
      */
     abstract void handleRequest(@NotNull final ClientConnection clientConnection,
                                 @NotNull final ProxyInfo proxyInfo)
-            throws IOException, HttpException, ProxyAuthorizationException;
+            throws IOException, HttpException;
 
     /**
      * Handle the exception thrown by {@link #handleRequest(ClientConnection, ProxyInfo)} method.

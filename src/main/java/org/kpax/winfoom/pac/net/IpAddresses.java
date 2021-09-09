@@ -16,8 +16,6 @@ package org.kpax.winfoom.pac.net;
 import inet.ipaddr.IPAddressString;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.functional.SingleExceptionSingletonSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

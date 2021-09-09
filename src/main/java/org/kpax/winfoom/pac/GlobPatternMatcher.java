@@ -30,12 +30,9 @@ import java.util.regex.Pattern;
 @Component
 public class GlobPatternMatcher {
 
-    private final SystemConfig systemConfig;
-
     private final SingletonSupplier<Cache<String, Pattern>> globPatternCacheSupplier;
 
     public GlobPatternMatcher(SystemConfig systemConfig) {
-        this.systemConfig = systemConfig;
         this.globPatternCacheSupplier =
                 new SingletonSupplier<>(() ->
                         Cache2kBuilder.of(String.class, Pattern.class)

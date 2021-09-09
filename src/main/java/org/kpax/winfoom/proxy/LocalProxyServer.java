@@ -20,7 +20,6 @@ import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.InputOutputs;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;

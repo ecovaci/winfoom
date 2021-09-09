@@ -13,7 +13,6 @@
 package org.kpax.winfoom.proxy;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -29,7 +28,6 @@ import org.kpax.winfoom.proxy.processor.ClientConnectionProcessor;
 import org.kpax.winfoom.proxy.processor.ConnectionProcessorSelector;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.Socket;
@@ -79,7 +77,7 @@ public class ClientConnectionHandler implements StopListener {
      */
     public void handleConnection(@NotNull final Socket socket) throws Exception {
         try (ClientConnection clientConnection = new ClientConnection(
-                socket, proxyConfig, systemConfig, connectionProcessorSelector)) {
+                socket, proxyConfig, systemConfig)) {
 
             RequestLine requestLine = clientConnection.getRequestLine();
             log.debug("Handle request: {}", requestLine);

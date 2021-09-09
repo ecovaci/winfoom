@@ -15,7 +15,6 @@ package org.kpax.winfoom.proxy.processor;
 import lombok.RequiredArgsConstructor;
 import org.kpax.winfoom.annotation.NotNull;
 import org.kpax.winfoom.proxy.ProxyInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**

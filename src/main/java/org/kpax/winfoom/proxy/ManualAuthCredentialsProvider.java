@@ -23,10 +23,6 @@ import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.DomainUser;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.security.Principal;
 
 /**
  * The {@link CredentialsProvider} for manual authentication.

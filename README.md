@@ -37,7 +37,7 @@ on Linux systems, use your package manager.
 If, for certain reasons, you do not want to install Java globally on your system then download the JRE archive according
 to your system architecture, unzip it in the Winfoom directory and rename it to `jdk`.
 
-If you want to run Winfoom in command line mode, then you also need `foomcli.zip` archive, containing scripts for application management (start, stop, config, etc).
+If you want to run Winfoom in command line mode, then you also need `foomcli.zip` archive, containing scripts for application management (start, stop, config etc.).
 
 ### Build from source code
 If you decide to build the executable *jar* file from the source code, you would need these prerequisites:
@@ -67,7 +67,7 @@ The prepackaged `winfoom-windows.zip` for Windows systems, contains the followin
 * `launchGui.bat` launches the application in graphical mode
 * `foomcli.bat` manages the application in GUI-less mode
 
-The prepackaged `winfoom-unix.zip` for Linux/Macos systems, contains the following executable files:
+The prepackaged `winfoom-unix.zip` for Linux/MacOS systems, contains the following executable files:
 * `launch.sh` launches the application (needs to be made executable)
 * `foomcli.sh` manages the application in GUI-less mode (needs to be made executable)
 
@@ -84,7 +84,7 @@ or, to run it in the graphical mode:
 
 `launch --gui`
 
-On Linux/Macos systems, there is no graphical mode available. Make sure the `*.sh` files are executable.
+On Linux/MacOS systems, there is no graphical mode available. Make sure the `*.sh` files are executable.
 To run Winfoom, execute in a terminal:
 
 `./launch.sh`
@@ -130,7 +130,7 @@ The script `foomcli` provides easy access to this API.
 
 To get help about the usage execute:
 
-`foomcli --help` (on Linux/Macos is `./foomcli.sh --help`)
+`foomcli --help` (on Linux/MacOS is `./foomcli.sh --help`)
 
 > 👉 Note: You can move the script `foomcli` whatever location you want. It is not required to be in the Winfoom's directory.
 
@@ -159,7 +159,7 @@ to get the current configuration. You'll get something like:
 ```
 
 The output is in JSON format. The name of the fields is self-descriptive. 
-Suppose you want to configure Winfoom for a HTTP proxy. First, change the proxy type to HTTP with:
+Suppose you want to configure Winfoom for an HTTP proxy. First, change the proxy type to HTTP with:
 
 `foomcli config -t http`
 
@@ -243,7 +243,7 @@ If you want to shut down Winfoom execute `foomcli shutdown`
 
 ---
 
-On Linux/Macos or Windows with `useCurrentCredentials=false`, if the proxy type is HTTP you need to set the `httpAuthProtocol` field, 
+On Linux/MacOS or Windows with `useCurrentCredentials=false`, if the proxy type is HTTP you need to set the `httpAuthProtocol` field, 
 which is the proxy protocol: one of `NTLM, BASIC` values.
 
 If the proxy type is PAC, then the output of the `foomcli config` command would be like:
@@ -328,7 +328,7 @@ The available settings:
 ### Authentication
 * For HTTP proxy type, Winfoom uses the current Windows user credentials to authenticate to the upstream proxy, 
   unless you uncheck the `Use system credentials` checkbox. 
-  On Linux/Macos or on Windows with `Use system credentials` unchecked you need to provide the user and password (or DOMAIN\user and password if the DOMAIN is required) 
+  On Linux/MacOS or on Windows with `Use system credentials` unchecked you need to provide the user and password (or DOMAIN\user and password if the DOMAIN is required) 
 * For SOCKS5 proxy type, the user/password need to be provided when required.
 * For PAC proxy type, starting with v3.4.0, there is some support for authentication 
   (still, keep in mind that the PAC protocol does not support authentication) when:

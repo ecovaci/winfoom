@@ -59,8 +59,6 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WTypes;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.InputOutputs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A pointer to a LPWSTR.
