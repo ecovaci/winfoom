@@ -56,7 +56,7 @@ or, if you did not install Maven, use the Maven Wrapper:
  .\mvnw clean package
 ```
 
-Now you should have the generated executable *jar* file under the *target* directory.
+Now you should have the generated executable *jar* file under the *target* directory and the two release archives: one for Windows, the other for Linux/MacOS.
 
 ## Run Winfoom
 
