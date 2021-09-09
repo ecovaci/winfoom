@@ -21,7 +21,6 @@ import org.kpax.winfoom.pac.net.IpAddresses;
 import org.kpax.winfoom.proxy.listener.StartListener;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.DomainUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
@@ -47,19 +46,12 @@ public class ProxyController {
 
     private final AbstractApplicationContext applicationContext;
 
-    private final  ProxyConfig proxyConfig;
-
-    private  LocalProxyServer localProxyServer;
+    private final ProxyConfig proxyConfig;
 
     /**
      * Whether the proxy session is started or not.
      */
     private volatile boolean started;
-
-    @Autowired
-    public void setLocalProxyServer(LocalProxyServer localProxyServer) {
-        this.localProxyServer = localProxyServer;
-    }
 
     /**
      * Begin a proxy session.
@@ -68,7 +60,7 @@ public class ProxyController {
      */
     public synchronized void start() throws Exception {
         Assert.state(!started, "Already started");
-        logger.debug("Attempting to start local proxy facade with: {}", proxyConfig);
+        log.debug("Attempting to start local proxy facade with: {}", proxyConfig);
         List<StartListener> startListeners = Stream.of(applicationContext.getBeanNamesForType(StartListener.class)).
                 map(applicationContext.getBeanFactory()::getSingleton).
                 filter(Objects::nonNull).
@@ -80,10 +72,10 @@ public class ProxyController {
                 TypeQualifier typeQualifier = startListener.getClass().getMethod("onStart").
                         getDeclaredAnnotation(TypeQualifier.class);
                 if (typeQualifier == null || typeQualifier.value() == proxyConfig.getProxyType()) {
-                    logger.debug("Call onStart for: {}", startListener.getClass());
+                    log.debug("Call onStart for: {}", startListener.getClass());
                     startListener.onStart();
                 } else {
-                    logger.debug("onStart ignored for {}", startListener.getClass());
+                    log.debug("onStart ignored for {}", startListener.getClass());
                 }
             }
         } catch (Exception e) {
@@ -99,7 +91,7 @@ public class ProxyController {
                 }
             });
         }
-        localProxyServer.start();
+        applicationContext.getBean(LocalProxyServer.class).start();
         started = true;
     }
 
@@ -111,7 +103,7 @@ public class ProxyController {
             started = false;
             resetState();
         } else {
-            logger.info("Already stopped, nothing to do");
+            log.info("Already stopped, nothing to do");
         }
     }
 
@@ -135,16 +127,11 @@ public class ProxyController {
     }
 
     void callStopListeners() {
-        logger.debug("Call all StopListener.afterStop singletons");
+        log.debug("Call all StopListener.afterStop singletons");
         Stream.of(applicationContext.getBeanNamesForType(StopListener.class)).
                 map(applicationContext.getBeanFactory()::getSingleton).
                 filter(Objects::nonNull).sorted(AnnotationAwareOrderComparator.INSTANCE).
                 map(b -> (StopListener) b).forEach(StopListener::onStop);
-    }
-
-    void restart() throws Exception {
-        stop();
-        start();
     }
 
     public boolean isRunning() {
@@ -155,5 +142,4 @@ public class ProxyController {
     public boolean isStopped() {
         return !started;
     }
-
 }

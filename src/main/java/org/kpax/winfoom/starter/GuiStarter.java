@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.util.SwingUtils;
 import org.kpax.winfoom.view.AppFrame;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -34,11 +33,11 @@ public class GuiStarter implements ApplicationListener<ApplicationReadyEvent> {
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         appFrame.setLocationRelativeTo(null);
-        logger.info("Launch the GUI");
+        log.info("Launch the GUI");
         try {
             appFrame.activate();
         } catch (Exception e) {
-            logger.error("GUI error", e);
+            log.error("GUI error", e);
             SwingUtils.showErrorMessage("Failed to load the graphical interface." +
                     "<br>Please check the application's log file.");
             System.exit(1);

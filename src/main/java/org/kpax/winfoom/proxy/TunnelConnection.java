@@ -43,7 +43,6 @@ import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.InputOutputs;
 import org.kpax.winfoom.util.functional.ProxySingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -51,7 +50,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Establish a tunnel via a HTTP proxy.<br>
+ * Establish a tunnel via an HTTP proxy.<br>
  * It is an adaptation of {@link org.apache.http.impl.client.ProxyClient}
  *
  * @author Eugen Covaci
@@ -125,7 +124,7 @@ public class TunnelConnection {
             response = requestExec.execute(connect, connection, context);
 
             final int status = response.getStatusLine().getStatusCode();
-            logger.debug("Tunnel status code: {}", status);
+            log.debug("Tunnel status code: {}", status);
             if (status < HttpStatus.SC_OK) {
                 throw new HttpException("Unexpected response to CONNECT request: " + response.getStatusLine());
             }
@@ -137,10 +136,10 @@ public class TunnelConnection {
                     // Retry request
                     if (DefaultConnectionReuseStrategy.INSTANCE.keepAlive(response, context)) {
                         // Consume response content
-                        logger.debug("Now consume entity");
+                        log.debug("Now consume entity");
                         EntityUtils.consume(response.getEntity());
                     } else {
-                        logger.debug("Close tunnel connection");
+                        log.debug("Close tunnel connection");
                         InputOutputs.close(connection);
                     }
                     // discard previous auth header
@@ -155,7 +154,7 @@ public class TunnelConnection {
         }
 
         final int status = response.getStatusLine().getStatusCode();
-        logger.debug("Tunnel final status code: {}", status);
+        log.debug("Tunnel final status code: {}", status);
 
         if (status > HttpUtils.MAX_HTTP_SUCCESS_CODE) { // Error case
 
@@ -164,7 +163,7 @@ public class TunnelConnection {
             if (entity != null) {
                 response.setEntity(new BufferedHttpEntity(entity));
             }
-            logger.debug("Close tunnel connection");
+            log.debug("Close tunnel connection");
             InputOutputs.close(connection);
             throw new TunnelRefusedException("CONNECT refused by proxy: " + response.getStatusLine(), response);
         }

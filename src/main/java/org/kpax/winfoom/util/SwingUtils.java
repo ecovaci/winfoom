@@ -14,6 +14,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.NotNull;
 import org.springframework.util.Assert;
@@ -34,6 +35,7 @@ import java.util.Collections;
  * @author Eugen Covaci
  */
 @Slf4j
+@UtilityClass
 public class SwingUtils {
 
     private static final String DLG_ERR_TITLE = "Winfoom: Error";

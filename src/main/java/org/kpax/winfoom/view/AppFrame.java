@@ -22,7 +22,6 @@ import org.kpax.winfoom.proxy.ProxyController;
 import org.kpax.winfoom.proxy.ProxyValidator;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.SwingUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -124,7 +123,7 @@ public class AppFrame extends JFrame {
                     try {
                         tray.add(trayIcon);
                     } catch (AWTException ex) {
-                        logger.error("Cannot add icon to tray", ex);
+                        log.error("Cannot add icon to tray", ex);
                     }
                     setVisible(false);
                 }
@@ -179,13 +178,13 @@ public class AppFrame extends JFrame {
         try {
             autoDetect = proxyConfig.autoDetect();
             if (autoDetect) {
-                logger.info("Successfully autodetect proxy settings");
+                log.info("Successfully autodetect proxy settings");
             } else {
-                logger.warn("Failed to autodetect proxy settings");
+                log.warn("Failed to autodetect proxy settings");
                 SwingUtils.showWarningMessage(this, "No proxy found within Internet Explorer settings!");
             }
         } catch (Exception e) {
-            logger.error("Error on getting system proxy", e);
+            log.error("Error on getting system proxy", e);
             SwingUtils.showErrorMessage(this, "Failed to retrieve Internet Explorer settings! See the log file for details");
         }
         return autoDetect;
@@ -467,7 +466,7 @@ public class AppFrame extends JFrame {
                 } catch (InvalidProxySettingsException e) {
                     SwingUtils.showErrorMessage(AppFrame.this, e.getMessage());
                 } catch (Exception e) {
-                    logger.error("Error on testing proxy", e);
+                    log.error("Error on testing proxy", e);
                     SwingUtils.showErrorMessage(AppFrame.this, "Proxy test failed. See the log file for details");
                 } finally {
                     setBtnEnable(true);
@@ -801,7 +800,7 @@ public class AppFrame extends JFrame {
     }
 
     private boolean startServer() {
-        logger.debug("Prepare for starting the local server");
+        log.debug("Prepare for starting the local server");
         if (proxyConfig.getProxyType().isSocks5()) {
             if (StringUtils.isNotEmpty(proxyConfig.getProxySocks5Username())
                     && StringUtils.isEmpty(proxyConfig.getProxySocks5Password())) {
@@ -814,9 +813,9 @@ public class AppFrame extends JFrame {
                 }
             }
         }
-        logger.debug("Disable all components");
+        log.debug("Disable all components");
         disableAll();
-        logger.debug("Now start the server ");
+        log.debug("Now start the server ");
         if (isValidInput()) {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             try {
@@ -828,7 +827,7 @@ public class AppFrame extends JFrame {
                 }
                 return true;
             } catch (Exception e) {
-                logger.error("Error on starting proxy server", e);
+                log.error("Error on starting proxy server", e);
                 enableInput();
                 SwingUtils.showErrorMessage(AppFrame.this,
                         "Error on starting proxy server.<br>See the application's log for details.");
@@ -861,7 +860,7 @@ public class AppFrame extends JFrame {
         if (!proxyController.isRunning() || JOptionPane.showConfirmDialog(this,
                 "The local proxy facade is started. \nDo you like to stop the proxy facade and leave the application?",
                 "Warning", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.YES_OPTION) {
-            logger.info("Now shutdown application");
+            log.info("Now shutdown application");
             applicationContext.close();
             dispose();
         }

@@ -12,7 +12,6 @@
 
 package org.kpax.winfoom.proxy.processor;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
@@ -24,7 +23,6 @@ import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.StreamSource;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -66,7 +64,7 @@ public abstract class ClientConnectionProcessor {
      */
     abstract void handleRequest(@NotNull final ClientConnection clientConnection,
                                 @NotNull final ProxyInfo proxyInfo)
-            throws IOException, HttpException, ProxyAuthorizationException;
+            throws IOException, HttpException;
 
     /**
      * Handle the exception thrown by {@link #handleRequest(ClientConnection, ProxyInfo)} method.
@@ -90,41 +88,41 @@ public abstract class ClientConnectionProcessor {
      */
     void duplex(@NotNull final StreamSource firstSource,
                 @NotNull final StreamSource secondSource) {
-        logger.debug("Start full duplex communication");
+        log.debug("Start full duplex communication");
         Future<?> secondToFirst = executorService.submit(
                 () -> {
                     try {
                         secondSource.getInputStream().transferTo(firstSource.getOutputStream());
                     } catch (SocketTimeoutException e) {
-                        logger.debug("Timeout exception on executing second to first transfer: {}", e.getMessage());
+                        log.debug("Timeout exception on executing second to first transfer: {}", e.getMessage());
                     } catch (SocketException e) {
-                        logger.debug("Socket exception on executing second to first transfer: {}", e.getMessage());
+                        log.debug("Socket exception on executing second to first transfer: {}", e.getMessage());
                     } catch (Exception e) {
-                        logger.debug("Error on executing second to first transfer", e);
+                        log.debug("Error on executing second to first transfer", e);
                     }
                 });
         try {
             firstSource.getInputStream().transferTo(secondSource.getOutputStream());
         } catch (SocketTimeoutException e) {
-            logger.debug("Timeout exception on executing first to second transfer: {}", e.getMessage());
+            log.debug("Timeout exception on executing first to second transfer: {}", e.getMessage());
         } catch (SocketException e) {
-            logger.debug("Socket exception on executing first to second transfer: {}", e.getMessage());
+            log.debug("Socket exception on executing first to second transfer: {}", e.getMessage());
         } catch (Exception e) {
-            logger.debug("Error on executing first to second transfer", e);
+            log.debug("Error on executing first to second transfer", e);
         }
         if (!secondToFirst.isDone()) {
             // Wait for the async transfer to finish
             try {
                 secondToFirst.get();
             } catch (ExecutionException e) {// Normally, we shouldn't get here
-                logger.debug("Error on executing second to first transfer", e.getCause());
+                log.debug("Error on executing second to first transfer", e.getCause());
             } catch (InterruptedException e) {
-                logger.debug("Transfer from second to first interrupted: {}", e.getMessage());
+                log.debug("Transfer from second to first interrupted: {}", e.getMessage());
             } catch (CancellationException e) {
-                logger.debug("Transfer from second to first cancelled: {}", e.getMessage());
+                log.debug("Transfer from second to first cancelled: {}", e.getMessage());
             }
         }
-        logger.debug("End full duplex communication");
+        log.debug("End full duplex communication");
     }
 
 
@@ -142,11 +140,11 @@ public abstract class ClientConnectionProcessor {
     public final void process(@NotNull final ClientConnection clientConnection,
                               @NotNull final ProxyInfo proxyInfo)
             throws ProxyConnectException {
-        logger.debug("Process {} for {}", clientConnection, proxyInfo);
+        log.debug("Process {} for {}", clientConnection, proxyInfo);
         try {
             handleRequest(clientConnection, proxyInfo);
         } catch (Exception e) {
-            logger.debug("Error on handling request", e);
+            log.debug("Error on handling request", e);
             try {
                 handleError(clientConnection, proxyInfo, e);
             } catch (ProxyConnectException pce) {

@@ -56,19 +56,17 @@ package org.kpax.winfoom.util.jna;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.platform.win32.WinDef;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kpax.winfoom.annotation.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Static helper methods for Windows {@code WinHttp} functions.
  *
  * @author phansson
  */
+@Slf4j
 public class WinHttpHelpers {
-
-    private static final Logger logger = LoggerFactory.getLogger(WinHttpHelpers.class);
 
     private WinHttpHelpers() {
     }
@@ -77,12 +75,11 @@ public class WinHttpHelpers {
      * Finds the URL for the Proxy Auto-Configuration (PAC) file using WPAD.
      * This is merely a wrapper around
      * {@link WinHttp#WinHttpDetectAutoProxyConfigUrl(WinDef.DWORD, LPWSTRByReference)}
-     * WinHttpDetectAutoProxyConfigUrl}
      *
      * <p>
      * This method is blocking and may take some time to execute.
      *
-     * @param dwAutoDetectFlags flags for auto detection
+     * @param dwAutoDetectFlags flags for auto-detection
      * @return the url of the PAC file or {@code null} if it cannot be located
      * using WPAD method.
      */
@@ -98,11 +95,11 @@ public class WinHttpHelpers {
                 // using either DHCP, DNS or both, failed because there wasn't
                 // a useful reply from DHCP / DNS. (meaning the site hasn't
                 // configured their DHCP Server or their DNS Server for WPAD)
-                logger.debug("The DHCP Server or the DNS Server is not configured for WPAD");
+                log.debug("The DHCP Server or the DNS Server is not configured for WPAD");
             } else {
                 // Something more serious is wrong. There isn't much we can do
                 // about it but at least we would like to log it.
-                logger.warn("Windows function WinHttpDetectAutoProxyConfigUrl returned error", ex);
+                log.warn("Windows function WinHttpDetectAutoProxyConfigUrl returned error", ex);
             }
         }
         return null;
@@ -129,21 +126,21 @@ public class WinHttpHelpers {
     public static String findPacFileLocation(@NotNull final IEProxyConfig ieSettings) {
         String pacUrl = null;
         if (ieSettings.isAutoDetect()) {
-            logger.debug("Auto detecting script URL ...");
+            log.debug("Auto detecting script URL ...");
             // This will take some time.
             WinDef.DWORD dwAutoDetectFlags = new WinDef.DWORD(
                     WinHttp.WINHTTP_AUTO_DETECT_TYPE_DHCP | WinHttp.WINHTTP_AUTO_DETECT_TYPE_DNS_A);
             pacUrl = WinHttpHelpers.detectAutoProxyConfigUrl(dwAutoDetectFlags);
-            logger.debug("Detected script URL: {}", pacUrl);
+            log.debug("Detected script URL: {}", pacUrl);
         }
         if (pacUrl == null) {
             pacUrl = ieSettings.getAutoConfigUrl();
         }
-        logger.debug("IE uses script: {}", pacUrl);
+        log.debug("IE uses script: {}", pacUrl);
         if (StringUtils.isNotEmpty(pacUrl)) {
             // Fix for issue 9
-            // If the IE has a file URL and it only starts has 2 slashes,
-            // add a third so it can be properly converted to the URL class
+            // If the IE has a file URL and only starts has 2 slashes,
+            // add a third, so it can be properly converted to the URL class
             if (pacUrl.startsWith("file://") && !pacUrl.startsWith("file:///")) {
                 pacUrl = "file:///" + pacUrl.substring(7);
             }

@@ -25,7 +25,6 @@ import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.exception.InvalidProxySettingsException;
 import org.kpax.winfoom.util.HttpUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -57,10 +56,10 @@ public class ProxyValidator {
                     .build();
             HttpGet request = new HttpGet("/");
             request.setConfig(config);
-            logger.info("Executing request " + request.getRequestLine() + " to " + target + " via " + proxy);
+            log.info("Executing request " + request.getRequestLine() + " to " + target + " via " + proxy);
             try (CloseableHttpResponse response = httpClient.execute(target, request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
-                logger.info("statusCode={}", statusCode);
+                log.info("statusCode={}", statusCode);
                 if (statusCode > HttpUtils.MAX_HTTP_SUCCESS_CODE) {
                     if (statusCode == HttpStatus.SC_BAD_GATEWAY) {
                         throw new InvalidProxySettingsException("Wrong proxy host/port");

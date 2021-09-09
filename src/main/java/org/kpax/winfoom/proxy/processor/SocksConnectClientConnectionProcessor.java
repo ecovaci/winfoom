@@ -12,7 +12,6 @@
 
 package org.kpax.winfoom.proxy.processor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -27,7 +26,6 @@ import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.StreamSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -45,22 +43,13 @@ import java.util.concurrent.ExecutorService;
 @Component
 class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
-    private final ExecutorService executorService;
-
-    private final ProxyConfig proxyConfig;
-
-    private final ProxyBlacklist proxyBlacklist;
-
     private final SystemConfig systemConfig;
 
     public SocksConnectClientConnectionProcessor(ExecutorService executorService,
                                                  ProxyConfig proxyConfig,
                                                  ProxyBlacklist proxyBlacklist,
-                                                 ExecutorService executorService1, ProxyConfig proxyConfig1, ProxyBlacklist proxyBlacklist1, SystemConfig systemConfig) {
+                                                 SystemConfig systemConfig) {
         super(executorService, proxyConfig, proxyBlacklist);
-        this.executorService = executorService1;
-        this.proxyConfig = proxyConfig1;
-        this.proxyBlacklist = proxyBlacklist1;
         this.systemConfig = systemConfig;
     }
 
@@ -83,11 +72,11 @@ class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
             if (proxyInfo.getType().isSocks4()) {
                 HttpUtils.setSocks4(socket);
             }
-            logger.debug("Open connection");
+            log.debug("Open connection");
             socket.connect(new InetSocketAddress(target.getHostName(), target.getPort()),
                     systemConfig.getSocketConnectTimeout() * 1000);
 
-            logger.debug("Connected to {}", target);
+            log.debug("Connected to {}", target);
 
             // Respond with 200 code
             clientConnection.write(String.format("%s 200 Connection established",
@@ -102,7 +91,7 @@ class SocksConnectClientConnectionProcessor extends ClientConnectionProcessor {
                 // This usually ends on connection reset, timeout or any other error
                 duplex(StreamSource.from(socket), clientConnection);
             } catch (Exception e) {
-                logger.error("Error on full duplex", e);
+                log.error("Error on full duplex", e);
             }
 
         }

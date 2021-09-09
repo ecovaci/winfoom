@@ -13,7 +13,6 @@
 package org.kpax.winfoom.proxy;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -29,7 +28,6 @@ import org.kpax.winfoom.proxy.processor.ClientConnectionProcessor;
 import org.kpax.winfoom.proxy.processor.ConnectionProcessorSelector;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.Socket;
@@ -79,21 +77,21 @@ public class ClientConnectionHandler implements StopListener {
      */
     public void handleConnection(@NotNull final Socket socket) throws Exception {
         try (ClientConnection clientConnection = new ClientConnection(
-                socket, proxyConfig, systemConfig, connectionProcessorSelector)) {
+                socket, proxyConfig, systemConfig)) {
 
             RequestLine requestLine = clientConnection.getRequestLine();
-            logger.debug("Handle request: {}", requestLine);
+            log.debug("Handle request: {}", requestLine);
 
             clientConnection.prepare();
 
             if (proxyConfig.isAutoConfig()) {
                 URI requestUri = clientConnection.getRequestUri();
-                logger.debug("Extracted URI from request {}", requestUri);
+                log.debug("Extracted URI from request {}", requestUri);
 
                 List<ProxyInfo> activeProxies;
                 try {
                     activeProxies = pacScriptEvaluator.findProxyForURL(requestUri);
-                    logger.debug("activeProxies: {}", activeProxies);
+                    log.debug("activeProxies: {}", activeProxies);
                 } catch (Exception e) {
                     clientConnection.writeErrorResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpUtils.reasonPhraseForPac(e));
                     throw e;
@@ -108,16 +106,16 @@ public class ClientConnectionHandler implements StopListener {
                     ProxyInfo proxy = itr.next();
                     ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.select(clientConnection.isConnect(),
                             proxy);
-                    logger.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
+                    log.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
                     try {
                         connectionProcessor.process(clientConnection, proxy);
                         break;
                     } catch (ProxyConnectException e) {
-                        logger.debug("Proxy connect error", e);
+                        log.debug("Proxy connect error", e);
                         if (itr.hasNext()) {
-                            logger.debug("Failed to connect to proxy: {}", proxy);
+                            log.debug("Failed to connect to proxy: {}", proxy);
                         } else {
-                            logger.debug("Failed to connect to proxy: {}, send the error response", proxy);
+                            log.debug("Failed to connect to proxy: {}, send the error response", proxy);
                             // Cannot connect to the remote proxy,
                             // commit a response with 502 error code
                             clientConnection.writeBadGatewayResponse(e.getMessage());
@@ -131,14 +129,14 @@ public class ClientConnectionHandler implements StopListener {
                 try {
                     connectionProcessor.process(clientConnection, proxyInfoSupplier.get());
                 } catch (ProxyConnectException e) {
-                    logger.debug("Failed to connect to proxy: {}, send the error response", proxyInfoSupplier.get());
+                    log.debug("Failed to connect to proxy: {}, send the error response", proxyInfoSupplier.get());
                     // Cannot connect to the remote proxy,
                     // commit a response with 502 error code
                     clientConnection.writeBadGatewayResponse(e.getMessage());
                 }
             }
 
-            logger.debug("Done handling request: {}", requestLine);
+            log.debug("Done handling request: {}", requestLine);
         }
     }
 

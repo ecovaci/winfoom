@@ -110,7 +110,7 @@ public interface WinHttp extends StdCallLibrary {
      * file, but it does not download the file.
      *
      * @param dwAutoDetectFlags  A data type that specifies what protocols to use to locate the
-     *                           PAC file. If both the DHCP and DNS auto detect flags are set,
+     *                           PAC file. If both the DHCP and DNS auto-detect flags are set,
      *                           DHCP is used first; if no PAC URL is discovered using DHCP,
      *                           then DNS is used. Set {@code WINHTTP_AUTO_DETECT_TYPE_DHCP},
      *                           {@code WINHTTP_AUTO_DETECT_TYPE_DNS_A} or both.

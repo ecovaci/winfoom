@@ -104,7 +104,7 @@ public class ProxyExecutorService implements ExecutorService, StopListener {
 
     @Override
     public void onStop() {
-        logger.debug("Reset the proxy executor service");
+        log.debug("Reset the proxy executor service");
         threadPoolSupplier.reset(ExecutorService::shutdownNow);
     }
 

@@ -13,6 +13,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -21,16 +22,17 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Slf4j
+@UtilityClass
 public class BeanUtils {
 
     public static void copyProperties(Iterator<String> fieldNamesItr, Object source, Object destination)
             throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Map<String, Object> objectMap = PropertyUtils.describe(source);
-        for (; fieldNamesItr.hasNext(); ) {
+        while (fieldNamesItr.hasNext()) {
             String fieldName = fieldNamesItr.next();
             if (objectMap.containsKey(fieldName)) {
                 Object fieldValue = objectMap.get(fieldName);
-                logger.debug("Set property: {}={}", fieldName, fieldValue);
+                log.debug("Set property: {}={}", fieldName, fieldValue);
                 PropertyUtils.setProperty(destination, fieldName, fieldValue);
             } else {
                 throw new IllegalArgumentException("The source object does not contain the field [" + fieldName + "] ");

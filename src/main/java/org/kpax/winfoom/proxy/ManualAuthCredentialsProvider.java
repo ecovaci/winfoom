@@ -13,6 +13,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
@@ -22,26 +23,22 @@ import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.DomainUser;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.security.Principal;
 
 /**
  * The {@link CredentialsProvider} for manual authentication.
  */
+@Slf4j
 public class ManualAuthCredentialsProvider implements CredentialsProvider, StopListener {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private ProxyConfig proxyConfig;
 
     private final SingletonSupplier<Credentials> credentialsSupplier = new SingletonSupplier<>(() -> {
         if (proxyConfig.isNtlm()) {
             DomainUser domainUser = DomainUser.from(proxyConfig.getProxyUsername());
-            logger.debug("Create NTLM credentials using domainUser {}", domainUser);
+            log.debug("Create NTLM credentials using domainUser {}", domainUser);
             return new NTCredentials(domainUser.getUsername(), proxyConfig.getProxyPassword(), null, domainUser.getDomain());
         } else {
-            logger.debug("Create basic credentials for username: {}", proxyConfig.getProxyUsername());
+            log.debug("Create basic credentials for username: {}", proxyConfig.getProxyUsername());
             return new UsernamePasswordCredentials(proxyConfig.getProxyUsername(),
                     proxyConfig.getProxyPassword());
         }

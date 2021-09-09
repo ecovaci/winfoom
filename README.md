@@ -1,8 +1,8 @@
 # winfoom 
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecovaci/winfoom/blob/master/LICENSE)
-![Downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total)
-![Downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/latest/total)
+![Total downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total.svg)
+![Latest downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/latest/total.svg)
 ![Release](https://img.shields.io/github/v/release/ecovaci/winfoom)
 [![Java CI with Maven](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml)
 
@@ -28,7 +28,7 @@ An example of such a facade for NTLM proxies is [CNTLM](http://cntlm.sourceforge
 # Getting Started
 ## Download Winfoom
 ### Download prepackaged
-To try out Winfoom without needing to download the source and package it, check out the [releases](https://github.com/ecovaci/winfoom/releases) for a prepackaged `winfoom.zip`.
+To try out Winfoom without needing to download the source and package it, check out the [releases](https://github.com/ecovaci/winfoom/releases) for a prepackaged `winfoom-*.zip`.
 Winfoom is a Java application and requires a Java Runtime Environment (at least v11).
 
 If it is not already installed on your system, you can download it from [AdoptOpenJDK](https://adoptopenjdk.net/) or, 
@@ -36,10 +36,6 @@ on Linux systems, use your package manager.
 
 If, for certain reasons, you do not want to install Java globally on your system then download the JRE archive according
 to your system architecture, unzip it in the Winfoom directory and rename it to `jdk`.
-
-> 👉 Note: For Windows systems there is `winfoom-windows.zip` archive containing only the Windows executable files together with AdoptOpenJDK v11 (the `jdk` directory), therefore you don't need a Java Runtime Environment to be installed on your operating system.
-
-If you want to run Winfoom in command line mode, then you also need `foomcli.zip` archive, containing scripts for application management (start, stop, config, etc).
 
 ### Build from source code
 If you decide to build the executable *jar* file from the source code, you would need these prerequisites:
@@ -64,10 +60,14 @@ Now you should have the generated executable *jar* file under the *target* direc
 
 ## Run Winfoom
 
-The prepackaged `winfoom.zip` contains the following executable files: 
-* `launch.bat` launches the application (Windows systems)
-* `launchGui.bat` launches the application in graphical mode (Windows systems)
-* `launch.sh` launches the application (Linux/Macos systems, needs to be made executable)
+The prepackaged `winfoom-windows.zip` for Windows systems, contains the following executable files: 
+* `launch.bat` launches the application
+* `launchGui.bat` launches the application in graphical mode
+* `foomcli.bat` manages the application in GUI-less mode
+
+The prepackaged `winfoom-unix.zip` for Linux/MacOS systems, contains the following executable files:
+* `launch.sh` launches the application (needs to be made executable)
+* `foomcli.sh` manages the application in GUI-less mode (needs to be made executable)
 
 On Windows systems, Winfoom can be launched by double-click on `launchGui.bat` or
 from the command prompt:
@@ -82,7 +82,7 @@ or, to run it in the graphical mode:
 
 `launch --gui`
 
-On Linux/Macos systems, there is no graphical mode available. Make sure the `*.sh` files are executable.
+On Linux/MacOS systems, there is no graphical mode available. Make sure the `*.sh` files are executable.
 To run Winfoom, execute in a terminal:
 
 `./launch.sh`
@@ -97,16 +97,8 @@ Winfoom can be launched with modified Java and system parameters by defining the
 
 > 👉 Note: It's a good idea to add the Winfoom's home directory to the PATH environment variable.
 
-Starting with v3.3.0 it is possible to modify the config directory location by setting the `WINFOOM_CONFIG` environment variable.
-When this variable is not set, the default value would be `WINFOOM_CONFIG=<user.home.directory.path>`. 
-This allows running multiple instances of the application having different configurations.
-
-For GUI-less management you need `foomcli.zip` containing:
-* `foomcli.bat` manages the application (Windows systems)
-* `foomcli.sh` manages the application (Linux/Macos systems, needs to be made executable)
-
 ## Winfoom's logs
-The application log file is placed under `<WINFOOM_CONFIG>/.winfoom/logs` directory.
+The application log file is placed under `out/logs` directory.
 
 ## Configuration
 ### User settings
@@ -136,7 +128,7 @@ The script `foomcli` provides easy access to this API.
 
 To get help about the usage execute:
 
-`foomcli --help` (on Linux/Macos is `./foomcli.sh --help`)
+`foomcli --help` (on Linux/MacOS is `./foomcli.sh --help`)
 
 > 👉 Note: You can move the script `foomcli` whatever location you want. It is not required to be in the Winfoom's directory.
 
@@ -165,7 +157,7 @@ to get the current configuration. You'll get something like:
 ```
 
 The output is in JSON format. The name of the fields is self-descriptive. 
-Suppose you want to configure Winfoom for a HTTP proxy. First, change the proxy type to HTTP with:
+Suppose you want to configure Winfoom for an HTTP proxy. First, change the proxy type to HTTP with:
 
 `foomcli config -t http`
 
@@ -249,7 +241,7 @@ If you want to shut down Winfoom execute `foomcli shutdown`
 
 ---
 
-On Linux/Macos or Windows with `useCurrentCredentials=false`, if the proxy type is HTTP you need to set the `httpAuthProtocol` field, 
+On Linux/MacOS or Windows with `useCurrentCredentials=false`, if the proxy type is HTTP you need to set the `httpAuthProtocol` field, 
 which is the proxy protocol: one of `NTLM, BASIC` values.
 
 If the proxy type is PAC, then the output of the `foomcli config` command would be like:
@@ -310,7 +302,7 @@ then check the new settings with `foomcli settings`
 
 
 ### System settings
-The system settings configuration file is `<WINFOOM_CONFIG>/.winfoom/system.properties`.
+The system settings configuration file is `config/system.properties`.
 
 _Please do not modify this file unless absolutely necessary. It is advisable to post your issue in [Issues Section](https://github.com/ecovaci/winfoom/issues) first._
 
@@ -334,7 +326,7 @@ The available settings:
 ### Authentication
 * For HTTP proxy type, Winfoom uses the current Windows user credentials to authenticate to the upstream proxy, 
   unless you uncheck the `Use system credentials` checkbox. 
-  On Linux/Macos or on Windows with `Use system credentials` unchecked you need to provide the user and password (or DOMAIN\user and password if the DOMAIN is required) 
+  On Linux/MacOS or on Windows with `Use system credentials` unchecked you need to provide the user and password (or DOMAIN\user and password if the DOMAIN is required) 
 * For SOCKS5 proxy type, the user/password need to be provided when required.
 * For PAC proxy type, starting with v3.4.0, there is some support for authentication 
   (still, keep in mind that the PAC protocol does not support authentication) when:
@@ -376,6 +368,10 @@ If you decide to build your own docker image, here are the steps:
 
 You can read [dockerhub's README](https://hub.docker.com/r/ecovaci/winfoom) for further instructions.
    
+# TODOs
+
+* Proper unit testing
+
 # Coding Guidance
 
 Please review these docs below about coding practices.

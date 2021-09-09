@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.util;
 
+import lombok.experimental.UtilityClass;
 import org.kpax.winfoom.annotation.NotNull;
 import org.springframework.util.Assert;
 
@@ -21,12 +22,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author Eugen Covaci
  */
+@UtilityClass
 public final class CrlfConverter {
 
     public static final String CRLF = "\r\n";
-
-    private CrlfConverter() {
-    }
 
     /**
      * Call the <code>input.toString()</code> and appends CRLF.

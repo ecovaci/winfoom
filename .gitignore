@@ -1,3 +1,5 @@
 /.idea/.gitignore
 /target/
 /.idea/
+/out/
+/config/

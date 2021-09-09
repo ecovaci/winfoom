@@ -12,7 +12,6 @@
 
 package org.kpax.winfoom.proxy.processor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
@@ -20,7 +19,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.kpax.winfoom.annotation.ThreadSafe;
@@ -33,7 +31,6 @@ import org.kpax.winfoom.proxy.HttpClientBuilderFactory;
 import org.kpax.winfoom.proxy.ProxyBlacklist;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.util.HttpUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -54,8 +51,6 @@ import java.util.concurrent.ExecutorService;
 @Component
 class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
-    private final SystemConfig systemConfig;
-
     private final HttpClientBuilderFactory clientBuilderFactory;
 
     public NonConnectClientConnectionProcessor(ExecutorService executorService,
@@ -64,13 +59,12 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                                                SystemConfig systemConfig,
                                                HttpClientBuilderFactory clientBuilderFactory) {
         super(executorService, proxyConfig, proxyBlacklist);
-        this.systemConfig = systemConfig;
         this.clientBuilderFactory = clientBuilderFactory;
     }
 
     @Override
     void handleRequest(final ClientConnection clientConnection, final ProxyInfo proxyInfo)
-            throws IOException, ProxyAuthorizationException {
+            throws IOException {
         try (CloseableHttpClient httpClient = clientBuilderFactory.createClientBuilder(proxyInfo).build()) {
             URI uri = clientConnection.getRequestUri();
             HttpHost target = new HttpHost(uri.getHost(),
@@ -87,7 +81,7 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
             try (CloseableHttpResponse response = httpClient.execute(target, clientConnection.getRequest(), context)) {
                 StatusLine statusLine = response.getStatusLine();
                 try {
-                    logger.debug("Write status line: {}", statusLine);
+                    log.debug("Write status line: {}", statusLine);
                     clientConnection.write(statusLine);
                     clientConnection.write(HttpUtils.createViaHeader(
                             clientConnection.getRequestLine().getProtocolVersion(),
@@ -106,12 +100,12 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                                 clientConnection.write(
                                         HttpUtils.createHttpHeader(HttpHeaders.TRANSFER_ENCODING,
                                                 nonChunkedTransferEncoding));
-                                logger.debug("Add chunk-striped header response");
+                                log.debug("Add chunk-striped header response");
                             } else {
-                                logger.debug("Remove transfer encoding chunked header response");
+                                log.debug("Remove transfer encoding chunked header response");
                             }
                         } else {
-                            logger.debug("Write response header: {}", header);
+                            log.debug("Write response header: {}", header);
                             clientConnection.write(header);
                         }
                     }
@@ -123,16 +117,16 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                     // Now write the request body, if any
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        logger.debug("Start writing entity content");
+                        log.debug("Start writing entity content");
                         entity.writeTo(clientConnection.getOutputStream());
-                        logger.debug("End writing entity content");
+                        log.debug("End writing entity content");
 
                         // Make sure the entity is fully consumed
                         EntityUtils.consume(entity);
                     }
 
                 } catch (Exception e) {
-                    logger.debug("Error on handling non CONNECT response", e);
+                    log.debug("Error on handling non CONNECT response", e);
                 }
             }
         }

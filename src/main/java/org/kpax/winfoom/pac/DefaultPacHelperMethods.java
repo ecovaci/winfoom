@@ -51,7 +51,6 @@ import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.pac.datetime.PacDateTimeUtils;
 import org.kpax.winfoom.pac.net.IpAddressMatcher;
 import org.kpax.winfoom.pac.net.IpAddresses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.Inet4Address;
@@ -117,7 +116,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
         try {
             return !IpAddresses.resolve(host, isIPv4Predicate).isEmpty();
         } catch (UnknownHostException ex) {
-            logger.debug("Error on resolving host [{}]", host);
+            log.debug("Error on resolving host [{}]", host);
             return false;
         }
     }
@@ -130,7 +129,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
                 return addresses.get(0).getHostAddress();
             }
         } catch (UnknownHostException ex) {
-            logger.debug("Error on resolving host [{}]", host);
+            log.debug("Error on resolving host [{}]", host);
         }
         // Returning null is what Chrome and Firefox do in this situation
         return null;
@@ -141,7 +140,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
         try {
             return IpAddresses.primaryIPv4Address.get().getHostAddress();
         } catch (Exception e) {
-            logger.warn("Cannot get localhost ip address", e);
+            log.warn("Cannot get localhost ip address", e);
             return IpAddresses.LOCALHOST;
         }
     }
@@ -170,7 +169,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
         try {
             return PacDateTimeUtils.isInWeekdayRange(new Date(), args);
         } catch (PacDateTimeUtils.PacDateTimeInputException ex) {
-            logger.warn("PAC script error : arguments passed to weekdayRange() function {} are faulty: {}",
+            log.warn("PAC script error : arguments passed to weekdayRange() function {} are faulty: {}",
                     Arrays.toString(args), ex.getMessage());
             return false;
         }
@@ -181,7 +180,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
         try {
             return PacDateTimeUtils.isInDateRange(new Date(), args);
         } catch (PacDateTimeUtils.PacDateTimeInputException ex) {
-            logger.warn("PAC script error : arguments passed to dateRange() function {} are faulty: {}",
+            log.warn("PAC script error : arguments passed to dateRange() function {} are faulty: {}",
                     Arrays.toString(args), ex.getMessage());
             return false;
         }
@@ -192,7 +191,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
         try {
             return PacDateTimeUtils.isInTimeRange(new Date(), args);
         } catch (PacDateTimeUtils.PacDateTimeInputException ex) {
-            logger.warn("PAC script error : arguments passed to timeRange() function {} are faulty: {}",
+            log.warn("PAC script error : arguments passed to timeRange() function {} are faulty: {}",
                     Arrays.toString(args), ex.getMessage());
             return false;
         }
@@ -223,7 +222,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
                 return addresses.get(0).getHostAddress();
             }
         } catch (UnknownHostException ex) {
-            logger.debug("Error on resolving host [{}]", host);
+            log.debug("Error on resolving host [{}]", host);
         }
         return "";
     }
@@ -237,7 +236,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
                     map(InetAddress::getHostAddress).
                     collect(Collectors.joining(";"));
         } catch (Exception e) {
-            logger.warn("Cannot get localhost ip addresses", e);
+            log.warn("Cannot get localhost ip addresses", e);
             return IpAddresses.LOCALHOST;
         }
     }
@@ -286,7 +285,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
     // *************************************************************
 
     public void alert(String message) {
-        logger.debug("PAC script says: {}", message);
+        log.debug("PAC script says: {}", message);
     }
 
 

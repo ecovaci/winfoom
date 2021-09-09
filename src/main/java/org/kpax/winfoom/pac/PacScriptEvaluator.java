@@ -31,7 +31,6 @@
 package org.kpax.winfoom.pac;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -54,10 +53,8 @@ import org.kpax.winfoom.proxy.ProxyInfo;
 import org.kpax.winfoom.proxy.listener.ProxyListener;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import javax.script.ScriptException;
@@ -90,8 +87,6 @@ public class PacScriptEvaluator implements ProxyListener {
 
     private final ProxyConfig proxyConfig;
 
-    private final SystemConfig systemConfig;
-
     private final DefaultPacHelperMethods pacHelperMethods;
 
     private final ProxyBlacklist proxyBlacklist;
@@ -123,7 +118,6 @@ public class PacScriptEvaluator implements ProxyListener {
 
     public PacScriptEvaluator(ProxyConfig proxyConfig, SystemConfig systemConfig, DefaultPacHelperMethods pacHelperMethods, ProxyBlacklist proxyBlacklist) {
         this.proxyConfig = proxyConfig;
-        this.systemConfig = systemConfig;
         this.pacHelperMethods = pacHelperMethods;
         this.proxyBlacklist = proxyBlacklist;
         this.enginePoolSingletonSupplier =
@@ -136,7 +130,7 @@ public class PacScriptEvaluator implements ProxyListener {
                     config.setTestOnReturn(false);
                     config.setBlockWhenExhausted(true);
                     return new GenericObjectPool<>(
-                            new BasePooledObjectFactory<GraalJSScriptEngine>() {
+                            new BasePooledObjectFactory<>() {
                                 @Override
                                 public GraalJSScriptEngine create() throws PacFileException, IOException {
                                     return createScriptEngine();
@@ -176,7 +170,7 @@ public class PacScriptEvaluator implements ProxyListener {
             Object type = eng.invokeMethod(typeofCheck, "call", null, functionName);
             return "function".equals(type);
         } catch (NoSuchMethodException | ScriptException ex) {
-            logger.warn("Error on testing if the function is there", ex);
+            log.warn("Error on testing if the function is there", ex);
             return false;
         }
     }
@@ -190,10 +184,10 @@ public class PacScriptEvaluator implements ProxyListener {
     private String loadScript() throws IOException {
         URL url = proxyConfig.getProxyPacFileLocationAsURL();
         Assert.state(url != null, "No proxy PAC file location found");
-        logger.info("Get PAC file from: {}", url);
+        log.info("Get PAC file from: {}", url);
         try (InputStream inputStream = url.openStream()) {
             String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            logger.info("PAC content: {}", content);
+            log.info("PAC content: {}", content);
             return content;
         }
     }
@@ -278,7 +272,7 @@ public class PacScriptEvaluator implements ProxyListener {
                 enginePoolSingletonSupplier.get().returnObject(scriptEngine);
             }
             String proxyLine = Objects.toString(callResult, null);
-            logger.debug("Parse proxyLine [{}] for uri [{}]", proxyLine, uri);
+            log.debug("Parse proxyLine [{}] for uri [{}]", proxyLine, uri);
             return HttpUtils.parsePacProxyLine(proxyLine, proxyBlacklist::isActive);
         } catch (Exception ex) {
             throw new PacScriptException("Error when executing PAC script function: " + jsMainFunction, ex);
@@ -287,7 +281,7 @@ public class PacScriptEvaluator implements ProxyListener {
 
     @Override
     public void onStop() {
-        logger.debug("Reset the scriptEngineSupplier");
+        log.debug("Reset the scriptEngineSupplier");
         enginePoolSingletonSupplier.reset();
         jsMainFunction = null;
     }
