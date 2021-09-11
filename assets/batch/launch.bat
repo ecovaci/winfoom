@@ -16,6 +16,10 @@
 
 setlocal EnableDelayedExpansion
 
+set currentFileDir=%~dp0
+:: removing the trailing backslash
+set currentFileDir=%currentFileDir:~0,-1%
+
 if "%1"=="--help" goto usage
 
 set ARGS=-server -XX:+UseG1GC -XX:MaxHeapFreeRatio=30 -XX:MinHeapFreeRatio=10
@@ -36,7 +40,7 @@ for %%a in (%*) do (
 )
 
 if exist out.log (
-del /F out.log
+	del /F out.log
 )
 
 if exist out.log (
@@ -44,13 +48,13 @@ if exist out.log (
 	exit /B 2
 )
 
-if exist .\jdk\bin\javaw.exe (
-set JAVA_EXE=.\jdk\bin\javaw
+if exist %currentFileDir%\jdk\bin\javaw.exe (
+	set JAVA_EXE=%currentFileDir%\jdk\bin\javaw
 ) else (
-set JAVA_EXE=javaw
+	set JAVA_EXE=javaw
 )
 
-start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
+start /B %JAVA_EXE% %ARGS% -jar %currentFileDir%\winfoom.jar > out.log 2>&1
 
 @echo You can check the application log with the command: type "%userprofile%\.winfoom\logs\winfoom.log"
 @echo If application is not launched in GUI mode, use foomcli script for management
