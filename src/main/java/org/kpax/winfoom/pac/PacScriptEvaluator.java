@@ -116,7 +116,10 @@ public class PacScriptEvaluator implements ProxyListener {
     private String jsMainFunction;
 
 
-    public PacScriptEvaluator(ProxyConfig proxyConfig, SystemConfig systemConfig, DefaultPacHelperMethods pacHelperMethods, ProxyBlacklist proxyBlacklist) {
+    public PacScriptEvaluator(ProxyConfig proxyConfig,
+                              SystemConfig systemConfig,
+                              DefaultPacHelperMethods pacHelperMethods,
+                              ProxyBlacklist proxyBlacklist) {
         this.proxyConfig = proxyConfig;
         this.pacHelperMethods = pacHelperMethods;
         this.proxyBlacklist = proxyBlacklist;
