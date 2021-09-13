@@ -24,7 +24,7 @@ if defined FOOM_ARGS set ARGS=%FOOM_ARGS% %ARGS%
 
 for %%a in (%*) do (
     if not "%%a"=="--debug" if not "%%a"=="--gui" (
-        @echo Invalid command, try 'launch --help' for more information
+        echo Invalid command, try 'launch --help' for more information
         exit /B 1;
     )
     if "%%a"=="--debug" (
@@ -40,7 +40,7 @@ if exist out.log (
 )
 
 if exist out.log (
-    @echo Is there another application's instance running?
+    echo Is there another application's instance running?
     exit /B 2
 )
 
@@ -52,14 +52,14 @@ if exist .\jdk\bin\javaw.exe (
 
 start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
 
-@echo You can check the application log with the command: type "%userprofile%\.winfoom\logs\winfoom.log"
-@echo If application is not launched in GUI mode, use foomcli script for management
-@echo If application failed to start, you may get the reason with the command: type out.log
+echo You can check the application log with the command: type "%userprofile%\.winfoom\logs\winfoom.log"
+echo If application is not launched in GUI mode, use foomcli script for management
+echo If application failed to start, you may get the reason with the command: type out.log
 
 exit /B %ERRORLEVEL%
 
 :usage
-@echo Usage: launch [arguments]
-@echo where [arguments] must be any of the following:
-@echo    --debug             start in debug mode
-@echo    --gui               start with graphical user interface
+echo Usage: launch [arguments]
+echo where [arguments] must be any of the following:
+echo    --debug             start in debug mode
+echo    --gui               start with graphical user interface

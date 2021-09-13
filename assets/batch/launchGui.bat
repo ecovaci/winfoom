@@ -25,7 +25,7 @@ if exist out.log (
 )
 
 if exist out.log (
-    @echo Is there another application's instance running?
+    echo Is there another application's instance running?
     exit /B 2
 )
 
