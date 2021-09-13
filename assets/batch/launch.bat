@@ -24,30 +24,30 @@ if defined FOOM_ARGS set ARGS=%FOOM_ARGS% %ARGS%
 
 for %%a in (%*) do (
     if not "%%a"=="--debug" if not "%%a"=="--gui" (
-		@echo Invalid command, try 'launch --help' for more information
-		exit /B 1;
-	)
-	if "%%a"=="--debug" (
-		set ARGS=!ARGS! -Dlogging.level.root=DEBUG -Dlogging.level.java.awt=INFO -Dlogging.level.sun.awt=INFO -Dlogging.level.javax.swing=INFO -Dlogging.level.jdk=INFO
-	)
-	if "%%a"=="--gui" (
-		set ARGS=!ARGS! -Dswing.aatext=true -Dspring.profiles.active=gui
-	)
+        @echo Invalid command, try 'launch --help' for more information
+        exit /B 1;
+    )
+    if "%%a"=="--debug" (
+        set ARGS=!ARGS! -Dlogging.level.root=DEBUG -Dlogging.level.java.awt=INFO -Dlogging.level.sun.awt=INFO -Dlogging.level.javax.swing=INFO -Dlogging.level.jdk=INFO
+    )
+    if "%%a"=="--gui" (
+        set ARGS=!ARGS! -Dswing.aatext=true -Dspring.profiles.active=gui
+    )
 )
 
 if exist out.log (
-del /F out.log
+    del /F out.log
 )
 
 if exist out.log (
     @echo Is there another application's instance running?
-	exit /B 2
+    exit /B 2
 )
 
 if exist .\jdk\bin\javaw.exe (
-set JAVA_EXE=.\jdk\bin\javaw
+    set JAVA_EXE=.\jdk\bin\javaw
 ) else (
-set JAVA_EXE=javaw
+    set JAVA_EXE=javaw
 )
 
 start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
