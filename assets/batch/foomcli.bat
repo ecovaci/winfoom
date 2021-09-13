@@ -115,8 +115,8 @@ exit /B %ERRORLEVEL%
 
 :usage
 echo Usage: foomcli [command] [arguments]
-echo It manages winfoom application"
-echo Note:  It requires 'curl' to be available!"
+echo It manages winfoom application
+echo Note:  It requires 'curl' to be available!
 echo.
 echo [command] must be one of the following:
 echo    start                              - start the local proxy facade
