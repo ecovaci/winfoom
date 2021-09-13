@@ -21,21 +21,24 @@ set ARGS=-server -XX:+UseG1GC -XX:MaxHeapFreeRatio=30 -XX:MinHeapFreeRatio=10 -D
 if defined FOOM_ARGS set ARGS=%FOOM_ARGS% %ARGS%
 
 if exist out.log (
-del /F out.log
+    del /F out.log
 )
 
 if exist out.log (
-    @echo Is there another application's instance running?
-	exit /B 2
+    echo Is there another application's instance running?
+    exit /B 2
 )
 
 if exist .\jdk\bin\javaw.exe (
-set JAVA_EXE=.\jdk\bin\javaw
+    set JAVA_EXE=.\jdk\bin\javaw
 ) else (
-set JAVA_EXE=javaw
+    if exist %JAVA_HOME%\bin\javaw.exe (
+        set JAVA_EXE=%JAVA_HOME%\bin\javaw.exe
+    ) else (
+        set JAVA_EXE=javaw
+    )
 )
 
 start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
 
 exit /B %ERRORLEVEL%
-
