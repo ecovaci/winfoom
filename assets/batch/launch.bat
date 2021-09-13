@@ -47,7 +47,11 @@ if exist out.log (
 if exist .\jdk\bin\javaw.exe (
     set JAVA_EXE=.\jdk\bin\javaw
 ) else (
-    set JAVA_EXE=javaw
+    if exist %JAVA_HOME%\bin\javaw.exe (
+        set JAVA_EXE=%JAVA_HOME%\bin\javaw.exe
+    ) else (
+        set JAVA_EXE=javaw
+    )
 )
 
 start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
