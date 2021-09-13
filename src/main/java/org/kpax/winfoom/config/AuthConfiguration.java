@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 class AuthConfiguration {
 
     /**
-     * Create the system wide {@link CredentialsProvider}.
+     * Create the system-wide {@link CredentialsProvider}.
      * <p>Note: Only works with HTTP proxies.
      *
      * @return the system wide {@link CredentialsProvider}
