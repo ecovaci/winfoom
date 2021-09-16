@@ -32,15 +32,15 @@ public class ConnectionProcessorSelector {
 
     private final SocksNonConnectClientConnectionProcessor socksNonConnectClientConnectionProcessor;
 
-    public ClientConnectionProcessor select(boolean isConnect, @NotNull ProxyInfo proxyInfo) {
+    public ClientConnectionProcessor select(boolean isConnect,boolean isHttp) {
         if (isConnect) {
-            if (proxyInfo.getType().isHttp()) {
+            if (isHttp) {
                 return httpConnectClientConnectionProcessor;
             } else {
                 return socksConnectClientConnectionProcessor;
             }
         } else {
-            if (proxyInfo.getType().isHttp()) {
+            if (isHttp) {
                 return nonConnectClientConnectionProcessor;
             } else {
                 return socksNonConnectClientConnectionProcessor;

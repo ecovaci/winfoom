@@ -105,7 +105,7 @@ public class ClientConnectionHandler implements StopListener {
                 for (Iterator<ProxyInfo> itr = activeProxies.iterator(); itr.hasNext(); ) {
                     ProxyInfo proxy = itr.next();
                     ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.select(clientConnection.isConnect(),
-                            proxy);
+                            proxy.getType().isHttp());
                     log.debug("Process connection for proxy {} using connectionProcessor: {}", proxy, connectionProcessor);
                     try {
                         connectionProcessor.process(clientConnection, proxy);
@@ -125,7 +125,7 @@ public class ClientConnectionHandler implements StopListener {
 
             } else {
                 ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.select(clientConnection.isConnect(),
-                        proxyInfoSupplier.get());
+                        proxyInfoSupplier.get().getType().isHttp());
                 try {
                     connectionProcessor.process(clientConnection, proxyInfoSupplier.get());
                 } catch (ProxyConnectException e) {
