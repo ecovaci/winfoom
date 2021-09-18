@@ -24,7 +24,6 @@ import org.apache.http.util.EntityUtils;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemConfig;
-import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.HttpClientBuilderFactory;

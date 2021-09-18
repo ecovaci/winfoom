@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * The proxy facade system configuration.
@@ -36,6 +39,23 @@ import java.net.SocketException;
 @Component
 @PropertySource(value = "file:./config/system.properties", ignoreResourceNotFound = true)
 public class SystemConfig {
+
+    /**
+     * The name of the current operating system.
+     */
+    public static final String OS_NAME = System.getProperty("os.name");
+
+    /**
+     * Is Windows the current operating system?
+     */
+    public static final boolean IS_OS_WINDOWS = OS_NAME.toLowerCase(Locale.ROOT).startsWith("windows");
+
+    /**
+     * Is the application running in graphical mode?
+     */
+    public static final boolean IS_GUI_MODE = Optional.ofNullable(System.getProperty("spring.profiles.active")).
+            map(s -> List.of(s.split(",")).contains("gui")).
+            orElse(false);
 
     /**
      * Connection pool property:  max polled connections per route.

@@ -13,7 +13,7 @@
 package org.kpax.winfoom;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kpax.winfoom.config.SystemContext;
+import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.Base64DecoderPropertyEditor;
 import org.kpax.winfoom.util.SwingUtils;
 import org.springframework.beans.factory.config.CustomEditorConfigurer;
@@ -46,15 +46,15 @@ public class FoomApplication {
     }
 
     public static void main(String[] args) {
-        if (SystemContext.IS_GUI_MODE && !SystemContext.IS_OS_WINDOWS) {
-            log.error("Graphical mode is not supported on " + SystemContext.OS_NAME + ", exit the application");
+        if (SystemConfig.IS_GUI_MODE && !SystemConfig.IS_OS_WINDOWS) {
+            log.error("Graphical mode is not supported on " + SystemConfig.OS_NAME + ", exit the application");
             System.exit(1);
         }
 
         log.info("Application started at: {}", new Date());
         Runtime.getRuntime().addShutdownHook(new Thread(() -> log.info("Application shutdown at: {}", new Date())));
 
-        if (SystemContext.IS_GUI_MODE) {
+        if (SystemConfig.IS_GUI_MODE) {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
             } catch (Exception e) {
@@ -67,7 +67,7 @@ public class FoomApplication {
             SpringApplication.run(FoomApplication.class, args);
         } catch (Exception e) {
             log.error("Error on bootstrapping Spring's application context", e);
-            if (SystemContext.IS_GUI_MODE) {
+            if (SystemConfig.IS_GUI_MODE) {
                 SwingUtils.showErrorMessage("Failed to launch the application." +
                         "<br>Please check the application's log file.");
             }

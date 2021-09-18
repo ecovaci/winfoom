@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.kpax.winfoom.annotation.NotNull;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.ProxyBlacklist;

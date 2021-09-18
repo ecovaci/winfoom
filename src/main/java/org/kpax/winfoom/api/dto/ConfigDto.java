@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.config.SystemContext;
+import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.exception.InvalidProxySettingsException;
 import org.kpax.winfoom.util.HttpUtils;
 import org.springframework.util.Assert;
@@ -65,7 +65,7 @@ public class ConfigDto {
 
         if (useCurrentCredentials != null) {
             Assert.state(proxyType == ProxyConfig.Type.HTTP, "proxyType must be HTTP when useCurrentCredentials is provided");
-            if (useCurrentCredentials && !SystemContext.IS_OS_WINDOWS) {
+            if (useCurrentCredentials && !SystemConfig.IS_OS_WINDOWS) {
                 throw new InvalidProxySettingsException("The field useCurrentCredentials is only allowed on Windows OS");
             }
         }

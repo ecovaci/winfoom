@@ -15,7 +15,7 @@ package org.kpax.winfoom.api.json;
 
 import org.kpax.winfoom.annotation.NotNull;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.config.SystemContext;
+import org.kpax.winfoom.config.SystemConfig;
 
 /**
  * Jackson's views to control which fields should be JSON available, based on the operating system and proxy type.
@@ -91,7 +91,7 @@ public class Views {
     public static Class<?> getView(@NotNull ProxyConfig proxyConfig) {
         switch (proxyConfig.getProxyType()) {
             case DIRECT:
-                if (SystemContext.IS_OS_WINDOWS) {
+                if (SystemConfig.IS_OS_WINDOWS) {
                     return DirectWindows.class;
                 } else {
                     return DirectNonWindows.class;
@@ -100,25 +100,25 @@ public class Views {
                 if (proxyConfig.isHttpAuthAutoMode()) {
                     return HttpWindows.class;
                 } else {
-                    if (SystemContext.IS_OS_WINDOWS) {
+                    if (SystemConfig.IS_OS_WINDOWS) {
                         return HttpWindowsManual.class;
                     }
                     return HttpNonWindows.class;
                 }
             case SOCKS4:
-                if (SystemContext.IS_OS_WINDOWS) {
+                if (SystemConfig.IS_OS_WINDOWS) {
                     return Socks4Windows.class;
                 } else {
                     return Socks4NonWindows.class;
                 }
             case SOCKS5:
-                if (SystemContext.IS_OS_WINDOWS) {
+                if (SystemConfig.IS_OS_WINDOWS) {
                     return Socks5Windows.class;
                 } else {
                     return Socks5NonWindows.class;
                 }
             case PAC:
-                if (SystemContext.IS_OS_WINDOWS) {
+                if (SystemConfig.IS_OS_WINDOWS) {
                     return PacWindows.class;
                 } else {
                     return PacNonWindows.class;
@@ -129,7 +129,7 @@ public class Views {
     }
 
     public static Class<?> getSettingsView() {
-        if (SystemContext.IS_OS_WINDOWS) {
+        if (SystemConfig.IS_OS_WINDOWS) {
             return WindowsSettings.class;
         } else {
             return NonWindowsSettings.class;

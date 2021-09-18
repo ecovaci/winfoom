@@ -17,7 +17,6 @@ import org.apache.http.*;
 import org.apache.http.impl.execchain.TunnelRefusedException;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.exception.ProxyAuthorizationException;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.*;
 import org.kpax.winfoom.util.HttpUtils;

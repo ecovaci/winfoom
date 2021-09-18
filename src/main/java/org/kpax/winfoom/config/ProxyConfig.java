@@ -462,13 +462,13 @@ public class ProxyConfig implements StartListener {
     }
 
     public boolean isHttpAuthAutoMode() {
-        return SystemContext.IS_OS_WINDOWS
+        return SystemConfig.IS_OS_WINDOWS
                 && proxyType.isHttp()
                 && useCurrentCredentials;
     }
 
     public boolean isPacAuthAutoMode() {
-        return SystemContext.IS_OS_WINDOWS
+        return SystemConfig.IS_OS_WINDOWS
                 && proxyType.isPac()
                 && StringUtils.isEmpty(proxyPacUsername);
     }
@@ -483,7 +483,7 @@ public class ProxyConfig implements StartListener {
 
     public boolean isPacAuthDisabledMode() {
         return proxyType.isPac()
-                && !SystemContext.IS_OS_WINDOWS
+                && !SystemConfig.IS_OS_WINDOWS
                 && StringUtils.isEmpty(proxyPacUsername);
     }
 

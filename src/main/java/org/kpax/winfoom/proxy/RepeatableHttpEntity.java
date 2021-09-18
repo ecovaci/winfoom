@@ -18,7 +18,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.io.ChunkedInputStream;
 import org.apache.http.impl.io.SessionInputBufferImpl;
 import org.kpax.winfoom.annotation.NotThreadSafe;
-import org.kpax.winfoom.config.SystemContext;
+import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.InputOutputs;
 
@@ -273,7 +273,7 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
         void write(int length) throws IOException;
 
         static CacheFile from(final Path tempFilepath, final byte[] buffer) throws IOException {
-            return SystemContext.IS_OS_WINDOWS ?
+            return SystemConfig.IS_OS_WINDOWS ?
                     new WindowsCacheFile(tempFilepath, buffer) : new SimpleCacheFile(tempFilepath, buffer);
         }
     }
