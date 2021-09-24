@@ -60,6 +60,6 @@ fi
   rm -f out.log
 ) &
 
-echo "You can check the application log with: \$ tail -n 150 -f ~/.winfoom/logs/winfoom.log"
+echo "You can check the application log with: \$ tail -n 150 -f out/logs/winfoom.log"
 echo "If application failed to start, you may get the reason with: \$ cat out.log"
 echo "Use foomcli script for management (like start, stop etc.)"

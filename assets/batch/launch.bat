@@ -46,17 +46,19 @@ if exist out.log (
 
 if exist .\jdk\bin\javaw.exe (
     set JAVA_EXE=.\jdk\bin\javaw
-) else (
-    if exist %JAVA_HOME%\bin\javaw.exe (
-        set JAVA_EXE=%JAVA_HOME%\bin\javaw.exe
-    ) else (
-        set JAVA_EXE=javaw
-    )
+    goto :start
 )
 
+if exist %JAVA_HOME%\bin\javaw.exe (
+    set JAVA_EXE=%JAVA_HOME%\bin\javaw.exe
+) else (
+    set JAVA_EXE=javaw
+)
+
+:start
 start /B %JAVA_EXE% %ARGS% -cp . -jar winfoom.jar > out.log 2>&1
 
-echo You can check the application log with the command: type "%userprofile%\.winfoom\logs\winfoom.log"
+echo You can check the application log with the command: type "out\logs\winfoom.log"
 echo If application is not launched in GUI mode, use foomcli script for management
 echo If application failed to start, you may get the reason with the command: type out.log
 
