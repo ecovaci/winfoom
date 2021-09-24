@@ -53,7 +53,7 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
-if [[ "$1" != "start" && "$1" != "stop" && "$1" != "status" && "$1" != "validate" && "$1" != "shutdown" && "$1" != "test" && "$1" != "config"  && "$1" != "settings" ]]; then
+if [[ "$1" != "start" && "$1" != "stop" && "$1" != "status" && "$1" != "validate" && "$1" != "shutdown" && "$1" != "config"  && "$1" != "settings" ]]; then
   echo "Invalid command, try 'foomcli --help' for more information"
   exit 1
 fi

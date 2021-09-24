@@ -47,7 +47,7 @@ class LocalProxyServer implements StopListener {
 
     private final ProxyExecutorService executorService;
 
-    private final ClientConnectionHandler clientConnectionHandler;
+    private final ClientConnectionHandlerSelector clientConnectionHandlerSelector;
 
     private ServerSocket serverSocket;
 
@@ -67,6 +67,7 @@ class LocalProxyServer implements StopListener {
                 "There is an active ServerSocket instance that needs to be closed before creating another one");
         log.info("Start local proxy server with userConfig {}", proxyConfig);
         try {
+            final ClientConnectionHandler clientConnectionHandler = clientConnectionHandlerSelector.select();
             serverSocket = new ServerSocket(proxyConfig.getLocalPort(),
                     systemConfig.getServerSocketBacklog());
             executorService.submit(() -> {

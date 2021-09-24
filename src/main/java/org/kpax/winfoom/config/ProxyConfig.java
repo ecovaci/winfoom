@@ -628,7 +628,7 @@ public class ProxyConfig implements StartListener {
         propertiesBuilder.save();
     }
 
-    private static String encode (String value) {
+    private static String encode(String value) {
         return "encoded(" + value + ")";
     }
 

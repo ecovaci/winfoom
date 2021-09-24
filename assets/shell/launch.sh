@@ -51,6 +51,10 @@ if [ -e ./jdk/bin/java ]; then
   JAVA_EXE=./jdk/bin/java
 fi
 
+if [ -z ${JAVA_EXE+x} ] && [ -e "$JAVA_HOME/bin/java" ]; then
+  JAVA_EXE="$JAVA_HOME/bin/java"
+fi
+
 if [ -z ${JAVA_EXE+x} ]; then
   JAVA_EXE=java
 fi

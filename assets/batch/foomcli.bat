@@ -23,7 +23,7 @@ if [%1]==[] (
 
 if "%1"=="--help" goto usage
 
-if not "%1"=="start" if not "%1"=="stop" if not "%1"=="status" if not "%1"=="validate" if not "%1"=="shutdown" if not "%1"=="test" if not "%1"=="config" if not "%1"=="autodetect" if not "%1"=="settings" (
+if not "%1"=="start" if not "%1"=="stop" if not "%1"=="status" if not "%1"=="validate" if not "%1"=="shutdown" if not "%1"=="config" if not "%1"=="autodetect" if not "%1"=="settings" (
     echo Unknown command "%1", try 'foomcli --help' for more information
     exit /B 1
 )

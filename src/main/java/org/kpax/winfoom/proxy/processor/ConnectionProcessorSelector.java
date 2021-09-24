@@ -30,7 +30,7 @@ public class ConnectionProcessorSelector {
 
     private final SocksNonConnectClientConnectionProcessor socksNonConnectClientConnectionProcessor;
 
-    public ClientConnectionProcessor select(boolean isConnect,boolean isHttp) {
+    public ClientConnectionProcessor select(boolean isConnect, boolean isHttp) {
         if (isConnect) {
             if (isHttp) {
                 return httpConnectClientConnectionProcessor;
