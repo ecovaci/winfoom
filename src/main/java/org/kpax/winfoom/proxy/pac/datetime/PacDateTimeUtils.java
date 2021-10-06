@@ -24,10 +24,10 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package org.kpax.winfoom.pac.datetime;
+package org.kpax.winfoom.proxy.pac.datetime;
 
 
-import org.kpax.winfoom.pac.PacHelperMethodsNetscape;
+import org.kpax.winfoom.proxy.pac.PacHelperMethodsNetscape;
 
 import java.util.*;
 

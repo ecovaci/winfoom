@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kpax.winfoom.pac;
+package org.kpax.winfoom.proxy.pac;
 
-import org.kpax.winfoom.pac.datetime.PacDateTimeUtils;
+import org.kpax.winfoom.proxy.pac.datetime.PacDateTimeUtils;
 
 /**
  * Netscape's original PAC script helper functions. In their original

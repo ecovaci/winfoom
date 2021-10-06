@@ -19,7 +19,7 @@ import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.exception.ProxyConnectException;
-import org.kpax.winfoom.pac.PacScriptEvaluator;
+import org.kpax.winfoom.proxy.pac.PacScriptEvaluator;
 import org.kpax.winfoom.proxy.processor.ClientConnectionProcessor;
 import org.kpax.winfoom.proxy.processor.ConnectionProcessorSelector;
 import org.kpax.winfoom.util.HttpUtils;

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.annotation.TypeQualifier;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.pac.net.IpAddresses;
+import org.kpax.winfoom.proxy.pac.net.IpAddresses;
 import org.kpax.winfoom.proxy.listener.StartListener;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.DomainUser;

@@ -41,16 +41,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-package org.kpax.winfoom.pac;
+package org.kpax.winfoom.proxy.pac;
 
 import inet.ipaddr.IPAddressString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kpax.winfoom.config.SystemConfig;
-import org.kpax.winfoom.pac.datetime.PacDateTimeUtils;
-import org.kpax.winfoom.pac.net.IpAddressMatcher;
-import org.kpax.winfoom.pac.net.IpAddresses;
+import org.kpax.winfoom.proxy.pac.datetime.PacDateTimeUtils;
+import org.kpax.winfoom.proxy.pac.net.IpAddressMatcher;
+import org.kpax.winfoom.proxy.pac.net.IpAddresses;
 import org.springframework.stereotype.Component;
 
 import java.net.Inet4Address;

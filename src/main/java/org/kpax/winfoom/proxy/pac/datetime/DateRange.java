@@ -25,7 +25,7 @@
  */
 
 
-package org.kpax.winfoom.pac.datetime;
+package org.kpax.winfoom.proxy.pac.datetime;
 
 import java.util.Calendar;
 

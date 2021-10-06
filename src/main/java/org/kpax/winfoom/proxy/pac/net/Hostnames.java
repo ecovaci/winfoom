@@ -29,7 +29,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package org.kpax.winfoom.pac.net;
+package org.kpax.winfoom.proxy.pac.net;
 
 import org.springframework.util.Assert;
 
