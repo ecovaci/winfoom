@@ -23,24 +23,24 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException;
 import java.util.Optional;
 
-public class AsteriskSerializer extends StdSerializer<Object> implements ContextualSerializer {
+public class MaskSerializer extends StdSerializer<Object> implements ContextualSerializer {
 
     private String asterisk;
 
-    public AsteriskSerializer() {
+    public MaskSerializer() {
         super(Object.class);
     }
 
-    public AsteriskSerializer(String asterisk) {
+    public MaskSerializer(String asterisk) {
         super(Object.class);
         this.asterisk = asterisk;
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider serializerProvider, BeanProperty property) {
-        Optional<Asterisk> optionalAsterisk = Optional.ofNullable(property)
-                .map(prop -> prop.getAnnotation(Asterisk.class));
-        return new AsteriskSerializer(optionalAsterisk.map(Asterisk::value).orElse(null));
+        Optional<Mask> optionalAsterisk = Optional.ofNullable(property)
+                .map(prop -> prop.getAnnotation(Mask.class));
+        return new MaskSerializer(optionalAsterisk.map(Mask::value).orElse(null));
     }
 
     @Override

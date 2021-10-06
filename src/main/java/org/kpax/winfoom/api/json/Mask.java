@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotationsInside
-@JsonSerialize(using = AsteriskSerializer.class)
-public @interface Asterisk {
+@JsonSerialize(using = MaskSerializer.class)
+public @interface Mask {
     String value() default "***";
 }

@@ -133,6 +133,7 @@ public class TunnelConnection {
                     proxy, response, proxyAuthStrategy, proxyAuthState, context)) {
                 if (authenticator.handleAuthChallenge(
                         proxy, response, proxyAuthStrategy, proxyAuthState, context)) {
+
                     // Retry request
                     if (DefaultConnectionReuseStrategy.INSTANCE.keepAlive(response, context)) {
                         // Consume response content
@@ -142,6 +143,7 @@ public class TunnelConnection {
                         log.debug("Close tunnel connection");
                         InputOutputs.close(connection);
                     }
+
                     // discard previous auth header
                     connect.removeHeaders(AUTH.PROXY_AUTH_RESP);
                 } else {
@@ -163,6 +165,7 @@ public class TunnelConnection {
             if (entity != null) {
                 response.setEntity(new BufferedHttpEntity(entity));
             }
+
             log.debug("Close tunnel connection");
             InputOutputs.close(connection);
             throw new TunnelRefusedException("CONNECT refused by proxy: " + response.getStatusLine(), response);

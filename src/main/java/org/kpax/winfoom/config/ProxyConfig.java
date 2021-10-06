@@ -23,18 +23,15 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
-import org.kpax.winfoom.api.json.Asterisk;
+import org.kpax.winfoom.api.json.Mask;
 import org.kpax.winfoom.api.json.Views;
 import org.kpax.winfoom.exception.InvalidProxySettingsException;
 import org.kpax.winfoom.proxy.ProxyType;
-import org.kpax.winfoom.proxy.listener.StartListener;
 import org.kpax.winfoom.util.HttpUtils;
 import org.kpax.winfoom.util.jna.IEProxyConfig;
 import org.kpax.winfoom.util.jna.WinHttpHelpers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -63,8 +60,7 @@ import java.util.Properties;
         "localPort", "proxyTestUrl", "autostart", "autodetect"})
 @Component
 @PropertySource(value = "file:./config/proxy.properties", ignoreResourceNotFound = true)
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class ProxyConfig implements StartListener {
+public class ProxyConfig {
 
     @Value("${app.version}")
     private String appVersion;
@@ -149,9 +145,6 @@ public class ProxyConfig implements StartListener {
     private HttpAuthProtocol httpAuthProtocol;
 
     private Path tempDirectory;
-
-    // --- Calculated fields on server startup
-    private boolean ntlm;
 
     @PostConstruct
     public void init() throws IOException {
@@ -399,7 +392,7 @@ public class ProxyConfig implements StartListener {
         }
     }
 
-    @Asterisk
+    @Mask
     @JsonView(value = {Views.Socks5.class, Views.Pac.class, Views.HttpNonWindows.class, Views.HttpWindowsManual.class})
     public String getProxyPassword() {
         switch (proxyType) {
@@ -548,7 +541,9 @@ public class ProxyConfig implements StartListener {
     }
 
     public boolean isNtlm() {
-        return ntlm;
+        return  !isAuthAutoMode() &&
+                ((proxyType.isHttp() && httpAuthProtocol != null && httpAuthProtocol.isNtlm()) ||
+                        (proxyType.isPac() && pacHttpAuthProtocol != null && pacHttpAuthProtocol.isNtlm()));
     }
 
     @JsonView(value = {Views.Settings.class})
@@ -642,12 +637,6 @@ public class ProxyConfig implements StartListener {
         }
     }
 
-    @Override
-    public void onStart() {
-        this.ntlm = !isAuthAutoMode() &&
-                ((proxyType.isHttp() && httpAuthProtocol != null && httpAuthProtocol.isNtlm()) ||
-                        (proxyType.isPac() && pacHttpAuthProtocol != null && pacHttpAuthProtocol.isNtlm()));
-    }
 
     public enum Type implements ProxyType {
         HTTP, SOCKS4, SOCKS5, PAC, DIRECT;
