@@ -352,7 +352,8 @@ public final class HttpUtils {
             return Collections.singletonList(new ProxyInfo(ProxyInfo.PacType.DIRECT));
         }
         List<ProxyInfo> proxyInfos = new ArrayList<>();
-        for (String s : proxyLine.split(";")) {
+        for (String s : proxyLine.trim().split(";")) {
+            log.debug("Process token: [{}]", s);
             String[] split = s.trim().split("\\s+");
             Assert.isTrue(split.length > 0,
                     String.format("Invalid proxy line [%s]: empty",

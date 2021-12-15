@@ -51,7 +51,7 @@ class AuthConfiguration {
     }
 
     /**
-     * Create the system wide {@link Registry<AuthSchemeProvider>}.
+     * Create the system-wide {@link Registry<AuthSchemeProvider>}.
      * <p>Note: Only works with HTTP proxies.
      *
      * @return the system wide {@link Registry<AuthSchemeProvider>}
