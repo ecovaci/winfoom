@@ -123,76 +123,7 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
     @Override
     public void writeTo(OutputStream outStream) throws IOException {
         if (streaming) {
-            if (this.contentLength > 0 && this.contentLength <= internalBufferLength) {
-                int length;
-                final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                long remaining = contentLength;
-                while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
-                    length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
-                    if (length == -1) {
-                        break;
-                    }
-                    outStream.write(buffer, 0, length);
-                    outStream.flush();
-
-                    out.write(buffer, 0, length);
-                    remaining -= length;
-                }
-                out.flush();
-                bufferedBytes = out.toByteArray();
-            } else if (contentLength != 0) {
-                tempFilepath = tempDirectory.resolve(InputOutputs.generateCacheFilename());
-                final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
-                try (CacheFile cacheFile = CacheFile.from(tempFilepath, buffer)) {
-                    if (contentLength < 0) {
-                        if (isChunked()) {
-                            ChunkedInputStream chunkedInputStream = new ChunkedInputStream(inputBuffer);
-                            int length;
-                            while ((length = chunkedInputStream.read(buffer)) > 0) {
-                                outStream.write(buffer, 0, length);
-                                outStream.flush();
-
-                                // Write to file
-                                cacheFile.write(length);
-                            }
-                        } else {
-
-                            // consume until EOF
-                            int length;
-                            while (InputOutputs.isAvailable(inputBuffer)) {
-                                length = inputBuffer.read(buffer);
-                                if (length == -1) {
-                                    break;
-                                }
-                                outStream.write(buffer, 0, length);
-                                outStream.flush();
-
-                                // Write to file
-                                cacheFile.write(length);
-                            }
-                        }
-
-                    } else {
-                        int length;
-                        long remaining = contentLength;
-
-                        // consume no more than maxLength
-                        while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
-                            length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
-                            if (length == -1) {
-                                break;
-                            }
-                            outStream.write(buffer, 0, length);
-                            outStream.flush();
-                            remaining -= length;
-
-                            // Write to temp file
-                            cacheFile.write(length);
-                        }
-                    }
-                }
-            }
+            writeStreaming(outStream);
             streaming = false;
         } else {
             if (bufferedBytes != null) {
@@ -203,6 +134,87 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
                 try (InputStream inputStream = Files.newInputStream(tempFilepath)) {
                     inputStream.transferTo(outStream);
                     outStream.flush();
+                }
+            }
+        }
+    }
+
+    private void writeStreaming(OutputStream outStream) throws IOException {
+        if (this.contentLength > 0 && this.contentLength <= internalBufferLength) {
+            writeBuffer(outStream);
+        } else if (contentLength != 0) {
+            writeStream(outStream);
+        }
+    }
+
+    private void writeBuffer(OutputStream outStream) throws IOException {
+        int length;
+        final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        long remaining = contentLength;
+        while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
+            length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
+            if (length == -1) {
+                break;
+            }
+            outStream.write(buffer, 0, length);
+            outStream.flush();
+
+            out.write(buffer, 0, length);
+            remaining -= length;
+        }
+        out.flush();
+        bufferedBytes = out.toByteArray();
+    }
+
+    private void writeStream(OutputStream outStream) throws IOException {
+        tempFilepath = tempDirectory.resolve(InputOutputs.generateCacheFilename());
+        final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
+        try (CacheFile cacheFile = CacheFile.from(tempFilepath, buffer)) {
+            if (contentLength < 0) {
+                if (isChunked()) {
+                    ChunkedInputStream chunkedInputStream = new ChunkedInputStream(inputBuffer);
+                    int length;
+                    while ((length = chunkedInputStream.read(buffer)) > 0) {
+                        outStream.write(buffer, 0, length);
+                        outStream.flush();
+
+                        // Write to file
+                        cacheFile.write(length);
+                    }
+                } else {
+
+                    // consume until EOF
+                    int length;
+                    while (InputOutputs.isAvailable(inputBuffer)) {
+                        length = inputBuffer.read(buffer);
+                        if (length == -1) {
+                            break;
+                        }
+                        outStream.write(buffer, 0, length);
+                        outStream.flush();
+
+                        // Write to file
+                        cacheFile.write(length);
+                    }
+                }
+
+            } else {
+                int length;
+                long remaining = contentLength;
+
+                // consume no more than maxLength
+                while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
+                    length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
+                    if (length == -1) {
+                        break;
+                    }
+                    outStream.write(buffer, 0, length);
+                    outStream.flush();
+                    remaining -= length;
+
+                    // Write to temp file
+                    cacheFile.write(length);
                 }
             }
         }
