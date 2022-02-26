@@ -148,10 +148,10 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
     }
 
     private void writeBuffer(OutputStream outStream) throws IOException {
-        int length;
         final byte[] buffer = new byte[OUTPUT_BUFFER_SIZE];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         long remaining = contentLength;
+        int length;
         while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
             length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
             if (length == -1) {
@@ -200,10 +200,10 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
                 }
 
             } else {
-                int length;
                 long remaining = contentLength;
 
                 // consume no more than maxLength
+                int length;
                 while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
                     length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
                     if (length == -1) {
