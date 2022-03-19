@@ -18,12 +18,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.4</version>
+        <version>2.6.4</version>
         <relativePath/>
     </parent>
     <groupId>org.kpax</groupId>
     <artifactId>winfoom</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.2</version>
 
     <name>winfoom</name>
     <url>https://github.com/ecovaci/winfoom</url>
@@ -36,14 +36,15 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <ipaddress.version>5.3.3</ipaddress.version>
-        <cache2k.version>2.2.1.Final</cache2k.version>
+        <cache2k.version>2.6.1.Final</cache2k.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
-        <graalvm-js.version>21.2.0</graalvm-js.version>
+        <graalvm-js.version>22.0.0.2</graalvm-js.version>
         <mock-server.version>5.9.0</mock-server.version>
         <littleproxy.version>1.1.2</littleproxy.version>
         <mockserver-netty.version>5.10.0</mockserver-netty.version>
         <lombok.version>1.18.20</lombok.version>
         <assertj.version>3.20.2</assertj.version>
+        <log4j-jcl.version>2.17.2</log4j-jcl.version>
     </properties>
 
     <dependencies>
@@ -121,6 +122,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
             <version>${commons-pool2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>${log4j-jcl.version}</version>
         </dependency>
 
         <dependency>
