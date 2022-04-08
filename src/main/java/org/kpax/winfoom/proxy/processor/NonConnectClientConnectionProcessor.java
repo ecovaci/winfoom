@@ -20,6 +20,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
@@ -88,6 +89,8 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
 
                     response.removeHeaders(HttpHeaders.VIA);
                     response.removeHeaders(HttpHeaders.PROXY_AUTHENTICATE);
+                    response.removeHeaders(HttpHeaders.CONNECTION);// Remove the Connection header
+                                                                   // in order to add Connection: close header later.
 
                     for (Header header : response.getAllHeaders()) {
                         if (HttpHeaders.TRANSFER_ENCODING.equals(header.getName())) {
@@ -108,6 +111,10 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
                             clientConnection.write(header);
                         }
                     }
+
+                    clientConnection.write(
+                            HttpUtils.createHttpHeader(HttpHeaders.CONNECTION,
+                                    HTTP.CONN_CLOSE));
 
                     // Empty line marking the end
                     // of header's section
