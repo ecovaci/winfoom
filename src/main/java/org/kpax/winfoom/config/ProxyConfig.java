@@ -57,13 +57,16 @@ import java.util.Properties;
 @Slf4j
 @JsonPropertyOrder({"proxyType", "proxyHost", "proxyPort", "proxyUsername", "proxyPassword", "proxyStorePassword",
         "proxyPacFileLocation", "blacklistTimeout",
-        "localPort", "proxyTestUrl", "autostart", "autodetect"})
+        "localAddress", "localPort", "proxyTestUrl", "autostart", "autodetect"})
 @Component
 @PropertySource(value = "file:./config/proxy.properties", ignoreResourceNotFound = true)
 public class ProxyConfig {
 
     @Value("${app.version}")
     private String appVersion;
+
+    @Value("${api.address:localhost}")
+    private String apiAddress;
 
     @Value("${api.port:9999}")
     private Integer apiPort;
@@ -77,6 +80,9 @@ public class ProxyConfig {
 
     @Value("${proxy.type:DIRECT}")
     private Type proxyType;
+
+    @Value("${local.address:localhost}")
+    private String localAddress;
 
     @Value("${local.port:3129}")
     private Integer localPort;
@@ -286,6 +292,15 @@ public class ProxyConfig {
 
     public void setLocalPort(Integer localPort) {
         this.localPort = localPort;
+    }
+
+    @JsonView(value = {Views.Common.class})
+    public String getLocalAddress() {
+        return localAddress;
+    }
+
+    public void setLocalAddress(String localAddress) {
+        this.localAddress = localAddress;
     }
 
     @JsonView(value = {Views.Http.class, Views.Socks4.class})
@@ -547,6 +562,15 @@ public class ProxyConfig {
     }
 
     @JsonView(value = {Views.Settings.class})
+    public String getApiAddress() {
+        return apiAddress;
+    }
+
+    public void setApiAddress(String apiAddress) {
+        this.apiAddress = apiAddress;
+    }
+
+    @JsonView(value = {Views.Settings.class})
     public Integer getApiPort() {
         return apiPort;
     }
@@ -581,6 +605,7 @@ public class ProxyConfig {
                 .propertiesBuilder(userProperties);
         Configuration config = propertiesBuilder.getConfiguration();
         setProperty(config, "app.version", appVersion);
+        setProperty(config, "api.address", apiAddress);
         setProperty(config, "api.port", apiPort);
         setProperty(config, "proxy.type", proxyType);
         setProperty(config, "proxy.http.host", proxyHttpHost);
@@ -589,6 +614,7 @@ public class ProxyConfig {
         setProperty(config, "proxy.socks4.port", proxySocks4Port);
         setProperty(config, "proxy.socks5.host", proxySocks5Host);
         setProperty(config, "proxy.socks5.port", proxySocks5Port);
+        setProperty(config, "local.address", localAddress);
         setProperty(config, "local.port", localPort);
         setProperty(config, "proxy.test.url", proxyTestUrl);
         setProperty(config, "proxy.http.username", proxyHttpUsername);

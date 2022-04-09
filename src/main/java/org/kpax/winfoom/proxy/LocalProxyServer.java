@@ -24,6 +24,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.net.InetAddress;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -69,7 +70,8 @@ class LocalProxyServer implements StopListener {
         try {
             final ClientConnectionHandler clientConnectionHandler = clientConnectionHandlerSelector.select();
             serverSocket = new ServerSocket(proxyConfig.getLocalPort(),
-                    systemConfig.getServerSocketBacklog());
+                    systemConfig.getServerSocketBacklog(),
+                    InetAddress.getByName(proxyConfig.getLocalAddress()));
             executorService.submit(() -> {
                 while (true) {
                     try {
@@ -101,7 +103,7 @@ class LocalProxyServer implements StopListener {
                     }
                 }
             });
-            log.info("Server started, listening on port: " + proxyConfig.getLocalPort());
+            log.info("Server started, listening on address: " + proxyConfig.getLocalAddress() + " and port: " + proxyConfig.getLocalPort());
         } catch (Exception e) {
             // Cleanup on exception
             close();

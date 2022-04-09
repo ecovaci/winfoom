@@ -150,9 +150,10 @@ to get the current configuration. You'll get something like:
 
 ```
 {
-"proxyType" : "DIRECT",
-"localPort" : 3129,
-"proxyTestUrl" : "https://example.com"
+  "proxyType" : "DIRECT",
+  "localAddress" : "localhost",
+  "localPort" : 3129,
+  "proxyTestUrl" : "https://example.com"
 }
 ```
 
@@ -168,6 +169,7 @@ Then, executing `foomcli config` again, the output is something like:
   "proxyType" : "HTTP",
   "proxyHost" : "",
   "proxyPort" : 0,
+  "localAddress" : "localhost",
   "localPort" : 3129,
   "proxyTestUrl" : "http://example.com",
   "useCurrentCredentials" : true
@@ -182,11 +184,12 @@ in the same directory, and edit the field's values accordingly:
 
 ```
 {
-"proxyType" : "HTTP",
-"proxyHost" : "192.168.0.105",
-"proxyPort" : 80,
-"localPort" : 3129,
-"proxyTestUrl" : "http://example.com"
+  "proxyType" : "HTTP",
+  "proxyHost" : "192.168.0.105",
+  "proxyPort" : 80,
+  "localAddress" : "localhost",
+  "localPort" : 3129,
+  "proxyTestUrl" : "http://example.com"
 }
 ```
 
@@ -217,6 +220,7 @@ Execute `foomcli config -f http_config.json` again, then `foomcli config` to see
   "proxyPort" : 80,
   "proxyUsername" : null,
   "proxyPassword" : null,
+  "localAddress" : "localhost",
   "localPort" : 3129,
   "proxyTestUrl" : "http://example.com",
   "useCurrentCredentials" : false,
@@ -253,6 +257,7 @@ If the proxy type is PAC, then the output of the `foomcli config` command would 
   "proxyPassword" : "***",
   "proxyPacFileLocation" : "C:\\path_to\\proxy-ntlm-auth.pac",
   "blacklistTimeout" : 30,
+  "localAddress" : "localhost",
   "localPort" : 3129,
   "proxyTestUrl" : "https://example.com",
   "pacHttpAuthProtocol" : "NTLM"
@@ -271,10 +276,11 @@ The output would be something like:
 
 ```
 {
-"autostart" : false,
-"autodetect" : false,
-"appVersion" : "3.0.1",
-"apiPort" : 9999
+  "autostart" : false,
+  "autodetect" : false,
+  "appVersion" : "3.0.1",
+  "apiAddress" : "localhost",
+  "apiPort" : 9999
 }
 ```
 
@@ -282,7 +288,7 @@ Copy the output into a file named, let's say, `settings.json` and modify accordi
 
 ```
 {
-"autostart" : true
+  "autostart" : true
 }
 ```
 
@@ -294,7 +300,7 @@ To load the new values, execute:
 
 then check the new settings with `foomcli settings`
 
-> 👉 Note: If you modify the apiPort then you need to set the variable FOOM_LOCATION. 
+> 👉 Note: If you modify the apiAddress or the apiPort then you need to set the variable FOOM_LOCATION.
 > (For example FOOM_LOCATION=localhost:[your new port])
 
 > 👉 WARNING: All the provided passwords are stored encoded BASE64 without any encryption. 

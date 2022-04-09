@@ -38,6 +38,7 @@ public class ConfigDto {
     private Integer blacklistTimeout;
     private String proxyHost;
     private Integer proxyPort;
+    private String localAddress;
     private Integer localPort;
     private String proxyTestUrl;
 
@@ -54,6 +55,12 @@ public class ConfigDto {
         if (proxyPort != null) {
             if (!HttpUtils.isValidPort(proxyPort)) {
                 throw new InvalidProxySettingsException("Invalid proxyPort, allowed range: 1 - 65535");
+            }
+        }
+
+        if (localAddress != null) {
+            if (!HttpUtils.isValidAddress(localAddress)) {
+                throw new InvalidProxySettingsException("Invalid localAddress, use a locally bound address");
             }
         }
 

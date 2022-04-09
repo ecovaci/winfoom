@@ -27,11 +27,17 @@ import org.kpax.winfoom.util.HttpUtils;
 @ToString
 public class SettingsDto {
 
+    private String apiAddress;
     private Integer apiPort;
     private Boolean autodetect;
     private Boolean autostart;
 
     public void validate() throws InvalidProxySettingsException {
+        if (apiAddress != null) {
+            if (!HttpUtils.isValidAddress(apiAddress)) {
+                throw new InvalidProxySettingsException("Invalid apiAddress, use a locally bound address");
+            }
+        }
         if (apiPort != null) {
             if (!HttpUtils.isValidPort(apiPort)) {
                 throw new InvalidProxySettingsException("Invalid apiPort, allowed range: 1 - 65535");

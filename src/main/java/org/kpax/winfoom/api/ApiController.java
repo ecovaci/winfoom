@@ -46,6 +46,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +77,9 @@ public class ApiController implements AutoCloseable {
     private void init() throws IOException {
         Credentials credentials = new ApiCredentials(proxyConfig.getApiToken());
         log.info("Register API request handlers");
-        apiServer = ServerBootstrap.bootstrap().setListenerPort(proxyConfig.getApiPort()).
+        apiServer = ServerBootstrap.bootstrap().
+                setLocalAddress(InetAddress.getByName(proxyConfig.getApiAddress())).
+                setListenerPort(proxyConfig.getApiPort()).
                 registerHandler("/start",
                         new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
                             @Override

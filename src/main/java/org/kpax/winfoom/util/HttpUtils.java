@@ -29,6 +29,7 @@ import org.kpax.winfoom.exception.PacScriptException;
 import org.kpax.winfoom.proxy.ProxyInfo;
 import org.springframework.util.Assert;
 
+import java.net.InetAddress;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -261,6 +262,23 @@ public final class HttpUtils {
         return new BasicStatusLine(protocolVersion, httpCode,
                 StringUtils.isEmpty(reasonPhrase) ?
                         EnglishReasonPhraseCatalog.INSTANCE.getReason(httpCode, Locale.ENGLISH) : reasonPhrase);
+    }
+
+    /**
+     * Validate an address.
+     *
+     * @param addr the address value.
+     * @return {@code true} if the address value is locally bound.
+     */
+    public static boolean isValidAddress(final String addr) {
+        try {
+            InetAddress inetAddr = InetAddress.getByName(addr);
+            if (inetAddr.isAnyLocalAddress() || inetAddr.isLoopbackAddress())
+                return true;
+            return NetworkInterface.getByInetAddress(inetAddr) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

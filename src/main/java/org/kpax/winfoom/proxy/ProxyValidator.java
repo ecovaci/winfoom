@@ -49,7 +49,7 @@ public class ProxyValidator {
     public void testProxy() throws IOException, InvalidProxySettingsException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpHost target = HttpHost.create(proxyConfig.getProxyTestUrl());
-            HttpHost proxy = new HttpHost("localhost", proxyConfig.getLocalPort());
+            HttpHost proxy = new HttpHost(proxyConfig.getLocalAddress(), proxyConfig.getLocalPort());
             RequestConfig config = RequestConfig.custom()
                     .setProxy(proxy)
                     .setCircularRedirectsAllowed(true)

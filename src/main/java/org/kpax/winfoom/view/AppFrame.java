@@ -208,6 +208,10 @@ public class AppFrame extends JFrame {
         return new JLabel("Proxy port* ");
     }
 
+    private JLabel getLocalAddressLabel() {
+        return new JLabel("Local address* ");
+    }
+
     private JLabel getLocalPortLabel() {
         return new JLabel("Local proxy port* ");
     }
@@ -314,6 +318,13 @@ public class AppFrame extends JFrame {
         proxyPortJSpinner.setToolTipText("The remote proxy port, between 1 and 65535");
         proxyPortJSpinner.addChangeListener(e -> proxyConfig.setProxyPort((Integer) proxyPortJSpinner.getValue()));
         return proxyPortJSpinner;
+    }
+
+    private JTextField getLocalAddressJTextField() {
+        JTextField localAddressJTextField = createTextField(proxyConfig.getLocalAddress());
+        localAddressJTextField.setToolTipText("The ip or domain name of a local interface");
+        localAddressJTextField.getDocument().addDocumentListener((TextChangeListener) (e) -> proxyConfig.setLocalAddress(localAddressJTextField.getText()));
+        return localAddressJTextField;
     }
 
     private JSpinner getLocalPortJSpinner() {
@@ -555,11 +566,13 @@ public class AppFrame extends JFrame {
     private void configureForHttp() {
         labelPanel.add(getProxyHostLabel());
         labelPanel.add(getProxyPortLabel());
+        labelPanel.add(getLocalAddressLabel());
         labelPanel.add(getLocalPortLabel());
         labelPanel.add(getUseSystemCredentialsLabel());
 
         fieldPanel.add(getProxyHostJTextField());
         fieldPanel.add(wrapToPanel(getProxyPortJSpinner()));
+        fieldPanel.add(getLocalAddressJTextField());
         fieldPanel.add(wrapToPanel(getLocalPortJSpinner()));
         fieldPanel.add(getUseSystemCredentialsJCheckBox());
 
@@ -577,16 +590,19 @@ public class AppFrame extends JFrame {
     private void configureForSocks4() {
         labelPanel.add(getProxyHostLabel());
         labelPanel.add(getProxyPortLabel());
+        labelPanel.add(getLocalAddressLabel());
         labelPanel.add(getLocalPortLabel());
 
         fieldPanel.add(getProxyHostJTextField());
         fieldPanel.add(wrapToPanel(getProxyPortJSpinner()));
+        fieldPanel.add(getLocalAddressJTextField());
         fieldPanel.add(wrapToPanel(getLocalPortJSpinner()));
     }
 
     private void configureForPac() {
         labelPanel.add(getPacFileLabel());
         labelPanel.add(getBlacklistTimeoutLabel());
+        labelPanel.add(getLocalAddressLabel());
         labelPanel.add(getLocalPortLabel());
         labelPanel.add(getUsernameLabel(false));
         labelPanel.add(getPasswordLabel(false));
@@ -595,6 +611,7 @@ public class AppFrame extends JFrame {
         fieldPanel.add(getPacFileJTextField());
         fieldPanel.add(wrapToPanel(getBlacklistTimeoutJSpinner(),
                 new JLabel(" (" + ProxyBlacklist.TEMPORAL_UNIT.toString().toLowerCase() + ")")));
+        fieldPanel.add(getLocalAddressJTextField());
         fieldPanel.add(wrapToPanel(getLocalPortJSpinner()));
 
         fieldPanel.add(getPacUsernameTextField());
@@ -607,7 +624,9 @@ public class AppFrame extends JFrame {
 
 
     private void configureForDirect() {
+        labelPanel.add(getLocalAddressLabel());
         labelPanel.add(getLocalPortLabel());
+        fieldPanel.add(getLocalAddressJTextField());
         fieldPanel.add(wrapToPanel(getLocalPortJSpinner()));
     }
 
@@ -616,12 +635,14 @@ public class AppFrame extends JFrame {
         labelPanel.add(getProxyPortLabel());
         labelPanel.add(getUsernameLabel(false));
         labelPanel.add(getPasswordLabel(false));
+        labelPanel.add(getLocalAddressLabel());
         labelPanel.add(getLocalPortLabel());
 
         fieldPanel.add(getProxyHostJTextField());
         fieldPanel.add(wrapToPanel(getProxyPortJSpinner()));
         fieldPanel.add(getSocks5UsernameJTextField());
         fieldPanel.add(getSocks5PasswordField());
+        fieldPanel.add(getLocalAddressJTextField());
         fieldPanel.add(wrapToPanel(getLocalPortJSpinner()));
     }
 
@@ -772,6 +793,11 @@ public class AppFrame extends JFrame {
 
         if (proxyConfig.isAutoConfig() && StringUtils.isBlank(proxyConfig.getProxyPacFileLocation())) {
             SwingUtils.showErrorMessage(this, "Fill in a valid Pac file location");
+            return false;
+        }
+
+        if (StringUtils.isBlank(proxyConfig.getLocalAddress()) || !HttpUtils.isValidAddress(proxyConfig.getLocalAddress())) {
+            SwingUtils.showErrorMessage(this, "Fill in a valid local proxy address that is locally bound");
             return false;
         }
 
