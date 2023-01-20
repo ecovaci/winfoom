@@ -49,6 +49,9 @@ if exist .\jdk\bin\javaw.exe (
     goto :start
 )
 
+:: Format JAVA_HOME to 8.3 to evade problems with exist and start commands
+for %%I in ("%JAVA_HOME%") do set JAVA_HOME=%%~sI
+
 if exist %JAVA_HOME%\bin\javaw.exe (
     set JAVA_EXE=%JAVA_HOME%\bin\javaw.exe
 ) else (
