@@ -13,6 +13,7 @@
 package org.kpax.winfoom.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.kpax.winfoom.proxy.concurrent.ExecutorServiceFactory;
 import org.kpax.winfoom.proxy.listener.StopListener;
 import org.kpax.winfoom.util.functional.SingletonSupplier;
 import org.springframework.core.annotation.Order;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A wrapper for {@link ThreadPoolExecutor} that forbids {@link #shutdown()}, {@link #shutdownNow()}
@@ -32,13 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class ProxyExecutorService implements ExecutorService, StopListener {
 
-    private final SingletonSupplier<ThreadPoolExecutor> threadPoolSupplier;
+    private final SingletonSupplier<ExecutorService> threadPoolSupplier;
 
     public ProxyExecutorService() {
-        this.threadPoolSupplier =
-                new SingletonSupplier<>(() -> new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                        60L, TimeUnit.SECONDS, new SynchronousQueue<>(),
-                        new DefaultThreadFactory()));
+        this.threadPoolSupplier = new SingletonSupplier<>(() -> new ExecutorServiceFactory().get());
     }
 
     public void execute(Runnable task) {
@@ -113,36 +110,4 @@ public class ProxyExecutorService implements ExecutorService, StopListener {
         threadPoolSupplier.reset(ExecutorService::shutdownNow);
     }
 
-    public static class DefaultThreadFactory implements ThreadFactory {
-        private static final AtomicInteger poolNumber = new AtomicInteger(1);
-        private final ThreadGroup group;
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-        private final String namePrefix;
-
-        public DefaultThreadFactory() {
-            SecurityManager securityManager = System.getSecurityManager();
-            group = (securityManager != null) ? securityManager.getThreadGroup() :
-                    Thread.currentThread().getThreadGroup();
-            namePrefix = "pool-" +
-                    poolNumber.getAndIncrement() +
-                    "-thread-";
-        }
-
-        @Override
-        public Thread newThread(Runnable runnable) {
-            Thread thread = new Thread(group, runnable,
-                    namePrefix + threadNumber.getAndIncrement(),
-                    0);
-
-            // Make sure all threads are daemons!
-            if (!thread.isDaemon()) {
-                thread.setDaemon(true);
-            }
-
-            if (thread.getPriority() != Thread.NORM_PRIORITY) {
-                thread.setPriority(Thread.NORM_PRIORITY);
-            }
-            return thread;
-        }
-    }
 }
