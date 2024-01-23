@@ -45,7 +45,7 @@ import org.kpax.winfoom.util.InputOutputs;
 import org.kpax.winfoom.util.functional.ProxySingletonSupplier;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.Socket;
 
