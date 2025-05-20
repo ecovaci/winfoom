@@ -78,6 +78,9 @@ public class ProxyConfig {
     @Value("${proxy.type:DIRECT}")
     private Type proxyType;
 
+    @Value("${local.address:localhost}")
+    private String localAddress;
+
     @Value("${local.port:3129}")
     private Integer localPort;
 
@@ -277,6 +280,11 @@ public class ProxyConfig {
     @JsonView(value = {Views.Settings.class})
     public String getAppVersion() {
         return appVersion;
+    }
+
+    @JsonView(value = {Views.Common.class})
+    public String getLocalAddress() {
+        return localAddress;
     }
 
     @JsonView(value = {Views.Common.class})

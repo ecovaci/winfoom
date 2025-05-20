@@ -12,6 +12,8 @@
 
 package org.kpax.winfoom.proxy;
 
+import inet.ipaddr.IPAddressString;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.ThreadSafe;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -68,8 +71,12 @@ class LocalProxyServer implements StopListener {
         log.info("Start local proxy server with userConfig {}", proxyConfig);
         try {
             final ClientConnectionHandler clientConnectionHandler = clientConnectionHandlerSelector.select();
-            serverSocket = new ServerSocket(proxyConfig.getLocalPort(),
-                    systemConfig.getServerSocketBacklog());
+            var localAddress = new IPAddressString(proxyConfig.getLocalAddress()).getAddress().toInetAddress();
+            serverSocket = new ServerSocket(
+                    proxyConfig.getLocalPort(),
+                    systemConfig.getServerSocketBacklog(),
+                    localAddress
+            );
             executorService.submit(() -> {
                 while (true) {
                     try {
