@@ -39,7 +39,7 @@ to your system architecture, unzip it in the Winfoom directory and rename it to 
 
 ### Build from source code
 If you decide to build the executable *jar* file from the source code, you would need these prerequisites:
-* Java JDK 11(+)
+* Java JDK 17(+)
 * Maven 3.x version (optional)
 
 First download  the source code from [releases](https://github.com/ecovaci/winfoom/releases) and unzip it.
