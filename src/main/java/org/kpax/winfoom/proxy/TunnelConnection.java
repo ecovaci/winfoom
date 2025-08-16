@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
@@ -45,7 +46,6 @@ import org.kpax.winfoom.util.InputOutputs;
 import org.kpax.winfoom.util.functional.ProxySingletonSupplier;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.Socket;
 
