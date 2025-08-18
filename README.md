@@ -4,7 +4,6 @@
 ![Total downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total.svg)
 ![Latest downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/latest/total.svg)
 ![Release](https://img.shields.io/github/v/release/ecovaci/winfoom)
-[![Java CI with Maven](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/ecovaci/winfoom/actions/workflows/maven-ci.yml)
 
 ### Basic Proxy Facade for NTLM, Kerberos, SOCKS and Proxy Auto Config file proxies
 
