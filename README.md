@@ -96,6 +96,13 @@ Winfoom can be launched with modified Java and system parameters by defining the
 
 > 👉 Note: It's a good idea to add the Winfoom's home directory to the PATH environment variable.
 
+To run a working Winfoom package at server start use this cron entry. Make sure to have set the autostart parameter to true. ( Check with ./foomcli.sh settings if autostart is true)
+
+`@reboot 'cd /opt/winfoom;/opt/winfoom/jdk/bin/java -server -XX:+UseG1GC -XX:MaxHeapFreeRatio=30 -XX:MinHeapFreeRatio=10 -Dlogging.level.root=DEBUG -Dlogging.level.java.awt=INFO -Dlogging.level.sun.awt=INFO -Dlogging.level.javax.s
+wing=INFO -Dlogging.level.jdk=INFO -Dsun.security.krb5.debug=true -Dsun.security.jgss.debug=true -cp . -jar /opt/winfoom/winfoom.jar > /opt/winfoom/out.log 2>&1 &`
+
+The parameter were taken from launch.sh script. Adapt as necessary.
+
 ## Winfoom's logs
 The application log file is placed under `out/logs` directory.
 
