@@ -73,17 +73,7 @@ class LocalProxyServer implements StopListener {
             executorService.submit(() -> {
                 while (true) {
                     try {
-                        Socket socket = serverSocket.accept();
-                        systemConfig.configureSocket(socket);
-                        executorService.submit(() -> {
-                            try {
-                                clientConnectionHandler.handleConnection(socket);
-                            } catch (Exception e) {
-                                log.debug("Error on handling connection", e);
-                            } finally {
-                                InputOutputs.close(socket);
-                            }
-                        });
+                        initiateSocketConnection(clientConnectionHandler);
                     } catch (SocketException e) {
 
                         // The ServerSocket has been closed, exit the while loop
@@ -107,6 +97,20 @@ class LocalProxyServer implements StopListener {
             close();
             throw e;
         }
+    }
+
+    private void initiateSocketConnection(ClientConnectionHandler clientConnectionHandler) throws IOException {
+        Socket socket = serverSocket.accept();
+        systemConfig.configureSocket(socket);
+        executorService.submit(() -> {
+            try {
+                clientConnectionHandler.handleConnection(socket);
+            } catch (Exception e) {
+                log.debug("Error on handling connection", e);
+            } finally {
+                InputOutputs.close(socket);
+            }
+        });
     }
 
     @Override

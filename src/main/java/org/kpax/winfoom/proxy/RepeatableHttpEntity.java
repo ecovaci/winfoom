@@ -173,50 +173,60 @@ public class RepeatableHttpEntity extends AbstractHttpEntity implements Closeabl
         try (CacheFile cacheFile = CacheFile.from(tempFilepath, buffer)) {
             if (contentLength < 0) {
                 if (isChunked()) {
-                    ChunkedInputStream chunkedInputStream = new ChunkedInputStream(inputBuffer);
-                    int length;
-                    while ((length = chunkedInputStream.read(buffer)) > 0) {
-                        outStream.write(buffer, 0, length);
-                        outStream.flush();
-
-                        // Write to file
-                        cacheFile.write(length);
-                    }
+                    writeChunkedStream(outStream, buffer, cacheFile);
                 } else {
-
-                    // consume until EOF
-                    int length;
-                    while (InputOutputs.isAvailable(inputBuffer)) {
-                        length = inputBuffer.read(buffer);
-                        if (length == -1) {
-                            break;
-                        }
-                        outStream.write(buffer, 0, length);
-                        outStream.flush();
-
-                        // Write to file
-                        cacheFile.write(length);
-                    }
+                    writeNonChunkedStream(outStream, buffer, cacheFile);
                 }
-
             } else {
-                long remaining = contentLength;
-
-                // consume no more than maxLength
-                int length;
-                while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
-                    length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
-                    if (length == -1) {
-                        break;
-                    }
-                    outStream.write(buffer, 0, length);
-                    outStream.flush();
-                    remaining -= length;
-
-                    // Write to temp file
-                    cacheFile.write(length);
-                }
+                writeStreamWithContent(outStream, buffer, cacheFile);
             }
+        }
+    }
+
+    private void writeStreamWithContent(OutputStream outStream, byte[] buffer, CacheFile cacheFile) throws IOException {
+        long remaining = contentLength;
+
+        // consume no more than maxLength
+        int length;
+        while (remaining > 0 && InputOutputs.isAvailable(inputBuffer)) {
+            length = inputBuffer.read(buffer, 0, (int) Math.min(OUTPUT_BUFFER_SIZE, remaining));
+            if (length == -1) {
+                break;
+            }
+            outStream.write(buffer, 0, length);
+            outStream.flush();
+            remaining -= length;
+
+            // Write to temp file
+            cacheFile.write(length);
+        }
+    }
+
+    private void writeNonChunkedStream(OutputStream outStream, byte[] buffer, CacheFile cacheFile) throws IOException {
+        // consume until EOF
+        int length;
+        while (InputOutputs.isAvailable(inputBuffer)) {
+            length = inputBuffer.read(buffer);
+            if (length == -1) {
+                break;
+            }
+            outStream.write(buffer, 0, length);
+            outStream.flush();
+
+            // Write to file
+            cacheFile.write(length);
+        }
+    }
+
+    private void writeChunkedStream(OutputStream outStream, byte[] buffer, CacheFile cacheFile) throws IOException {
+        ChunkedInputStream chunkedInputStream = new ChunkedInputStream(inputBuffer);
+        int length;
+        while ((length = chunkedInputStream.read(buffer)) > 0) {
+            outStream.write(buffer, 0, length);
+            outStream.flush();
+
+            // Write to file
+            cacheFile.write(length);
         }
     }
 

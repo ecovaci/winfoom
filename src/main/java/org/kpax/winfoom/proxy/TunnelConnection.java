@@ -111,7 +111,31 @@ public class TunnelConnection {
         context.setAttribute(HttpClientContext.AUTHSCHEME_REGISTRY, authSchemeRegistrySupplier.get());
 
         requestExec.preProcess(connect, httpProcessor, context);
+        HttpResponse response = executeRequest(proxy, connection, connect, proxyAuthState, context);
+        processStatus(response, connection);
 
+        return new Tunnel(connection, response);
+    }
+
+    private static void processStatus(HttpResponse response, ManagedHttpClientConnection connection) throws IOException, TunnelRefusedException {
+        final int status = response.getStatusLine().getStatusCode();
+        log.debug("Tunnel final status code: {}", status);
+
+        if (status > HttpUtils.MAX_HTTP_SUCCESS_CODE) { // Error case
+
+            // Buffer response content
+            final HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                response.setEntity(new BufferedHttpEntity(entity));
+            }
+
+            log.debug("Close tunnel connection");
+            InputOutputs.close(connection);
+            throw new TunnelRefusedException("CONNECT refused by proxy: " + response.getStatusLine(), response);
+        }
+    }
+
+    private HttpResponse executeRequest(HttpHost proxy, ManagedHttpClientConnection connection, HttpRequest connect, AuthState proxyAuthState, HttpContext context) throws IOException, HttpException {
         HttpResponse response;
         while (true) {
             if (!connection.isOpen()) {
@@ -154,24 +178,7 @@ public class TunnelConnection {
             }
 
         }
-
-        final int status = response.getStatusLine().getStatusCode();
-        log.debug("Tunnel final status code: {}", status);
-
-        if (status > HttpUtils.MAX_HTTP_SUCCESS_CODE) { // Error case
-
-            // Buffer response content
-            final HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                response.setEntity(new BufferedHttpEntity(entity));
-            }
-
-            log.debug("Close tunnel connection");
-            InputOutputs.close(connection);
-            throw new TunnelRefusedException("CONNECT refused by proxy: " + response.getStatusLine(), response);
-        }
-
-        return new Tunnel(connection, response);
+        return response;
     }
 
 }

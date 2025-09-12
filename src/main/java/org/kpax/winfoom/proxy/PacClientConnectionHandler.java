@@ -55,20 +55,17 @@ class PacClientConnectionHandler extends ClientConnectionHandler {
         URI requestUri = clientConnection.getRequestUri();
         log.debug("Extracted URI from request {}", requestUri);
 
-        List<ProxyInfo> activeProxies;
-        try {
-            activeProxies = pacScriptEvaluator.findProxyForURL(requestUri);
-            log.debug("activeProxies: {}", activeProxies);
-        } catch (Exception e) {
-            clientConnection.writeErrorResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpUtils.reasonPhraseForPac(e));
-            throw e;
-        }
+        List<ProxyInfo> activeProxies = getActiveProxies(clientConnection, requestUri);
 
         if (activeProxies.isEmpty()) {
             clientConnection.writeBadGatewayResponse("Proxy Auto Config error: no available proxy server");
             throw new IllegalStateException("All proxy servers are blacklisted!");
         }
 
+        processClientConnection(clientConnection, activeProxies);
+    }
+
+    private void processClientConnection(ClientConnection clientConnection, List<ProxyInfo> activeProxies) {
         for (Iterator<ProxyInfo> itr = activeProxies.iterator(); itr.hasNext(); ) {
             ProxyInfo proxy = itr.next();
             ClientConnectionProcessor connectionProcessor = connectionProcessorSelector.select(clientConnection.isConnect(),
@@ -89,5 +86,17 @@ class PacClientConnectionHandler extends ClientConnectionHandler {
                 }
             }
         }
+    }
+
+    private List<ProxyInfo> getActiveProxies(ClientConnection clientConnection, URI requestUri) throws Exception {
+        List<ProxyInfo> activeProxies;
+        try {
+            activeProxies = pacScriptEvaluator.findProxyForURL(requestUri);
+            log.debug("activeProxies: {}", activeProxies);
+        } catch (Exception e) {
+            clientConnection.writeErrorResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, HttpUtils.reasonPhraseForPac(e));
+            throw e;
+        }
+        return activeProxies;
     }
 }

@@ -67,21 +67,14 @@ public class ProxyController {
                 sorted(AnnotationAwareOrderComparator.INSTANCE).
                 map(b -> (StartListener) b).
                 collect(Collectors.toList());
+
         try {
-            for (StartListener startListener : startListeners) {
-                TypeQualifier typeQualifier = startListener.getClass().getMethod("onStart").
-                        getDeclaredAnnotation(TypeQualifier.class);
-                if (typeQualifier == null || typeQualifier.value() == proxyConfig.getProxyType()) {
-                    log.debug("Call onStart for: {}", startListener.getClass());
-                    startListener.onStart();
-                } else {
-                    log.debug("onStart ignored for {}", startListener.getClass());
-                }
-            }
+            executeOnStartListeners(startListeners);
         } catch (Exception e) {
             resetState();
             throw e;
         }
+
         if (proxyConfig.getProxyType().isSocks5() || proxyConfig.isPacAuthManualMode()) {
             Authenticator.setDefault(new Authenticator() {
                 public PasswordAuthentication getPasswordAuthentication() {
@@ -93,6 +86,19 @@ public class ProxyController {
         }
         applicationContext.getBean(LocalProxyServer.class).start();
         started = true;
+    }
+
+    private void executeOnStartListeners(List<StartListener> startListeners) throws Exception {
+        for (StartListener startListener : startListeners) {
+            TypeQualifier typeQualifier = startListener.getClass().getMethod("onStart").
+                    getDeclaredAnnotation(TypeQualifier.class);
+            if (typeQualifier == null || typeQualifier.value() == proxyConfig.getProxyType()) {
+                log.debug("Call onStart for: {}", startListener.getClass());
+                startListener.onStart();
+            } else {
+                log.debug("onStart ignored for {}", startListener.getClass());
+            }
+        }
     }
 
     /**

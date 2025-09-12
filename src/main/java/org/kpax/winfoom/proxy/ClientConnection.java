@@ -320,42 +320,32 @@ public class ClientConnection implements StreamSource, AutoCloseable {
         }
     }
 
+    /**
+     Prepare the request for execution:
+     remove some headers, fix VIA header and set a proper entity.
+     */
     private void prepareRequest() {
         log.debug("Prepare the request for execution");
-        // Prepare the request for execution:
-        // remove some headers, fix VIA header and set a proper entity
+
         if (request instanceof HttpEntityEnclosingRequest) {
-            log.debug("Set enclosing entity");
-            RepeatableHttpEntity entity = new RepeatableHttpEntity(request,
-                    sessionInputBuffer,
-                    proxyConfig.getTempDirectory(),
-                    systemConfig.getInternalBufferLength());
-            Header transferEncoding = request.getFirstHeader(HTTP.TRANSFER_ENCODING);
-            if (transferEncoding != null
-                    && StringUtils.containsIgnoreCase(transferEncoding.getValue(), HTTP.CHUNK_CODING)) {
-                log.debug("Mark entity as chunked");
-                entity.setChunked(true);
-
-                // Apache HttpClient adds a Transfer-Encoding header's chunk directive
-                // so remove or strip the existent one from chunk directive
-                request.removeHeader(transferEncoding);
-                String nonChunkedTransferEncoding = HttpUtils.stripChunked(transferEncoding.getValue());
-                if (StringUtils.isNotEmpty(nonChunkedTransferEncoding)) {
-                    request.addHeader(
-                            HttpUtils.createHttpHeader(HttpHeaders.TRANSFER_ENCODING,
-                                    nonChunkedTransferEncoding));
-                    log.debug("Add chunk-striped request header");
-                } else {
-                    log.debug("Remove transfer encoding chunked request header");
-                }
-
-            }
-            ((HttpEntityEnclosingRequest) request).setEntity(entity);
+            prepareHttpEntityEnclosingRequest();
         } else {
             log.debug("No enclosing entity");
         }
 
-        // Remove banned headers
+        removeBannedHeaders();
+        fixViaHeader();
+    }
+
+    private void fixViaHeader() {
+        // Add a Via header and remove the existent one(s)
+        Header viaHeader = request.getFirstHeader(HttpHeaders.VIA);
+        request.removeHeaders(HttpHeaders.VIA);
+        request.setHeader(HttpUtils.createViaHeader(request.getRequestLine().getProtocolVersion(),
+                viaHeader));
+    }
+
+    private void removeBannedHeaders() {
         List<String> bannedHeaders = request instanceof HttpEntityEnclosingRequest ?
                 HttpUtils.ENTITY_BANNED_HEADERS : HttpUtils.DEFAULT_BANNED_HEADERS;
         for (Header header : request.getAllHeaders()) {
@@ -366,12 +356,35 @@ public class ClientConnection implements StreamSource, AutoCloseable {
                 log.debug("Allow request header {}", header);
             }
         }
+    }
 
-        // Add a Via header and remove the existent one(s)
-        Header viaHeader = request.getFirstHeader(HttpHeaders.VIA);
-        request.removeHeaders(HttpHeaders.VIA);
-        request.setHeader(HttpUtils.createViaHeader(request.getRequestLine().getProtocolVersion(),
-                viaHeader));
+    private void prepareHttpEntityEnclosingRequest() {
+        log.debug("Set enclosing entity");
+        RepeatableHttpEntity entity = new RepeatableHttpEntity(request,
+                sessionInputBuffer,
+                proxyConfig.getTempDirectory(),
+                systemConfig.getInternalBufferLength());
+        Header transferEncoding = request.getFirstHeader(HTTP.TRANSFER_ENCODING);
+        if (transferEncoding != null
+                && StringUtils.containsIgnoreCase(transferEncoding.getValue(), HTTP.CHUNK_CODING)) {
+            log.debug("Mark entity as chunked");
+            entity.setChunked(true);
+
+            // Apache HttpClient adds a Transfer-Encoding header's chunk directive
+            // so remove or strip the existent one from chunk directive
+            request.removeHeader(transferEncoding);
+            String nonChunkedTransferEncoding = HttpUtils.stripChunked(transferEncoding.getValue());
+            if (StringUtils.isNotEmpty(nonChunkedTransferEncoding)) {
+                request.addHeader(
+                        HttpUtils.createHttpHeader(HttpHeaders.TRANSFER_ENCODING,
+                                nonChunkedTransferEncoding));
+                log.debug("Add chunk-striped request header");
+            } else {
+                log.debug("Remove transfer encoding chunked request header");
+            }
+
+        }
+        ((HttpEntityEnclosingRequest) request).setEntity(entity);
     }
 
     @Override

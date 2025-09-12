@@ -76,160 +76,42 @@ public class ApiController implements AutoCloseable {
     private void init() throws IOException {
         Credentials credentials = new ApiCredentials(proxyConfig.getApiToken());
         log.info("Register API request handlers");
-        apiServer = ServerBootstrap.bootstrap().setListenerPort(proxyConfig.getApiPort()).
-                registerHandler("/start",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'start' command received");
-                                try {
-                                    proxyConfig.validate();
-                                    proxyController.start();
-                                    response.setEntity(new StringEntity("The local proxy server has been started"));
-                                } catch (InvalidProxySettingsException e) {
-                                    response.setEntity(new StringEntity("Invalid configuration: " + e.getMessage()));
-                                } catch (Exception e) {
-                                    log.error("Error on starting local proxy server", e);
-                                    response.setEntity(new StringEntity("Failed to start the local proxy: " + e.getMessage()));
-                                }
-                            }
-                        }).
-                registerHandler("/stop",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'stop' command received");
-                                if (proxyController.isRunning()) {
-                                    try {
-                                        proxyController.stop();
-                                        response.setEntity(new StringEntity("The local proxy server has been stopped"));
-                                    } catch (Exception e) {
-                                        log.error("Error on stopping local proxy server", e);
-                                        response.setEntity(new StringEntity("Failed to stop the local proxy: " + e.getMessage()));
-                                    }
-                                } else {
-                                    response.setEntity(new StringEntity("Already stopped, nothing to do"));
-                                }
-                            }
-                        }).
-                registerHandler("/status",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'status' command received");
-                                response.setEntity(new StringEntity(String.format("The local proxy server is %s",
-                                        proxyController.isRunning() ? "up" : "stopped")));
-                            }
-                        }).
-                registerHandler("/validate",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'validate' command received");
-                                boolean running = proxyController.isRunning();
-                                if (running) {
-                                    try {
-                                        applicationContext.getBean(ProxyValidator.class).testProxy();
-                                        response.setEntity(new StringEntity("The configuration is valid"));
-                                    } catch (InvalidProxySettingsException e) {
-                                        log.debug("Invalid proxy settings", e);
-                                        response.setEntity(new StringEntity("The configuration is invalid: " + e.getMessage()));
-                                    } catch (IOException e) {
-                                        log.error("Failed to validate proxy settings", e);
-                                        response.setEntity(new StringEntity("Error on validation the configuration: " + e.getMessage()));
-                                    }
-                                } else {
-                                    response.setEntity(new StringEntity("The local proxy server is down, you need to start it before validating configuration"));
-                                }
-                            }
-                        }).
-                registerHandler("/autodetect",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'autodetect' command received");
-                                if (systemConfig.isApiReadOnly()) {
-                                    response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-                                    response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
-                                    return;
-                                }
-                                if (proxyController.isStopped()) {
-                                    try {
-                                        boolean result = proxyConfig.autoDetect();
-                                        if (result) {
-                                            response.setEntity(new StringEntity("Autodetect succeeded"));
-                                        } else {
-                                            response.setEntity(new StringEntity("No proxy configuration found on your system"));
-                                        }
-                                    } catch (Exception e) {
-                                        log.error("Error on autodetect proxy settings", e);
-                                        response.setEntity(new StringEntity("Error on auto-detecting the configuration: " + e.getMessage()));
-                                    }
-                                } else {
-                                    response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before auto-detecting configuration"));
-                                }
-                            }
-                        }).
-                registerHandler("/config",
-                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
-                            @Override
-                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
-                                    throws IOException {
-                                log.debug("'config get' command received");
-                                try {
-                                    response.setEntity(new StringEntity(new ObjectMapper().
-                                            configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false).
-                                            writerWithDefaultPrettyPrinter().
-                                            withView(Views.getView(proxyConfig)).
-                                            writeValueAsString(proxyConfig)));
-                                } catch (Exception e) {
-                                    log.error("Error on serializing proxy configuration", e);
-                                    response.setEntity(new StringEntity("Failed to get proxy configuration: " + e.getMessage()));
-                                }
-                            }
+        ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap().setListenerPort(proxyConfig.getApiPort());
 
+        registerStartHandler(serverBootstrap, credentials);
+        registerStopHandler(serverBootstrap, credentials);
+        registerStatusHandler(serverBootstrap, credentials);
+        registerValidateHandler(serverBootstrap, credentials);
+        registerAutodetectHandler(serverBootstrap, credentials);
+        registerConfigHandler(serverBootstrap, credentials);
+        registerSettingsHandler(serverBootstrap, credentials);
+        registerShutdownHandler(serverBootstrap, credentials);
+
+        apiServer = serverBootstrap.create();
+        apiServer.start();
+    }
+
+    private ServerBootstrap registerShutdownHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/shutdown",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
                             @Override
-                            public void doPost(HttpRequest request, HttpResponse response, HttpContext context)
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                log.debug("'config post' command received");
-                                if (systemConfig.isApiReadOnly()) {
+                                log.debug("'shutdown' command received");
+                                if (systemConfig.isApiDisableShutdown()) {
                                     response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-                                    response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
-                                    return;
-                                }
-                                boolean running = proxyController.isRunning();
-                                if (running) {
-                                    response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before applying configuration"));
+                                    response.setEntity(new StringEntity("Forbidden: Shutdown is disabled"));
                                 } else {
-                                    if (request instanceof BasicHttpEntityEnclosingRequest) {
-                                        BasicHttpEntityEnclosingRequest entityEnclosingRequest = (BasicHttpEntityEnclosingRequest) request;
-                                        try {
-                                            String json = IOUtils.toString(entityEnclosingRequest.getEntity().getContent(), StandardCharsets.UTF_8);
-                                            ConfigDto configDto = new ObjectMapper().readValue(json, ConfigDto.class);
-                                            configDto.validate();
-                                            BeanUtils.copyProperties(JsonUtils.getFieldNames(json), configDto, proxyConfig);
-                                            response.setEntity(new StringEntity("Proxy configuration changed"));
-                                        } catch (IOException e) {
-                                            log.error("Error on parsing JSON", e);
-                                            response.setEntity(new StringEntity("Failed to parse JSON: " + e.getMessage()));
-                                        } catch (InvalidProxySettingsException e) {
-                                            log.error("Invalid JSON", e);
-                                            response.setEntity(new StringEntity("Invalid JSON: " + e.getMessage()));
-                                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                                            log.error("Error on applying proxy configuration", e);
-                                            response.setEntity(new StringEntity("Failed to changed proxy configuration: " + e.getMessage()));
-                                        }
-                                    } else {
-                                        response.setEntity(new StringEntity("Failed to changed proxy configuration: no JSON found"));
-                                    }
+                                    new Thread(applicationContext::close).start();
+                                    response.setEntity(new StringEntity("Shutdown initiated"));
                                 }
                             }
-                        }).
+                        });
+    }
+
+    private ServerBootstrap registerSettingsHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
                 registerHandler("/settings",
                         new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
                             @Override
@@ -275,7 +157,8 @@ public class ApiController implements AutoCloseable {
                                         } catch (InvalidProxySettingsException e) {
                                             log.error("Invalid JSON", e);
                                             response.setEntity(new StringEntity("Invalid JSON: " + e.getMessage()));
-                                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                                        } catch (IllegalAccessException | NoSuchMethodException |
+                                                 InvocationTargetException e) {
                                             log.error("Error on applying proxy settings", e);
                                             response.setEntity(new StringEntity("Failed to change proxy settings: " + e.getMessage()));
                                         }
@@ -284,23 +167,185 @@ public class ApiController implements AutoCloseable {
                                     }
                                 }
                             }
-                        }).
-                registerHandler("/shutdown",
+                        });
+    }
+
+    private ServerBootstrap registerConfigHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/config",
                         new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
                             @Override
                             public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
                                     throws IOException {
-                                log.debug("'shutdown' command received");
-                                if (systemConfig.isApiDisableShutdown()) {
-                                    response.setStatusCode(HttpStatus.SC_FORBIDDEN);
-                                    response.setEntity(new StringEntity("Forbidden: Shutdown is disabled"));
-                                } else {
-                                    new Thread(applicationContext::close).start();
-                                    response.setEntity(new StringEntity("Shutdown initiated"));
+                                log.debug("'config get' command received");
+                                try {
+                                    response.setEntity(new StringEntity(new ObjectMapper().
+                                            configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false).
+                                            writerWithDefaultPrettyPrinter().
+                                            withView(Views.getView(proxyConfig)).
+                                            writeValueAsString(proxyConfig)));
+                                } catch (Exception e) {
+                                    log.error("Error on serializing proxy configuration", e);
+                                    response.setEntity(new StringEntity("Failed to get proxy configuration: " + e.getMessage()));
                                 }
                             }
-                        }).create();
-        apiServer.start();
+
+                            @Override
+                            public void doPost(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'config post' command received");
+                                if (systemConfig.isApiReadOnly()) {
+                                    response.setStatusCode(HttpStatus.SC_FORBIDDEN);
+                                    response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
+                                    return;
+                                }
+                                boolean running = proxyController.isRunning();
+                                if (running) {
+                                    response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before applying configuration"));
+                                } else {
+                                    if (request instanceof BasicHttpEntityEnclosingRequest) {
+                                        BasicHttpEntityEnclosingRequest entityEnclosingRequest = (BasicHttpEntityEnclosingRequest) request;
+                                        try {
+                                            String json = IOUtils.toString(entityEnclosingRequest.getEntity().getContent(), StandardCharsets.UTF_8);
+                                            ConfigDto configDto = new ObjectMapper().readValue(json, ConfigDto.class);
+                                            configDto.validate();
+                                            BeanUtils.copyProperties(JsonUtils.getFieldNames(json), configDto, proxyConfig);
+                                            response.setEntity(new StringEntity("Proxy configuration changed"));
+                                        } catch (IOException e) {
+                                            log.error("Error on parsing JSON", e);
+                                            response.setEntity(new StringEntity("Failed to parse JSON: " + e.getMessage()));
+                                        } catch (InvalidProxySettingsException e) {
+                                            log.error("Invalid JSON", e);
+                                            response.setEntity(new StringEntity("Invalid JSON: " + e.getMessage()));
+                                        } catch (IllegalAccessException | NoSuchMethodException |
+                                                 InvocationTargetException e) {
+                                            log.error("Error on applying proxy configuration", e);
+                                            response.setEntity(new StringEntity("Failed to changed proxy configuration: " + e.getMessage()));
+                                        }
+                                    } else {
+                                        response.setEntity(new StringEntity("Failed to changed proxy configuration: no JSON found"));
+                                    }
+                                }
+                            }
+                        });
+    }
+
+    private ServerBootstrap registerAutodetectHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/autodetect",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
+                            @Override
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'autodetect' command received");
+                                if (systemConfig.isApiReadOnly()) {
+                                    response.setStatusCode(HttpStatus.SC_FORBIDDEN);
+                                    response.setEntity(new StringEntity("Forbidden: Modifying configuration is disabled"));
+                                    return;
+                                }
+                                if (proxyController.isStopped()) {
+                                    try {
+                                        boolean result = proxyConfig.autoDetect();
+                                        if (result) {
+                                            response.setEntity(new StringEntity("Autodetect succeeded"));
+                                        } else {
+                                            response.setEntity(new StringEntity("No proxy configuration found on your system"));
+                                        }
+                                    } catch (Exception e) {
+                                        log.error("Error on autodetect proxy settings", e);
+                                        response.setEntity(new StringEntity("Error on auto-detecting the configuration: " + e.getMessage()));
+                                    }
+                                } else {
+                                    response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before auto-detecting configuration"));
+                                }
+                            }
+                        });
+    }
+
+    private ServerBootstrap registerValidateHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/validate",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
+                            @Override
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'validate' command received");
+                                boolean running = proxyController.isRunning();
+                                if (running) {
+                                    try {
+                                        applicationContext.getBean(ProxyValidator.class).testProxy();
+                                        response.setEntity(new StringEntity("The configuration is valid"));
+                                    } catch (InvalidProxySettingsException e) {
+                                        log.debug("Invalid proxy settings", e);
+                                        response.setEntity(new StringEntity("The configuration is invalid: " + e.getMessage()));
+                                    } catch (IOException e) {
+                                        log.error("Failed to validate proxy settings", e);
+                                        response.setEntity(new StringEntity("Error on validation the configuration: " + e.getMessage()));
+                                    }
+                                } else {
+                                    response.setEntity(new StringEntity("The local proxy server is down, you need to start it before validating configuration"));
+                                }
+                            }
+                        });
+    }
+
+    private ServerBootstrap registerStatusHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/status",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
+                            @Override
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'status' command received");
+                                response.setEntity(new StringEntity(String.format("The local proxy server is %s",
+                                        proxyController.isRunning() ? "up" : "stopped")));
+                            }
+                        });
+    }
+
+    private ServerBootstrap registerStopHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        return serverBootstrap.
+                registerHandler("/stop",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
+                            @Override
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'stop' command received");
+                                if (proxyController.isRunning()) {
+                                    try {
+                                        proxyController.stop();
+                                        response.setEntity(new StringEntity("The local proxy server has been stopped"));
+                                    } catch (Exception e) {
+                                        log.error("Error on stopping local proxy server", e);
+                                        response.setEntity(new StringEntity("Failed to stop the local proxy: " + e.getMessage()));
+                                    }
+                                } else {
+                                    response.setEntity(new StringEntity("Already stopped, nothing to do"));
+                                }
+                            }
+                        });
+    }
+
+    private void registerStartHandler(ServerBootstrap serverBootstrap, Credentials credentials) {
+        serverBootstrap.
+                registerHandler("/start",
+                        new GenericHttpRequestHandler(credentials, executorService, systemConfig) {
+                            @Override
+                            public void doGet(HttpRequest request, HttpResponse response, HttpContext context)
+                                    throws IOException {
+                                log.debug("'start' command received");
+                                try {
+                                    proxyConfig.validate();
+                                    proxyController.start();
+                                    response.setEntity(new StringEntity("The local proxy server has been started"));
+                                } catch (InvalidProxySettingsException e) {
+                                    response.setEntity(new StringEntity("Invalid configuration: " + e.getMessage()));
+                                } catch (Exception e) {
+                                    log.error("Error on starting local proxy server", e);
+                                    response.setEntity(new StringEntity("Failed to start the local proxy: " + e.getMessage()));
+                                }
+                            }
+                        });
     }
 
 
