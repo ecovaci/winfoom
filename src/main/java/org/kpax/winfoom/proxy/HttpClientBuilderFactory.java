@@ -22,7 +22,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.kpax.winfoom.annotation.ThreadSafe;
-import org.kpax.winfoom.config.ProxyConfig;
 import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.util.functional.ProxySingletonSupplier;
 import org.springframework.stereotype.Component;
@@ -40,8 +39,6 @@ import org.springframework.stereotype.Component;
 public class HttpClientBuilderFactory {
 
     private final SystemConfig systemConfig;
-
-    private final ProxyConfig proxyConfig;
 
     private final ProxySingletonSupplier<CredentialsProvider> credentialsProviderSupplier;
 

@@ -103,20 +103,7 @@ class DateRange {
             }
         }
         if (dateDefined()) {
-            boolean checkDateRange = false;
-            if (monthDefined()) {
-                if (yearDefined()) {
-                    if ((year == yearMin && month == monthMin) || (year == yearMax && month == monthMax)) {
-                        checkDateRange = true;
-                    }
-                } else {
-                    if (month == monthMin || month == monthMax) {
-                        checkDateRange = true;
-                    }
-                }
-            } else {
-                checkDateRange = true;
-            }
+            boolean checkDateRange = checkDateRange(year, month);
             if (checkDateRange) {
                 if (dateMin <= dateMax) {  // date range is fully within a month
                     return date >= dateMin && date <= dateMax;
@@ -126,6 +113,24 @@ class DateRange {
             }
         }
         return true;
+    }
+
+    private boolean checkDateRange(int year, int month) {
+        boolean checkDateRange = false;
+        if (monthDefined()) {
+            if (yearDefined()) {
+                if ((year == yearMin && month == monthMin) || (year == yearMax && month == monthMax)) {
+                    checkDateRange = true;
+                }
+            } else {
+                if (month == monthMin || month == monthMax) {
+                    checkDateRange = true;
+                }
+            }
+        } else {
+            checkDateRange = true;
+        }
+        return checkDateRange;
     }
 
     private boolean yearDefined() {

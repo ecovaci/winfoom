@@ -13,6 +13,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -30,22 +31,20 @@ import org.kpax.winfoom.util.functional.SingletonSupplier;
 @Slf4j
 public class ManualAuthCredentialsProvider implements CredentialsProvider, StopListener {
 
-    private ProxyConfig proxyConfig;
+    private final SingletonSupplier<Credentials> credentialsSupplier;
 
-    private final SingletonSupplier<Credentials> credentialsSupplier = new SingletonSupplier<>(() -> {
-        if (proxyConfig.isNtlm()) {
-            DomainUser domainUser = DomainUser.from(proxyConfig.getProxyUsername());
-            log.debug("Create NTLM credentials using domainUser {}", domainUser);
-            return new NTCredentials(domainUser.getUsername(), proxyConfig.getProxyPassword(), null, domainUser.getDomain());
-        } else {
-            log.debug("Create basic credentials for username: {}", proxyConfig.getProxyUsername());
-            return new UsernamePasswordCredentials(proxyConfig.getProxyUsername(),
-                    proxyConfig.getProxyPassword());
-        }
-    });
-
-    public ManualAuthCredentialsProvider(ProxyConfig proxyConfig) {
-        this.proxyConfig = proxyConfig;
+    public ManualAuthCredentialsProvider(@NonNull ProxyConfig proxyConfig) {
+        this.credentialsSupplier = new SingletonSupplier<>(() -> {
+            if (proxyConfig.isNtlm()) {
+                DomainUser domainUser = DomainUser.from(proxyConfig.getProxyUsername());
+                log.debug("Create NTLM credentials using domainUser {}", domainUser);
+                return new NTCredentials(domainUser.getUsername(), proxyConfig.getProxyPassword(), null, domainUser.getDomain());
+            } else {
+                log.debug("Create basic credentials for username: {}", proxyConfig.getProxyUsername());
+                return new UsernamePasswordCredentials(proxyConfig.getProxyUsername(),
+                        proxyConfig.getProxyPassword());
+            }
+        });
     }
 
     @Override

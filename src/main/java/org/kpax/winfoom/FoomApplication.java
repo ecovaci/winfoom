@@ -47,7 +47,7 @@ public class FoomApplication {
 
     public static void main(String[] args) {
         if (SystemConfig.IS_GUI_MODE && !SystemConfig.IS_OS_WINDOWS) {
-            log.error("Graphical mode is not supported on " + SystemConfig.OS_NAME + ", exit the application");
+            log.error("Graphical mode is not supported on {}, exit the application", SystemConfig.OS_NAME);
             System.exit(1);
         }
 

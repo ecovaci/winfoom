@@ -129,7 +129,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
                 return addresses.get(0).getHostAddress();
             }
         } catch (UnknownHostException ex) {
-            log.debug("Error on resolving host [{}]", host);
+            log.debug("Error on resolving DNS host [{}]", host);
         }
         // Returning null is what Chrome and Firefox do in this situation
         return null;
@@ -222,7 +222,7 @@ public class DefaultPacHelperMethods implements PacHelperMethodsNetscape, PacHel
                 return addresses.get(0).getHostAddress();
             }
         } catch (UnknownHostException ex) {
-            log.debug("Error on resolving host [{}]", host);
+            log.debug("Error on resolving DNS ex host [{}]", host);
         }
         return "";
     }

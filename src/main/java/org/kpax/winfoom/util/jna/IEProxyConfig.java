@@ -49,25 +49,29 @@
  */
 package org.kpax.winfoom.util.jna;
 
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
 public class IEProxyConfig {
 
     private final boolean autoDetect;
+
     private final String autoConfigUrl;
+
     private final String proxy;
+
     private final String proxyBypass;
 
-    /*************************************************************************
+    /**
      * Constructor
      *
-     * @param autoDetect
-     *            flag is autodetect is active or not.
-     * @param autoConfigUrl
-     *            the URL for a PAC script
-     * @param proxy
-     *            the proxy server selected
+     * @param autoDetect    flag is autodetect is active or not.
+     * @param autoConfigUrl the URL for a PAC script
+     * @param proxy         the proxy server selected
      * @param proxyBypass
-     *            the proxy bypass address list.
-     ************************************************************************/
+     **/
 
     public IEProxyConfig(boolean autoDetect, String autoConfigUrl, String proxy, String proxyBypass) {
         super();
@@ -77,45 +81,5 @@ public class IEProxyConfig {
         this.proxyBypass = proxyBypass;
     }
 
-    /*************************************************************************
-     * @return Returns the autoDetect.
-     ************************************************************************/
 
-    public boolean isAutoDetect() {
-        return this.autoDetect;
-    }
-
-    /*************************************************************************
-     * @return Returns the autoConfigUrl.
-     ************************************************************************/
-
-    public String getAutoConfigUrl() {
-        return this.autoConfigUrl;
-    }
-
-    /*************************************************************************
-     * @return Returns the proxy.
-     ************************************************************************/
-
-    public String getProxy() {
-        return this.proxy;
-    }
-
-    /*************************************************************************
-     * @return Returns the proxyBypass.
-     ************************************************************************/
-
-    public String getProxyBypass() {
-        return this.proxyBypass;
-    }
-
-    @Override
-    public String toString() {
-        return "IEProxyConfig{" +
-                "autoDetect=" + autoDetect +
-                ", autoConfigUrl='" + autoConfigUrl + '\'' +
-                ", proxy='" + proxy + '\'' +
-                ", proxyBypass='" + proxyBypass + '\'' +
-                '}';
-    }
 }

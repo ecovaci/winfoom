@@ -132,7 +132,7 @@ public class PacScriptEvaluator implements ProxyListener {
                     config.setTestOnCreate(false);
                     config.setTestOnReturn(false);
                     config.setBlockWhenExhausted(true);
-                    return new GenericObjectPool<GraalJSScriptEngine>(
+                    return new GenericObjectPool<>(
                             new BasePooledObjectFactory<>() {
                                 @Override
                                 public GraalJSScriptEngine create() throws PacFileException, IOException {
@@ -218,17 +218,18 @@ public class PacScriptEvaluator implements ProxyListener {
                             + "WeakSet,Symbol,Reflect,Proxy,Promise,SharedArrayBuffer,"
                             + "Atomics,console,performance,"
                             + "arguments").split(",");
-            Object cleaner = scriptEngine.eval("(function(allowed) {\n"
-                    + "   var names = Object.getOwnPropertyNames(this);\n"
-                    + "   MAIN: for (var i = 0; i < names.length; i++) {\n"
-                    + "     for (var j = 0; j < allowed.length; j++) {\n"
-                    + "       if (names[i] === allowed[j]) {\n"
-                    + "         continue MAIN;\n"
-                    + "       }\n"
-                    + "     }\n"
-                    + "     delete this[names[i]];\n"
-                    + "   }\n"
-                    + "})");
+            Object cleaner = scriptEngine.eval("""
+                    (function(allowed) {
+                       var names = Object.getOwnPropertyNames(this);
+                       MAIN: for (var i = 0; i < names.length; i++) {
+                         for (var j = 0; j < allowed.length; j++) {
+                           if (names[i] === allowed[j]) {
+                             continue MAIN;
+                           }
+                         }
+                         delete this[names[i]];
+                       }
+                    })""");
             try {
                 scriptEngine.invokeMethod(cleaner, "call", null, allowedGlobals);
             } catch (NoSuchMethodException ex) {

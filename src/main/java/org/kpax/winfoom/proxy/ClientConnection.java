@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
@@ -89,6 +90,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     /**
      * Whether the request method is CONNECT or not.
      */
+    @Getter
     private final boolean connect;
 
     /**
@@ -241,12 +243,14 @@ public class ClientConnection implements StreamSource, AutoCloseable {
 
     public void writeProxyAuthRequiredErrorResponse() {
         log.debug("Write error response: statusCode = {}", HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
-        String body = "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">\n"
-                + "<html><head>\n"
-                + "<title>" + "Proxy authentication failed" + "</title>\n"
-                + "</head><body>\n"
-                + "Winfoom failed to login to the remote proxy with the provided credentials"
-                + "</body></html>\n";
+        String body = """
+                <!DOCTYPE HTML "-//IETF//DTD HTML 2.0//EN">
+                <html><head>
+                <title>Proxy authentication failed</title>
+                </head><body>
+                Winfoom failed to login to the remote proxy with the provided credentials\
+                </body></html>
+                """;
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         try {
             write(HttpUtils.toStatusLine(request != null ? request.getProtocolVersion() : HttpVersion.HTTP_1_1,
@@ -287,10 +291,6 @@ public class ClientConnection implements StreamSource, AutoCloseable {
             entity.writeTo(outputStream);
         }
         EntityUtils.consume(entity);
-    }
-
-    public boolean isConnect() {
-        return connect;
     }
 
     /**

@@ -56,7 +56,7 @@ public class ProxyValidator {
                     .build();
             HttpGet request = new HttpGet("/");
             request.setConfig(config);
-            log.info("Executing request " + request.getRequestLine() + " to " + target + " via " + proxy);
+            log.info("Executing request {} to {} via {}", request.getRequestLine(), target, proxy);
             try (CloseableHttpResponse response = httpClient.execute(target, request)) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 log.info("statusCode={}", statusCode);

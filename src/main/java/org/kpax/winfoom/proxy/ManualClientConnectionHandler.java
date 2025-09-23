@@ -33,10 +33,6 @@ import org.springframework.stereotype.Component;
 @Component
 class ManualClientConnectionHandler extends ClientConnectionHandler implements StopListener {
 
-    private final ProxyConfig proxyConfig;
-
-    private final SystemConfig systemConfig;
-
     private final ConnectionProcessorSelector connectionProcessorSelector;
 
     /**
@@ -48,8 +44,6 @@ class ManualClientConnectionHandler extends ClientConnectionHandler implements S
                                          SystemConfig systemConfig,
                                          ConnectionProcessorSelector connectionProcessorSelector) {
         super(proxyConfig, systemConfig);
-        this.proxyConfig = proxyConfig;
-        this.systemConfig = systemConfig;
         this.connectionProcessorSelector = connectionProcessorSelector;
         this.proxyInfoSupplier = new SingletonSupplier<>(
                 () -> new ProxyInfo(proxyConfig.getProxyType(), proxyConfig.getProxyType().isDirect() ? null :

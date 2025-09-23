@@ -148,7 +148,7 @@ public class PacDateTimeUtils {
     public static boolean isInDateRange(Date now, Object... args) throws PacDateTimeInputException {
         ParamsInfo paramsInfo = getParamsInfo(args);
 
-        if (!(paramsInfo.count >= 1 && paramsInfo.count <= 6) || paramsInfo.count == 5 || paramsInfo.count == 3) {
+        if (paramsInfo.count < 1 || paramsInfo.count > 6 || paramsInfo.count == 5 || paramsInfo.count == 3) {
             throw new PacDateTimeInputException("invalid number of arguments");
         }
 

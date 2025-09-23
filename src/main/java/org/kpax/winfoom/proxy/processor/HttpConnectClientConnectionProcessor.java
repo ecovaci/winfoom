@@ -55,26 +55,7 @@ class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
         HttpHost target = HttpHost.create(requestLine.getUri());
         HttpHost proxy = new HttpHost(proxyInfo.getProxyHost().getHostName(), proxyInfo.getProxyHost().getPort());
         try (Tunnel tunnel = tunnelConnection.open(proxy, target, requestLine.getProtocolVersion())) {
-            try {
-                // Handle the tunnel response
-                log.debug("Write status line {}", tunnel.getStatusLine());
-                clientConnection.write(tunnel.getStatusLine());
-
-                for (Header header : tunnel.getResponse().getAllHeaders()) {
-                    log.debug("Write header {}", header);
-                    clientConnection.write(header);
-                }
-
-                // Write empty line
-                clientConnection.writeln();
-
-                // The proxy facade mediates the full duplex communication
-                // between the client and the remote proxy.
-                // This usually ends on connection reset, timeout or any other error
-                duplex(tunnel, clientConnection);
-            } catch (Exception e) {
-                log.debug("Error on handling CONNECT response", e);
-            }
+            handleTunnelResponse(clientConnection, tunnel);
         } catch (TunnelRefusedException tre) {
             log.debug("The tunnel request was rejected by the proxy host", tre);
             try {
@@ -82,6 +63,29 @@ class HttpConnectClientConnectionProcessor extends ClientConnectionProcessor {
             } catch (Exception e) {
                 log.debug("Error on writing response", e);
             }
+        }
+    }
+
+    private void handleTunnelResponse(ClientConnection clientConnection, Tunnel tunnel) {
+        try {
+            // Handle the tunnel response
+            log.debug("Write status line {}", tunnel.getStatusLine());
+            clientConnection.write(tunnel.getStatusLine());
+
+            for (Header header : tunnel.getResponse().getAllHeaders()) {
+                log.debug("Write header {}", header);
+                clientConnection.write(header);
+            }
+
+            // Write empty line
+            clientConnection.writeln();
+
+            // The proxy facade mediates the full duplex communication
+            // between the client and the remote proxy.
+            // This usually ends on connection reset, timeout or any other error
+            duplex(tunnel, clientConnection);
+        } catch (Exception e) {
+            log.debug("Error on handling CONNECT response", e);
         }
     }
 

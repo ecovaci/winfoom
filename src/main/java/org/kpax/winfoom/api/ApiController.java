@@ -143,8 +143,7 @@ public class ApiController implements AutoCloseable {
                                 if (running) {
                                     response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before changing settings"));
                                 } else {
-                                    if (request instanceof BasicHttpEntityEnclosingRequest) {
-                                        BasicHttpEntityEnclosingRequest entityEnclosingRequest = (BasicHttpEntityEnclosingRequest) request;
+                                    if (request instanceof BasicHttpEntityEnclosingRequest entityEnclosingRequest) {
                                         try {
                                             String json = IOUtils.toString(entityEnclosingRequest.getEntity().getContent(), StandardCharsets.UTF_8);
                                             SettingsDto settingsDto = new ObjectMapper().readValue(json, SettingsDto.class);
@@ -203,8 +202,7 @@ public class ApiController implements AutoCloseable {
                                 if (running) {
                                     response.setEntity(new StringEntity("The local proxy server is up, you need to stop it before applying configuration"));
                                 } else {
-                                    if (request instanceof BasicHttpEntityEnclosingRequest) {
-                                        BasicHttpEntityEnclosingRequest entityEnclosingRequest = (BasicHttpEntityEnclosingRequest) request;
+                                    if (request instanceof BasicHttpEntityEnclosingRequest entityEnclosingRequest) {
                                         try {
                                             String json = IOUtils.toString(entityEnclosingRequest.getEntity().getContent(), StandardCharsets.UTF_8);
                                             ConfigDto configDto = new ObjectMapper().readValue(json, ConfigDto.class);

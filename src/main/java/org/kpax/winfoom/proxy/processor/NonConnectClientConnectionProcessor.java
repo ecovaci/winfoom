@@ -24,7 +24,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.kpax.winfoom.annotation.ThreadSafe;
 import org.kpax.winfoom.config.ProxyConfig;
-import org.kpax.winfoom.config.SystemConfig;
 import org.kpax.winfoom.exception.ProxyConnectException;
 import org.kpax.winfoom.proxy.ClientConnection;
 import org.kpax.winfoom.proxy.HttpClientBuilderFactory;
@@ -56,7 +55,6 @@ class NonConnectClientConnectionProcessor extends ClientConnectionProcessor {
     public NonConnectClientConnectionProcessor(ExecutorService executorService,
                                                ProxyConfig proxyConfig,
                                                ProxyBlacklist proxyBlacklist,
-                                               SystemConfig systemConfig,
                                                HttpClientBuilderFactory clientBuilderFactory) {
         super(executorService, proxyConfig, proxyBlacklist);
         this.clientBuilderFactory = clientBuilderFactory;

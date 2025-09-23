@@ -54,6 +54,7 @@ public final class Message {
         return new Message(MessageType.INFO, text);
     }
 
+    @Getter
     public enum MessageType {
         ERROR("Error"), INFO("Information"), WARNING("Warning");
 
@@ -63,8 +64,5 @@ public final class Message {
             this.label = label;
         }
 
-        public String getLabel() {
-            return label;
-        }
     }
 }

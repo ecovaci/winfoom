@@ -18,11 +18,14 @@
  */
 package org.kpax.winfoom.exception;
 
+import lombok.Getter;
+
 /**
  * A native error has occurred. (error in JNI or JNA call)
  *
  * @author lbruun
  */
+@Getter
 public class NativeException extends Exception {
 
     private final int errorCode;
@@ -34,10 +37,6 @@ public class NativeException extends Exception {
     public NativeException(int errorCode, String msg) {
         super(msg);
         this.errorCode = errorCode;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
     }
 
 }

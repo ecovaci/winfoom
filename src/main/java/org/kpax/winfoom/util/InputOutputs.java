@@ -54,7 +54,7 @@ public final class InputOutputs {
             try {
                 closeable.close();
             } catch (Exception e) {
-                log.debug("Fail to close: " + closeable.getClass().getName(), e);
+                log.debug("Fail to close: {}", closeable.getClass().getName(), e);
             }
         }
 

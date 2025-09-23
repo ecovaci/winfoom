@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import lombok.Getter;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.conn.ManagedHttpClientConnection;
@@ -35,6 +36,7 @@ import java.io.OutputStream;
 public final class Tunnel implements StreamSource, Closeable {
 
     private final ManagedHttpClientConnection connection;
+    @Getter
     private final HttpResponse response;
 
     private final InputStream inputStream;
@@ -61,10 +63,6 @@ public final class Tunnel implements StreamSource, Closeable {
     @Override
     public OutputStream getOutputStream() {
         return this.outputStream;
-    }
-
-    public HttpResponse getResponse() {
-        return response;
     }
 
     public StatusLine getStatusLine() {
