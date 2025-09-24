@@ -23,14 +23,14 @@ import java.util.Base64;
  */
 public class Base64DecoderPropertyEditor extends PropertyEditorSupport {
 
+    private static final String ENCODED = "encoded(";
+
     @Override
     public void setAsText(String source) {
-        if (StringUtils.isNotEmpty(source)) {
-            if (source.startsWith("encoded(")) {
-                String encoded = source.substring("encoded(".length(), source.length() - 1);
-                setValue(new String(Base64.getDecoder().decode(encoded)));
-                return;
-            }
+        if (StringUtils.isNotEmpty(source) && source.startsWith(ENCODED)) {
+            String encoded = source.substring(ENCODED.length(), source.length() - 1);
+            setValue(new String(Base64.getDecoder().decode(encoded)));
+            return;
         }
         setValue(source);
     }
