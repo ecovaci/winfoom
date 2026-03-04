@@ -44,9 +44,8 @@ class SocksNonConnectClientConnectionProcessor extends NonConnectClientConnectio
     public SocksNonConnectClientConnectionProcessor(ExecutorService executorService,
                                                     ProxyConfig proxyConfig,
                                                     ProxyBlacklist proxyBlacklist,
-                                                    SystemConfig systemConfig,
                                                     HttpClientBuilderFactory clientBuilderFactory) {
-        super(executorService, proxyConfig, proxyBlacklist, systemConfig, clientBuilderFactory);
+        super(executorService, proxyConfig, proxyBlacklist, clientBuilderFactory);
     }
 
     @Override
