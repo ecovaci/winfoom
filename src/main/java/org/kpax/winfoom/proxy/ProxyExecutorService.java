@@ -94,6 +94,12 @@ public class ProxyExecutorService implements ExecutorService, StopListener {
         return threadPoolSupplier.get().invokeAny(tasks, timeout, unit);
     }
 
+    @Override
+    public void close() {
+        ExecutorService.super.close();
+        onStop();
+    }
+
     public boolean isShutdown() {
         return threadPoolSupplier.hasValue() && threadPoolSupplier.get().isShutdown();
     }
