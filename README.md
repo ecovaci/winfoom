@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecovaci/winfoom/blob/master/LICENSE)
 ![Total downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/total?style=flat-square)
 ![Latest downloads](https://img.shields.io/github/downloads/ecovaci/winfoom/latest/total?style=flat-square)
-![GitHub release](https://img.shields.io/github/v/release/ecovaci/winfoom)
+![GitHub release](https://img.shields.io/github/v/release/ecovaci/winfoom?style=flat)
 
 ### Basic Proxy Facade for NTLM, Kerberos, SOCKS and Proxy Auto Config file proxies
 
