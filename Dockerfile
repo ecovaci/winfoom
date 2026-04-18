@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:25-jre-alpine
 
 LABEL description="Basic Proxy Facade for NTLM, Kerberos, SOCKS and Proxy Auto Config file proxies"
 LABEL maintainer="ecovaci"
@@ -7,15 +7,16 @@ RUN mkdir /opt/winfoom
 
 ADD target/winfoom.jar /opt/winfoom/winfoom.jar
 
+RUN apk add --no-cache bash
 ADD docker-entrypoint.sh /opt/winfoom/docker-entrypoint.sh
 
 RUN chmod +x /opt/winfoom/docker-entrypoint.sh
 
 EXPOSE 3129 9999
 
-RUN groupadd -r winfoom && useradd -r -g winfoom winfoom
+RUN addgroup -S winfoom && adduser -S -g winfoom winfoom
 
-RUN mkdir /data && chown winfoom:winfoom /data
+RUN mkdir /data && chown winfoom:winfoom /data && chown -R winfoom:winfoom /opt/winfoom
 
 USER winfoom
 

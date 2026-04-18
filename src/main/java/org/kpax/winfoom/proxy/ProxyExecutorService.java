@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A wrapper for {@link ThreadPoolExecutor} that forbids {@link #shutdown()}, {@link #shutdownNow()}
@@ -32,13 +31,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class ProxyExecutorService implements ExecutorService, StopListener {
 
-    private final SingletonSupplier<ThreadPoolExecutor> threadPoolSupplier;
+    private final SingletonSupplier<ExecutorService> threadPoolSupplier;
 
     public ProxyExecutorService() {
         this.threadPoolSupplier =
-                new SingletonSupplier<>(() -> new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                        60L, TimeUnit.SECONDS, new SynchronousQueue<>(),
-                        new DefaultThreadFactory()));
+                new SingletonSupplier<>(() -> Executors.newThreadPerTaskExecutor(
+                        Thread
+                                .ofVirtual()
+                                .name("virtual-thread-", 0L)
+                                .factory()
+                ));
     }
 
     public void execute(Runnable task) {
@@ -112,36 +114,5 @@ public class ProxyExecutorService implements ExecutorService, StopListener {
     public void onStop() {
         log.debug("Reset the proxy executor service");
         threadPoolSupplier.reset(ExecutorService::shutdownNow);
-    }
-
-    public static class DefaultThreadFactory implements ThreadFactory {
-        private static final AtomicInteger poolNumber = new AtomicInteger(1);
-        private final ThreadGroup group;
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
-        private final String namePrefix;
-
-        public DefaultThreadFactory() {
-            group = Thread.currentThread().getThreadGroup();
-            namePrefix = "pool-" +
-                    poolNumber.getAndIncrement() +
-                    "-thread-";
-        }
-
-        @Override
-        public Thread newThread(Runnable runnable) {
-            Thread thread = new Thread(group, runnable,
-                    namePrefix + threadNumber.getAndIncrement(),
-                    0);
-
-            // Make sure all threads are daemons!
-            if (!thread.isDaemon()) {
-                thread.setDaemon(true);
-            }
-
-            if (thread.getPriority() != Thread.NORM_PRIORITY) {
-                thread.setPriority(Thread.NORM_PRIORITY);
-            }
-            return thread;
-        }
     }
 }
