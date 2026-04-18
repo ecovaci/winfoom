@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A wrapper for {@link ThreadPoolExecutor} that forbids {@link #shutdown()}, {@link #shutdownNow()}
@@ -36,11 +37,7 @@ public class ProxyExecutorService implements ExecutorService, StopListener {
     public ProxyExecutorService() {
         this.threadPoolSupplier =
                 new SingletonSupplier<>(() -> Executors.newThreadPerTaskExecutor(
-                        Thread
-                                .ofVirtual()
-                                .name("virtual-thread-", 0L)
-                                .factory()
-                ));
+                        Thread.ofVirtual().name("virtual-thread-", 0L).factory()));
     }
 
     public void execute(Runnable task) {
