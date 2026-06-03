@@ -12,6 +12,8 @@
 
 package org.kpax.winfoom.proxy;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpax.winfoom.annotation.ThreadSafe;
@@ -49,7 +51,7 @@ class LocalProxyServer implements StopListener {
 
     private final ClientConnectionHandlerSelector clientConnectionHandlerSelector;
 
-    private ServerSocket serverSocket;
+    private volatile ServerSocket serverSocket;
 
     /**
      * Start the local proxy server.
@@ -68,8 +70,10 @@ class LocalProxyServer implements StopListener {
         log.info("Start local proxy server with userConfig {}", proxyConfig);
         try {
             final ClientConnectionHandler clientConnectionHandler = clientConnectionHandlerSelector.select();
-            serverSocket = new ServerSocket(proxyConfig.getLocalPort(),
-                    systemConfig.getServerSocketBacklog());
+            serverSocket = new ServerSocket();
+            InetSocketAddress socketAddress = new InetSocketAddress(InetAddress.getLoopbackAddress(),
+                    proxyConfig.getLocalPort());
+            serverSocket.bind(socketAddress, systemConfig.getServerSocketBacklog());
             executorService.submit(() -> {
                 while (true) {
                     try {
@@ -77,13 +81,9 @@ class LocalProxyServer implements StopListener {
                     } catch (SocketException e) {
 
                         // The ServerSocket has been closed, exit the while loop
-                        if (HttpUtils.isSocketClosed(e)) {
+                        if (serverSocket.isClosed()) {
                             break;
-                        }
-
-                        // Get connection interrupted error whenever stop the server socket,
-                        // there is no reason to debug it
-                        if (!HttpUtils.isConnectionInterrupted(e)) {
+                        } else {
                             log.debug("Socket error on getting connection", e);
                         }
                     } catch (Exception e) {
@@ -101,9 +101,9 @@ class LocalProxyServer implements StopListener {
 
     private void initiateSocketConnection(ClientConnectionHandler clientConnectionHandler) throws IOException {
         Socket socket = serverSocket.accept();
-        systemConfig.configureSocket(socket);
         executorService.submit(() -> {
             try {
+                systemConfig.configureSocket(socket);
                 clientConnectionHandler.handleConnection(socket);
             } catch (Exception e) {
                 log.debug("Error on handling connection", e);
@@ -118,5 +118,4 @@ class LocalProxyServer implements StopListener {
         log.info("Close the local proxy server");
         InputOutputs.close(serverSocket);
     }
-
 }

@@ -55,7 +55,7 @@ import java.util.Properties;
  *
  * @author Eugen Covaci
  */
-@ToString(doNotUseGetters = true)
+@ToString(doNotUseGetters = true, onlyExplicitlyIncluded = true)
 @Slf4j
 @JsonPropertyOrder({"proxyType", "proxyHost", "proxyPort", "proxyUsername", "proxyPassword", "proxyStorePassword",
         "proxyPacFileLocation", "blacklistTimeout",
@@ -64,10 +64,12 @@ import java.util.Properties;
 @PropertySource(value = "file:./config/proxy.properties", ignoreResourceNotFound = true)
 public class ProxyConfig {
 
+    @ToString.Include
     @Value("${app.version}")
     private String appVersion;
 
     @Setter
+    @ToString.Include
     @Value("${api.port:9999}")
     private Integer apiPort;
 
@@ -78,33 +80,41 @@ public class ProxyConfig {
     @Value("${api.userPassword:YWRtaW46d2luZm9vbQ==}")
     private String apiToken;
 
-
     @Setter
+    @ToString.Include
     @Value("${proxy.type:DIRECT}")
     private Type proxyType;
 
     @Setter
+    @ToString.Include
     @Value("${local.port:3129}")
     private Integer localPort;
 
+    @ToString.Include
     @Value("${proxy.http.host:}")
     private String proxyHttpHost;
 
+    @ToString.Include
     @Value("${proxy.socks5.host:}")
     private String proxySocks5Host;
 
+    @ToString.Include
     @Value("${proxy.socks4.host:}")
     private String proxySocks4Host;
 
+    @ToString.Include
     @Value("${proxy.http.port:0}")
     private Integer proxyHttpPort;
 
+    @ToString.Include
     @Value("${proxy.socks5.port:0}")
     private Integer proxySocks5Port;
 
+    @ToString.Include
     @Value("${proxy.socks4.port:0}")
     private Integer proxySocks4Port;
 
+    @ToString.Include
     @Setter
     @Value("${proxy.test.url:http://example.com}")
     private String proxyTestUrl;
@@ -128,14 +138,17 @@ public class ProxyConfig {
     @Value("${proxy.http.password:#{null}}")
     private String proxyHttpPassword;
 
+    @ToString.Include
     @Setter
     @Value("${proxy.http.win.useCurrentCredentials:true}")
     private boolean useCurrentCredentials;
 
+    @ToString.Include
     @Setter
     @Value("${proxy.pac.fileLocation:#{null}}")
     private String proxyPacFileLocation;
 
+    @ToString.Include
     @Setter
     @Value("${blacklist.timeout:30}")// minutes
     private Integer blacklistTimeout;
@@ -148,18 +161,22 @@ public class ProxyConfig {
     @Value("${proxy.pac.password:#{null}}")
     private String proxyPacPassword;
 
+    @ToString.Include
     @Setter
     @Value("${pac.http.auth.protocol:#{null}}")
     private HttpAuthProtocol pacHttpAuthProtocol;
 
+    @ToString.Include
     @Setter
     @Value("${autostart:false}")
     private boolean autostart;
 
+    @ToString.Include
     @Setter
     @Value("${autodetect:false}")
     private boolean autodetect;
 
+    @ToString.Include
     @Setter
     @Value("${http.auth.protocol:#{null}}")
     private HttpAuthProtocol httpAuthProtocol;
