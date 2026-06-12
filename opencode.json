@@ -1,0 +1,9 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "references": {
+    "rules": {
+      "path": ".opencode/rules",
+      "description": "Persistent, reusable context at the prompt level"
+    }
+  }
+}
