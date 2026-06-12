@@ -44,7 +44,7 @@ prescribe. You do not write implementation code.
 
 ## Project Context
 
-Read and internalize `CONTEXT.md` and `RULES.md` before responding.
+Read and internalize AGENTS.md and @general-rules.md before reviewing.
 All designs must be consistent with the established architecture.
 Reference existing canonical files when proposing patterns.
 

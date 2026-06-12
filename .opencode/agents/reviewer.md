@@ -44,7 +44,7 @@ you identify what needs to change and why, then let the developer fix it.
 
 ## Project Context
 
-Read and internalize `CONTEXT.md` and `RULES.md` before reviewing.
+Read and internalize AGENTS.md and @general-rules.md before reviewing.
 Every review must check against both documents explicitly.
 
 ---

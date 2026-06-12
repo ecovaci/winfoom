@@ -41,7 +41,7 @@ You do not write production code.
 
 ## Project Context
 
-Read and internalize `CONTEXT.md` and `RULES.md` before generating tests.
+Read and internalize AGENTS.md and @general-rules.md before reviewing.
 
 **Test type decision guide:**
 | What you're testing              | Test type                                      |

@@ -41,8 +41,8 @@ the project's rules without being reminded.
 
 ## Project Context
 
-Read and internalize `CONTEXT.md` and `RULES.md` before generating any code.
-Always follow the canonical examples listed in CONTEXT.md for the relevant file type.
+Read and internalize AGENTS.md and @general-rules.md before reviewing.
+Always follow the canonical examples listed in AGENTS.md for the relevant file type.
 When in doubt about a pattern, look at the existing codebase, not your defaults.
 
 **Checklist before submitting any code:**
