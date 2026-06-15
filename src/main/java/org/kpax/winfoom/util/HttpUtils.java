@@ -60,6 +60,7 @@ public final class HttpUtils {
      * The context's key for the SOCKS proxy.
      */
     public static final String SOCKS_ADDRESS = "socks.address";
+    public static final String CONTENT_TYPE_TEXT_HTML = "text/html";
 
     /**
      * The maximum value of a success HTTP code.

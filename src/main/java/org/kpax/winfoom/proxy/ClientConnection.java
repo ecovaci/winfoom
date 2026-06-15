@@ -12,6 +12,7 @@
 
 package org.kpax.winfoom.proxy;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -94,8 +95,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     private final boolean connect;
 
     /**
-     * Constructor.<br>
-     * Has the responsibility of parsing the request and initiate various objects.
+     * Constructor.<br> Has the responsibility of parsing the request and initiate various objects.
      * <p><b>The response should be committed before throwing any exception.</b></p>
      *
      * @param socket
@@ -105,8 +105,8 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      * @throws HttpException
      */
     ClientConnection(final Socket socket,
-                     final ProxyConfig proxyConfig,
-                     final SystemConfig systemConfig) throws IOException, HttpException {
+            final ProxyConfig proxyConfig,
+            final SystemConfig systemConfig) throws IOException, HttpException {
         this.socket = socket;
         this.proxyConfig = proxyConfig;
         this.systemConfig = systemConfig;
@@ -256,6 +256,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
             write(HttpUtils.toStatusLine(request != null ? request.getProtocolVersion() : HttpVersion.HTTP_1_1,
                     HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED));
             write(HttpUtils.createHttpHeader(HTTP.DATE_HEADER, HttpUtils.getCurrentDate()));
+            write(HttpUtils.createHttpHeader(HttpHeaders.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_TEXT_HTML));
             write(HttpUtils.createHttpHeader(HttpHeaders.CONTENT_LENGTH, "" + bytes.length));
             writeln();
             outputStream.write(bytes);
@@ -273,24 +274,27 @@ public class ClientConnection implements StreamSource, AutoCloseable {
      * @throws Exception
      */
     public void writeHttpResponse(@NotNull final HttpResponse httpResponse) throws IOException {
-        StatusLine statusLine = httpResponse.getStatusLine();
-        log.debug("Write statusLine {}", statusLine);
-        write(statusLine);
+        try {
+            StatusLine statusLine = httpResponse.getStatusLine();
+            log.debug("Write statusLine {}", statusLine);
+            write(statusLine);
 
-        for (Header header : httpResponse.getAllHeaders()) {
-            log.debug("Write header {}", header);
-            write(header);
+            for (Header header : httpResponse.getAllHeaders()) {
+                log.debug("Write header {}", header);
+                write(header);
+            }
+
+            // Empty line between headers and the body
+            writeln();
+
+            HttpEntity entity = httpResponse.getEntity();
+            if (entity != null) {
+                log.debug("Write entity content");
+                entity.writeTo(outputStream);
+            }
+        } finally {
+            EntityUtils.consume(httpResponse.getEntity());
         }
-
-        // Empty line between headers and the body
-        writeln();
-
-        HttpEntity entity = httpResponse.getEntity();
-        if (entity != null) {
-            log.debug("Write entity content");
-            entity.writeTo(outputStream);
-        }
-        EntityUtils.consume(entity);
     }
 
     /**
@@ -321,8 +325,7 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     }
 
     /**
-     Prepare the request for execution:
-     remove some headers, fix VIA header and set a proper entity.
+     * Prepare the request for execution: remove some headers, fix VIA header and set a proper entity.
      */
     private void prepareRequest() {
         log.debug("Prepare the request for execution");
@@ -348,14 +351,20 @@ public class ClientConnection implements StreamSource, AutoCloseable {
     private void removeBannedHeaders() {
         List<String> bannedHeaders = request instanceof HttpEntityEnclosingRequest ?
                 HttpUtils.ENTITY_BANNED_HEADERS : HttpUtils.DEFAULT_BANNED_HEADERS;
-        for (Header header : request.getAllHeaders()) {
-            if (bannedHeaders.contains(header.getName())) {
-                request.removeHeader(header);
-                log.debug("Request header {} removed", header);
-            } else {
-                log.debug("Allow request header {}", header);
-            }
-        }
+
+        Arrays.stream(request.getAllHeaders())
+                .map(Header::getName)
+                .distinct()
+                .forEach(
+                        headerName -> {
+                            if (bannedHeaders.contains(headerName)) {
+                                request.removeHeaders(headerName);
+                                log.debug("Request header {} removed", headerName);
+                            } else {
+                                log.debug("Allow request header {}", headerName);
+                            }
+                        }
+                );
     }
 
     private void prepareHttpEntityEnclosingRequest() {
