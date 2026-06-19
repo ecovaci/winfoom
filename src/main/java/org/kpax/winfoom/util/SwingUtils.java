@@ -14,20 +14,19 @@
 
 package org.kpax.winfoom.util;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.kpax.winfoom.annotation.NotNull;
-import org.springframework.util.Assert;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.text.DefaultFormatter;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.text.DefaultFormatter;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.kpax.winfoom.annotation.NotNull;
+import org.springframework.util.Assert;
 
 /**
  * Various Swing related methods.
@@ -50,8 +49,12 @@ public class SwingUtils {
      * @param component the {@link Component} to be enabled/disabled.
      * @param enabled   {@code true} or {@code false}.
      */
-    public static void setEnabled(@NotNull final Component component, final boolean enabled, Class... excluded) {
-        java.util.List<Class> excludedClasses;
+    public static void setEnabled(
+        @NotNull final Component component,
+        final boolean enabled,
+        Class<?>... excluded
+    ) {
+        java.util.List<Class<?>> excludedClasses;
         if (excluded != null) {
             excludedClasses = Arrays.asList(excluded);
         } else {
@@ -78,63 +81,88 @@ public class SwingUtils {
         ((DefaultFormatter) field.getFormatter()).setCommitsOnValidEdit(true);
     }
 
-    public static void showMessage(final Component parentComponent,
-                                   final String title,
-                                   final String message,
-                                   final int type) {
-        JOptionPane.showMessageDialog(parentComponent,
-                String.format("<html><body><p style='word-wrap: break-word;width: 300px;'>%s</p></body></html>",
-                        message),
-                title,
-                type);
+    public static void showMessage(
+        final Component parentComponent,
+        final String title,
+        final String message,
+        final int type
+    ) {
+        JOptionPane.showMessageDialog(
+            parentComponent,
+            String.format(
+                "<html><body><p style='word-wrap: break-word;width: 300px;'>%s</p></body></html>",
+                message
+            ),
+            title,
+            type
+        );
     }
-
 
     public static void showErrorMessage(final String message) {
         showErrorMessage(null, DLG_ERR_TITLE, message);
     }
 
-    public static void showErrorMessage(final Component parentComponent,
-                                        final String message) {
+    public static void showErrorMessage(
+        final Component parentComponent,
+        final String message
+    ) {
         showErrorMessage(parentComponent, DLG_ERR_TITLE, message);
     }
 
-    public static void showErrorMessage(final Component parentComponent,
-                                        final String title,
-                                        final String message) {
+    public static void showErrorMessage(
+        final Component parentComponent,
+        final String title,
+        final String message
+    ) {
         showMessage(parentComponent, title, message, JOptionPane.ERROR_MESSAGE);
     }
-
 
     public static void showInfoMessage(final String message) {
         showInfoMessage(null, DLG_INFO_TITLE, message);
     }
 
-    public static void showInfoMessage(final Component parentComponent,
-                                       final String message) {
+    public static void showInfoMessage(
+        final Component parentComponent,
+        final String message
+    ) {
         showInfoMessage(parentComponent, DLG_INFO_TITLE, message);
     }
 
-    public static void showInfoMessage(final Component parentComponent,
-                                       final String title,
-                                       final String message) {
-        showMessage(parentComponent, title, message, JOptionPane.INFORMATION_MESSAGE);
+    public static void showInfoMessage(
+        final Component parentComponent,
+        final String title,
+        final String message
+    ) {
+        showMessage(
+            parentComponent,
+            title,
+            message,
+            JOptionPane.INFORMATION_MESSAGE
+        );
     }
-
 
     public static void showWarningMessage(final String message) {
         showWarningMessage(null, DLG_WARN_TITLE, message);
     }
 
-    public static void showWarningMessage(final Component parentComponent,
-                                          final String message) {
+    public static void showWarningMessage(
+        final Component parentComponent,
+        final String message
+    ) {
         showWarningMessage(parentComponent, DLG_WARN_TITLE, message);
     }
 
-    public static void showWarningMessage(final Component parentComponent,
-                                          final String title,
-                                          final String message) {
-        showMessage(parentComponent, title, message, JOptionPane.WARNING_MESSAGE);
+    public static void showWarningMessage(
+        final Component parentComponent,
+        final String title,
+        final String message
+    ) {
+        showMessage(
+            parentComponent,
+            title,
+            message,
+            JOptionPane.WARNING_MESSAGE
+        );
     }
 
     /**
@@ -143,7 +171,10 @@ public class SwingUtils {
      * @param runnable the {@link Runnable} instance (not null)
      * @param frame    the current {@link JFrame}
      */
-    public static void executeRunnable(@NotNull final Runnable runnable, @NotNull final JFrame frame) {
+    public static void executeRunnable(
+        @NotNull final Runnable runnable,
+        @NotNull final JFrame frame
+    ) {
         Assert.notNull(runnable, "runnable cannot be null");
         Assert.notNull(frame, "frame cannot be null");
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -152,7 +183,8 @@ public class SwingUtils {
                 runnable.run();
             } finally {
                 EventQueue.invokeLater(() ->
-                        frame.setCursor(Cursor.getDefaultCursor()));
+                    frame.setCursor(Cursor.getDefaultCursor())
+                );
             }
         });
         thread.setDaemon(true);
@@ -166,8 +198,10 @@ public class SwingUtils {
      * @param filename the image's filename.
      * @return the loaded {@link Image}.
      */
-    public static Image loadImage(@NotNull final Class<?> cls,
-                                  @NotNull final String filename) {
+    public static Image loadImage(
+        @NotNull final Class<?> cls,
+        @NotNull final String filename
+    ) {
         try {
             URL resource = cls.getResource("/img/" + filename);
             if (resource != null) {
@@ -176,8 +210,10 @@ public class SwingUtils {
                 throw new FileNotFoundException("Resource not found");
             }
         } catch (IOException e) {
-            throw new IllegalArgumentException("Cannot load the image named: " + filename, e);
+            throw new IllegalArgumentException(
+                "Cannot load the image named: " + filename,
+                e
+            );
         }
     }
-
 }
